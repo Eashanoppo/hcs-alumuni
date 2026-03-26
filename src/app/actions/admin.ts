@@ -95,28 +95,39 @@ export async function adminGetRegistrantById(id: string) {
 }
 
 export async function adminUpdatePaymentStatus(paymentId: string, status: 'VERIFIED' | 'FAILED', registrantId: string) {
-  console.log(`[AdminAction] Verifying payment ${paymentId} for registrant ${registrantId}`)
+  console.log(`[AdminAction] START: Verifying payment ${paymentId} → ${status} for registrant ${registrantId}`)
   
   const supabase = getAdminSupabase()
   
   // 1. Update Payment Status
-  const { error: pError } = await supabase
+  const { data: pData, error: pError } = await supabase
     .from('payments')
-    .update({ status: status })
+    .update({ status: status, updated_at: new Date().toISOString() })
     .eq('id', paymentId)
+    .select()
 
-  if (pError) throw new Error(pError.message)
+  if (pError) {
+    console.error(`[AdminAction] Payment update FAILED:`, pError)
+    throw new Error(`Payment update failed: ${pError.message}`)
+  }
+  console.log(`[AdminAction] Payment updated OK:`, pData?.[0]?.status)
 
   // 2. If verified, update registrant's payment status to PAID
-  if (status === 'VERIFIED') {
-    const { error: rError } = await supabase
+  if (status === 'VERIFIED' && registrantId) {
+    const { data: rData, error: rError } = await supabase
       .from('registrants')
-      .update({ payment_status: 'PAID' })
+      .update({ payment_status: 'PAID', updated_at: new Date().toISOString() })
       .eq('id', registrantId)
+      .select()
 
-    if (rError) throw new Error(rError.message)
+    if (rError) {
+      console.error(`[AdminAction] Registrant payment_status update FAILED:`, rError)
+      throw new Error(`Registrant update failed: ${rError.message}`)
+    }
+    console.log(`[AdminAction] Registrant payment_status updated OK:`, rData?.[0]?.payment_status)
   }
 
+  console.log(`[AdminAction] DONE: Payment ${paymentId} is now ${status}`)
   return true
 }
 

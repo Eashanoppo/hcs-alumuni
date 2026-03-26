@@ -80,3 +80,39 @@ BEGIN
     WHERE mobile = p_mobile AND dob = p_dob;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 6. Create Notices Table
+CREATE TABLE IF NOT EXISTS public.notices (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title TEXT NOT NULL,
+    title_bn TEXT,
+    body TEXT,
+    category TEXT DEFAULT 'General',
+    is_featured BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 7. Create Photo Gallery Table
+CREATE TABLE IF NOT EXISTS public.gallery (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title TEXT NOT NULL,
+    category TEXT DEFAULT 'Events',
+    event_year TEXT,
+    image_url TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8. Enable RLS on new tables
+ALTER TABLE public.notices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.gallery ENABLE ROW LEVEL SECURITY;
+
+-- 9. Create Policies for Notices and Gallery
+-- Anyone can read notices and gallery photos
+CREATE POLICY "Allow public read notices" ON public.notices FOR SELECT USING (true);
+CREATE POLICY "Allow public read gallery" ON public.gallery FOR SELECT USING (true);
+
+-- Only service_role handles inserts/updates/deletes for security
+CREATE POLICY "Allow service_role full access notices" ON public.notices USING (true) WITH CHECK (true);
+CREATE POLICY "Allow service_role full access gallery" ON public.gallery USING (true) WITH CHECK (true);

@@ -14,8 +14,9 @@ export default function AdminGallery() {
   const [file, setFile] = useState<File | null>(null)
   const [form, setForm] = useState({
     title: "",
-    category: "Events",
-    event_year: new Date().getFullYear().toString()
+    title_bn: "",
+    tag: "Events",
+    size: "small"
   })
 
   const loadPhotos = async () => {
@@ -51,7 +52,7 @@ export default function AdminGallery() {
         image_url
       })
       setFile(null)
-      setForm({ title: "", category: "Events", event_year: new Date().getFullYear().toString() })
+      setForm({ title: "", title_bn: "", tag: "Events", size: "small" })
       alert("Photo added to gallery!")
       await loadPhotos()
     } catch (error: any) {
@@ -121,11 +122,11 @@ export default function AdminGallery() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                 <div>
-                    <label className="text-[10px] font-black text-muted uppercase tracking-widest block mb-2">Category</label>
+                 <div className="col-span-2">
+                    <label className="text-[10px] font-black text-muted uppercase tracking-widest block mb-2">Category / Tag</label>
                     <select 
-                      value={form.category}
-                      onChange={e => setForm({...form, category: e.target.value})}
+                      value={form.tag}
+                      onChange={e => setForm({...form, tag: e.target.value})}
                       className="w-full px-6 py-4 bg-[#FAFAF7] border-none rounded-2xl focus:ring-2 focus:ring-primary/10 transition-all font-black text-[10px] uppercase tracking-widest"
                     >
                       <option value="Events">Events</option>
@@ -133,15 +134,6 @@ export default function AdminGallery() {
                       <option value="Sports">Sports</option>
                       <option value="Historic">Historic</option>
                     </select>
-                 </div>
-                 <div>
-                    <label className="text-[10px] font-black text-muted uppercase tracking-widest block mb-2">Year</label>
-                    <input 
-                      type="text" 
-                      value={form.event_year}
-                      onChange={e => setForm({...form, event_year: e.target.value})}
-                      className="w-full px-6 py-4 bg-[#FAFAF7] border-none rounded-2xl focus:ring-2 focus:ring-primary/10 transition-all font-bold"
-                    />
                  </div>
               </div>
 
@@ -177,7 +169,7 @@ export default function AdminGallery() {
                    <div className="p-6">
                       <div className="flex items-center justify-between mb-4">
                          <span className="px-3 py-1 bg-[#FAFAF7] border border-gray-100 rounded-lg text-[9px] font-black uppercase tracking-widest text-[#CEB888]">
-                            {p.category} • {p.event_year}
+                            {p.tag}
                          </span>
                          <button 
                           onClick={() => handleDelete(p.id)}

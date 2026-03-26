@@ -32,26 +32,30 @@ export default function AdminPayments() {
     if(!confirm(`Are you sure you want to mark this payment as ${status}?`)) return
     
     try {
-      // Using SERVER ACTION to bypass RLS
+      setLoading(true)
       await adminUpdatePaymentStatus(paymentId, status, registrantId)
-      alert(`Payment marked as ${status.toLowerCase()}!`)
+      alert(`✅ Payment successfully marked as ${status}!`)
       await loadData()
     } catch (error: any) {
       console.error("Failed to update payment status", error)
-      alert(`Verification failed: ${error.message || 'Unknown error'}`)
+      alert(`❌ Verification failed: ${error.message || 'Unknown error. Check the browser console and server logs.'}`)
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleDelete = async (id: string) => {
     if(!confirm("Are you sure you want to delete this payment record?")) return
     try {
-      // Using SERVER ACTION to bypass RLS
+      setLoading(true)
       await adminDeletePayment(id)
-      alert("Payment record deleted.")
+      alert("✅ Payment record deleted.")
       await loadData()
     } catch (error: any) {
       console.error("Failed to delete payment", error)
-      alert(`Deletion failed: ${error.message || 'Unknown error'}`)
+      alert(`❌ Deletion failed: ${error.message || 'Unknown error'}`)
+    } finally {
+      setLoading(false)
     }
   }
 

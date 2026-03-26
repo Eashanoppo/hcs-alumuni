@@ -27,10 +27,10 @@ export default function GalleryPage() {
     fetchPhotos()
   }, [])
 
-  const categories = ["All", ...Array.from(new Set(photos.map(p => p.category)))]
+  const categories = ["All", ...Array.from(new Set(photos.map(p => p.tag)))]
   const filteredPhotos = activeFilter === "All" 
     ? photos 
-    : photos.filter(p => p.category === activeFilter)
+    : photos.filter(p => p.tag === activeFilter)
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF7]">
@@ -96,7 +96,7 @@ export default function GalleryPage() {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8">
                    <span className="text-[9px] font-black text-[#CEB888] uppercase tracking-[0.3em] mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
-                     {photo.category} • {photo.event_year}
+                     {photo.tag}
                    </span>
                    <h3 className="text-xl font-black text-white tracking-tight translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
                      {photo.title}
@@ -156,7 +156,7 @@ export default function GalleryPage() {
             </div>
             <div className="md:w-[400px] shrink-0 text-white select-none">
               <span className="inline-block px-4 py-1.5 bg-[#CEB888] text-primary text-[10px] font-black rounded-lg mb-6 tracking-widest uppercase">
-                {selectedPhoto.category} MEMORY
+                {selectedPhoto.tag} MEMORY
               </span>
               <h2 className="text-4xl font-black mb-6 tracking-tight leading-tight italic">{selectedPhoto.title}</h2>
               <div className="space-y-6 text-white/60">
@@ -165,8 +165,8 @@ export default function GalleryPage() {
                     <Calendar size={24} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Event Year</p>
-                    <p className="text-xl font-black text-white">{selectedPhoto.event_year}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Uploaded On</p>
+                    <p className="text-xl font-black text-white">{new Date(selectedPhoto.created_at).toLocaleDateString('en-GB')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 border-b border-white/10 pb-6">
