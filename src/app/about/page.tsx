@@ -34,7 +34,7 @@ export default function AboutPage() {
         {/* Mission Vision */}
         <section className="max-w-7xl mx-auto py-24 px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="bg-white p-12 rounded-3xl shadow-sm border-l-8 border-accent group hover:shadow-xl transition-all">
+            <div className="bg-white p-12 rounded-3xl shadow-sm group hover:shadow-xl transition-all">
               <Lightbulb className="text-accent mb-8 w-12 h-12 group-hover:scale-110 transition-transform" />
               <h2 className="text-3xl font-bold text-primary mb-6">আমাদের লক্ষ্য</h2>
               <p className="text-muted leading-loose text-lg">
