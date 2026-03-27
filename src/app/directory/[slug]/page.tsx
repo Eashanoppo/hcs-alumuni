@@ -79,27 +79,27 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                  <div>
                    <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Mobile</p>
                    <p className="font-bold text-primary tracking-wide text-sm">
-                    {isOwner ? alumni.mobile : "Hidden"}
+                    {alumni.mobile}
                    </p>
                  </div>
                  <div>
                    <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Email</p>
                    <p className="font-bold text-primary tracking-wide text-sm break-all">
-                    {isOwner ? alumni.email : "Hidden"}
+                    {alumni.email}
                    </p>
                  </div>
                  {alumni.whatsapp && (
                    <div>
                      <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">WhatsApp</p>
                      <p className="font-bold text-primary tracking-wide text-sm">
-                      {isOwner ? alumni.whatsapp : "Hidden"}
+                      {alumni.whatsapp}
                      </p>
                    </div>
                  )}
                  <div>
                     <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Present Address</p>
                     <p className="font-bold text-primary tracking-wide text-xs leading-relaxed">
-                      {isOwner ? alumni.present_address : "Hidden"}
+                      {alumni.present_address}
                     </p>
                  </div>
                </div>
@@ -148,7 +148,7 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                             <div>
                                <p className="text-[10px] text-muted font-black uppercase tracking-widest mb-1">Bengali Name</p>
                                <p className="font-bold text-primary text-lg">
-                                 {isOwner ? (alumni.full_name_bn || alumni.full_name_en) : "Hidden"}
+                                 {alumni.full_name_bn || alumni.full_name_en}
                                </p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -226,16 +226,8 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                    </div>
                 </div>
                 <div className="flex gap-4">
-                   {isOwner ? (
-                     <>
-                       <a href={`tel:${alumni.mobile}`} className="px-6 py-3 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg transition-all">Call Now</a>
-                       <a href={`mailto:${alumni.email}`} className="px-6 py-3 bg-white border border-gray-100 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-primary transition-all">Send Email</a>
-                     </>
-                   ) : (
-                     <div className="flex items-center gap-2 px-6 py-3 bg-gray-50 text-muted/50 rounded-xl font-black text-[10px] uppercase tracking-widest cursor-not-allowed">
-                       <Lock size={14} /> Information Locked
-                     </div>
-                   )}
+                   <a href={`tel:${alumni.mobile}`} className="px-6 py-3 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg transition-all">Call Now</a>
+                   <a href={`mailto:${alumni.email}`} className="px-6 py-3 bg-white border border-gray-100 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-primary transition-all">Send Email</a>
                 </div>
              </div>
           </div>
