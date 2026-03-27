@@ -1,3 +1,7 @@
+/**
+ * Uploads a file to Cloudinary.
+ * Uses 'raw' resource type for non-image files (PDF, DOC, etc.) and 'image' for images.
+ */
 export async function uploadToCloudinary(file: File): Promise<string> {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'hcs_alumni_preset'
@@ -6,17 +10,17 @@ export async function uploadToCloudinary(file: File): Promise<string> {
     throw new Error("Cloudinary Cloud Name is missing in environment variables.")
   }
 
+  const isImage = file.type.startsWith("image/")
+  const resourceType = isImage ? "image" : "raw"
+
   const formData = new FormData()
   formData.append('file', file)
   formData.append('upload_preset', uploadPreset)
 
   try {
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      {
-        method: 'POST',
-        body: formData,
-      }
+      `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+      { method: 'POST', body: formData }
     )
     const data = await response.json()
     if (data.error) {

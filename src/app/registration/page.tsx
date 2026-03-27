@@ -24,7 +24,7 @@ export default function RegistrationPage() {
 
       <Stepper />
 
-      <section className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(31,61,43,0.06)] overflow-hidden border-t-8 border-accent">
+      <section className="bg-white rounded-2xl shadow-[0_12px_40px_rgba(31,61,43,0.06)] overflow-hidden">
         {step === 1 && <Step1 />}
         {step === 2 && <Step2 />}
         {step === 3 && <Step3 />}

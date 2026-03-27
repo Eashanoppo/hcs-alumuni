@@ -87,8 +87,14 @@ CREATE TABLE IF NOT EXISTS public.notices (
     title TEXT NOT NULL,
     title_bn TEXT,
     body TEXT,
+    body_bn TEXT,
+    highlights JSONB DEFAULT '[]',
     category TEXT DEFAULT 'General',
     is_featured BOOLEAN DEFAULT FALSE,
+    attachment_url TEXT,
+    attachment_name TEXT,
+    action_label TEXT,
+    action_url TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

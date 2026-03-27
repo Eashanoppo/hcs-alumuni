@@ -16,20 +16,28 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="flex-grow pt-20">
-        {/* Hero */}
-        <section className="relative h-[60vh] flex items-center justify-center text-center px-6 bg-primary overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1541339907198-e08759dfc3ef')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
-          <div className="relative z-10 max-w-4xl">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <span className="text-accent font-bold tracking-widest text-sm uppercase mb-4 block underline decoration-accent/30 underline-offset-4">Legacy of 25 Years</span>
-              <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-6">২৫ বছরের গৌরবময় পথচলা</h1>
-              <p className="text-white/80 text-xl font-light max-w-2xl mx-auto leading-relaxed">
-                জ্ঞান ও নৈতিকতার পথে আড়াই দশকের এক অনন্য যাত্রা।
-              </p>
-            </motion.div>
-          </div>
-        </section>
+      <main className="flex-grow pt-32 pb-24 bg-[#FAFAF7]">
+        {/* Minimalist Hero */}
+        <header className="max-w-7xl mx-auto px-8 mb-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <span className="h-0.5 w-12 bg-accent"></span>
+              <span className="text-accent font-bold tracking-widest text-sm uppercase">
+                Legacy of 25 Years
+              </span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter mb-8 leading-tight">
+              ২৫ বছরের গৌরবময় পথচলা
+            </h1>
+            <p className="text-xl text-muted max-w-2xl leading-relaxed font-medium">
+              জ্ঞান ও নৈতিকতার পথে আড়াই দশকের এক অনন্য যাত্রা।
+            </p>
+          </motion.div>
+        </header>
 
         {/* Mission Vision */}
         <section className="max-w-7xl mx-auto py-24 px-8">

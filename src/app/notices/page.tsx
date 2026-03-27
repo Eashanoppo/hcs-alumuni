@@ -3,16 +3,17 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {
-  Download,
   Calendar,
   Users,
   Megaphone,
   FileText,
   Search,
   Loader2,
+  ArrowRight,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 export default function NoticePage() {
   const [notices, setNotices] = useState<any[]>([]);
@@ -48,7 +49,7 @@ export default function NoticePage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF7]">
       <Navbar />
-      <main className="flex-grow pt-32 pb-20 px-8 max-w-7xl mx-auto w-full">
+      <main className="grow pt-32 pb-20 px-8 max-w-7xl mx-auto w-full">
         <header className="mb-16">
           <div className="flex items-center gap-4 mb-4">
             <div className="h-10 w-1.5 bg-[#CEB888] rounded-full"></div>
@@ -73,7 +74,7 @@ export default function NoticePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8 space-y-10">
               {featuredNotice && (
-                <section className="relative overflow-hidden rounded-[2.5rem] bg-primary p-10 md:p-14 text-white shadow-premium border-b-8 border-[#CEB888]">
+                <section className="relative overflow-hidden rounded-[2.5rem] bg-primary p-10 md:p-14 text-white shadow-premium">
                   <div className="absolute top-0 right-0 p-8 opacity-10">
                     <Megaphone size={120} />
                   </div>
@@ -104,9 +105,12 @@ export default function NoticePage() {
                       <p>{featuredNotice.body}</p>
                     </div>
                     <div className="flex flex-wrap gap-4">
-                      <button className="bg-white text-primary px-8 py-4 rounded-2xl font-black hover:bg-[#CEB888] transition-all flex items-center gap-2 shadow-lg hover:-translate-y-1">
-                        বিস্তারিত দেখুন
-                      </button>
+                      <Link
+                        href={`/notices/${featuredNotice.id}`}
+                        className="bg-white text-primary px-8 py-4 rounded-2xl font-black hover:bg-[#CEB888] transition-all flex items-center gap-2 shadow-lg hover:-translate-y-1"
+                      >
+                        বিস্তারিত দেখুন <ArrowRight size={18} />
+                      </Link>
                     </div>
                   </div>
                 </section>
@@ -118,12 +122,13 @@ export default function NoticePage() {
                 </h3>
                 {otherNotices.length > 0 ? (
                   otherNotices.map((n, i) => (
-                    <div
+                    <Link
                       key={i}
-                      className="group bg-white p-8 rounded-[2rem] flex items-center justify-between gap-8 border border-gray-100 hover:shadow-premium hover:border-[#1F3D2B]/20 transition-all"
+                      href={`/notices/${n.id}`}
+                      className="group bg-white p-8 rounded-4xl flex items-center justify-between gap-8 border border-gray-100 hover:shadow-premium hover:border-[#1F3D2B]/20 transition-all"
                     >
                       <div className="flex items-start gap-8">
-                        <div className="bg-[#FAFAF7] p-5 rounded-2xl text-center min-w-[100px] border border-gray-50 group-hover:bg-primary transition-colors group-hover:border-primary">
+                        <div className="bg-[#FAFAF7] p-5 rounded-2xl text-center min-w-25 border border-gray-50 group-hover:bg-primary transition-colors group-hover:border-primary">
                           <span className="block text-2xl font-black text-primary group-hover:text-white leading-none mb-1">
                             {new Date(n.created_at).getDate()}
                           </span>
@@ -138,17 +143,17 @@ export default function NoticePage() {
                             {n.category}
                           </span>
                           <h4 className="text-xl font-bold text-primary group-hover:text-[#CEB888] transition-colors leading-snug">
-                            {n.title}
+                            {n.title_bn || n.title}
                           </h4>
                           <p className="text-muted text-sm mt-2 line-clamp-2">
-                            {n.body}
+                            {n.body_bn || n.body}
                           </p>
                         </div>
                       </div>
-                      <button className="flex items-center justify-center w-14 h-14 bg-[#FAFAF7] border border-gray-100 rounded-2xl text-primary hover:bg-primary hover:text-white transition-all shadow-sm">
+                      <div className="flex items-center justify-center w-14 h-14 bg-[#FAFAF7] border border-gray-100 rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm shrink-0">
                         <FileText size={24} />
-                      </button>
-                    </div>
+                      </div>
+                    </Link>
                   ))
                 ) : (
                   <div className="text-center py-20 bg-white rounded-[2.5rem] border-2 border-dashed border-gray-100">
@@ -176,24 +181,6 @@ export default function NoticePage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full px-6 py-4 bg-[#FAFAF7] border-none rounded-2xl focus:ring-2 focus:ring-[#CEB888]/20 transition-all font-medium mb-4 shadow-inner"
-                />
-              </div>
-
-              <div className="bg-primary p-10 rounded-[2.5rem] text-white shadow-premium relative overflow-hidden group">
-                <div className="relative z-10">
-                  <h3 className="text-2xl font-black mb-4">
-                    এসএসসি ২০২৪ রেজাল্ট
-                  </h3>
-                  <p className="font-bold text-white/70 mb-8">
-                    আমাদের অসাধারণ সাফল্যের ফলাফল দেখতে ক্লিক করুন।
-                  </p>
-                  <button className="bg-[#CEB888] text-primary px-8 py-3 rounded-xl font-bold flex items-center gap-2 group-hover:-translate-y-1 transition-transform">
-                    ফলাফল দেখুন <FileText size={18} />
-                  </button>
-                </div>
-                <FileText
-                  className="absolute -right-8 -bottom-8 opacity-10 text-white rotate-12 transition-transform group-hover:scale-110"
-                  size={160}
                 />
               </div>
             </aside>
