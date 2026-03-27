@@ -1,7 +1,7 @@
 "use client"
 
 import { useRegistration } from "./RegistrationContext"
-import { ArrowLeft, CheckCircle2, Edit3, User, School, Phone, Users, Camera, FileText, Loader2, Image as ImageIcon } from "lucide-react"
+import { ArrowLeft, CheckCircle2, Edit3, User, School, Phone, Users, Camera, Loader2, Image as ImageIcon } from "lucide-react"
 import { useState } from "react"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { submitRegistration } from "@/lib/db"
@@ -11,7 +11,6 @@ export default function Step5() {
 
   const [uploading, setUploading] = useState(false)
   const [photo, setPhoto] = useState<File | null>(null)
-  const [sscCert, setSscCert] = useState<File | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,14 +18,9 @@ export default function Step5() {
     
     try {
       let photo_url = data.photo_url
-      let ssc_cert_url = data.certificate_url
 
       if (photo) {
         photo_url = await uploadToCloudinary(photo)
-      }
-      
-      if (sscCert) {
-        ssc_cert_url = await uploadToCloudinary(sscCert)
       }
 
       const randomDigits = Math.floor(1000 + Math.random() * 9000);
@@ -36,7 +30,6 @@ export default function Step5() {
       const finalData = { 
         ...data, 
         photo_url,
-        certificate_url: ssc_cert_url,
         alumni_number
       }
 
@@ -66,7 +59,7 @@ export default function Step5() {
         <div className="p-3 rounded-2xl bg-primary/5">
           {icon}
         </div>
-        <h3 className="text-xl font-black tracking-tight italic">{title}</h3>
+        <h3 className="text-xl font-black tracking-tight">{title}</h3>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {children}
@@ -85,7 +78,7 @@ export default function Step5() {
     <div className="p-8 md:p-16 bg-white rounded-[2.5rem] shadow-premium border border-gray-100">
       <div className="mb-14 text-center sm:text-left">
         <h2 className="text-3xl font-black text-primary mb-3 tracking-tighter">তথ্য যাচাই (Review & Submit)</h2>
-        <p className="text-muted text-lg font-medium italic">রেজিস্ট্রেশন চূড়ান্ত করার আগে আপনার তথ্যগুলো পুনরায় যাচাই করে নিন।</p>
+        <p className="text-muted text-lg font-medium">রেজিস্ট্রেশন চূড়ান্ত করার আগে আপনার তথ্যগুলো পুনরায় যাচাই করে নিন।</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
@@ -123,7 +116,7 @@ export default function Step5() {
         </ReviewSection>
 
         {/* Media Previews */}
-        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-gray-100">
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8 pt-12 border-t border-gray-100">
           <div className="space-y-4">
              <label className="text-[10px] font-black text-muted uppercase tracking-[0.2em] block ml-2">প্রোফাইল ফটো (Update)</label>
              <div className="relative border-2 border-dashed border-gray-100 rounded-[2rem] p-4 text-center hover:border-primary transition-all cursor-pointer bg-[#FAFAF7] group h-[180px] flex items-center justify-center overflow-hidden">
@@ -145,31 +138,6 @@ export default function Step5() {
                 )}
              </div>
           </div>
-          
-          <div className="space-y-4">
-             <label className="text-[10px] font-black text-muted uppercase tracking-[0.2em] block ml-2">সার্টিফিকেট (Update)</label>
-             <div className="relative border-2 border-dashed border-gray-100 rounded-[2rem] p-4 text-center hover:border-primary transition-all cursor-pointer bg-[#FAFAF7] group h-[180px] flex items-center justify-center overflow-hidden">
-                <input type="file" onChange={(e) => setSscCert(e.target.files?.[0] || null)} className="absolute inset-0 opacity-0 cursor-pointer z-20" accept=".pdf,image/*" />
-                {sscCert ? (
-                  <div className="absolute inset-0 w-full h-full bg-emerald-50 flex items-center justify-center z-10">
-                     <FileText className="text-emerald-500" size={48} />
-                     <p className="absolute bottom-4 text-[10px] font-black uppercase text-emerald-600 px-4 line-clamp-1">{sscCert.name}</p>
-                  </div>
-                ) : data.certificate_url ? (
-                  <img src={data.certificate_url} alt="Cert" className="absolute inset-0 w-full h-full object-cover z-10 opacity-50" />
-                ) : (
-                  <div className="flex flex-col items-center gap-2">
-                     <FileText className="text-muted group-hover:text-primary" size={28} />
-                     <span className="text-[10px] font-black text-primary uppercase tracking-widest">Add Certificate</span>
-                  </div>
-                )}
-                {(sscCert || data.certificate_url) && (
-                  <div className="absolute top-2 right-2 z-30 bg-emerald-500 text-white p-1 rounded-full shadow-lg">
-                    <CheckCircle2 size={16} />
-                  </div>
-                )}
-             </div>
-          </div>
 
           <div className="space-y-4">
              <label className="text-[10px] font-black text-muted uppercase tracking-[0.2em] block ml-2">স্কুল-লাইফ ফটো (Preview)</label>
@@ -179,7 +147,7 @@ export default function Step5() {
                 ) : (
                   <div className="flex flex-col items-center gap-2 opacity-20">
                      <ImageIcon size={48} />
-                     <span className="text-[10px] font-bold text-muted italic">No memory shared</span>
+                     <span className="text-[10px] font-bold text-muted">No memory shared</span>
                   </div>
                 )}
              </div>

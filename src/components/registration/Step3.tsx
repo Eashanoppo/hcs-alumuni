@@ -15,7 +15,7 @@ export default function Step3() {
     <div className="p-8 md:p-12">
       <div className="mb-10 text-center sm:text-left">
         <h2 className="text-2xl font-bold text-primary mb-2">যোগাযোগের তথ্য (Contact Information)</h2>
-        <p className="text-muted text-sm italic">অনুগ্রহ করে আপনার যোগাযোগের নম্বরটি সচল রাখুন।</p>
+        <p className="text-muted text-sm">অনুগ্রহ করে আপনার যোগাযোগের নম্বরটি সচল রাখুন।</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-10">

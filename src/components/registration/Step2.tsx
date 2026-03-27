@@ -39,7 +39,7 @@ export default function Step2() {
     <div className="p-8 md:p-16 bg-white rounded-[2.5rem] shadow-premium border border-gray-100">
       <div className="mb-14 text-center sm:text-left">
         <h2 className="text-3xl font-black text-primary mb-3 tracking-tighter">একাডেমিক তথ্য (Academic Information)</h2>
-        <p className="text-muted text-lg font-medium italic">আপনার স্কুল জীবনের সঠিক তথ্য প্রদান করুন।</p>
+        <p className="text-muted text-lg font-medium">আপনার স্কুল জীবনের সঠিক তথ্য প্রদান করুন।</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-12">

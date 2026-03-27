@@ -51,7 +51,7 @@ export default function ForgotCredentials() {
               <div className="w-16 h-16 bg-[#1F3D2B]/5 rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary">
                 <HelpCircle size={32} />
               </div>
-              <h1 className="text-3xl font-black text-primary mb-3 tracking-tight italic">তথ্য পুনরুদ্ধার</h1>
+              <h1 className="text-3xl font-black text-primary mb-3 tracking-tight">তথ্য পুনরুদ্ধার</h1>
               <p className="text-muted text-sm font-bold uppercase tracking-widest text-[10px]">Credential Recovery Portal</p>
             </div>
 

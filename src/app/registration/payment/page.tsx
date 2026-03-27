@@ -18,8 +18,8 @@ function PaymentForm() {
   const [txId, setTxId] = useState('')
   const [sender, setSender] = useState('')
 
-  const BASE_FEE = 1000
-  const GUEST_FEE = 500
+  const BASE_FEE = 700
+  const GUEST_FEE = 300
   const total = BASE_FEE + (data.guests_count || 0) * GUEST_FEE + (data.spouse_attending ? GUEST_FEE : 0)
 
   const [loading, setLoading] = useState(false)
@@ -53,7 +53,7 @@ function PaymentForm() {
       <Navbar />
       <main className="flex-grow max-w-5xl mx-auto w-full px-4 pb-20">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-black text-primary mb-4 tracking-tighter italic uppercase">Payment Verification</h1>
+          <h1 className="text-4xl md:text-6xl font-black text-primary mb-4 tracking-tighter uppercase">Payment Verification</h1>
           <p className="text-muted font-black uppercase tracking-[0.3em] text-[10px]">Secure Institutional Transaction Portal</p>
         </div>
 
@@ -61,7 +61,7 @@ function PaymentForm() {
           {/* Order Summary */}
           <div className="lg:col-span-1 space-y-8">
             <div className="bg-white rounded-[2.5rem] shadow-premium border border-gray-100 p-8">
-              <h3 className="font-black text-primary mb-8 flex items-center gap-3 text-lg italic tracking-tight">
+              <h3 className="font-black text-primary mb-8 flex items-center gap-3 text-lg tracking-tight">
                 <CheckCircle2 size={24} className="text-[#1F3D2B]" />
                 অর্ডার সামারি
               </h3>
@@ -84,7 +84,7 @@ function PaymentForm() {
                 )}
                 <div className="pt-6 border-t border-dashed border-gray-200 flex justify-between items-center">
                   <span className="font-black text-primary uppercase text-xs tracking-widest">সর্বমোট (Total)</span>
-                  <span className="text-3xl font-black text-primary tracking-tighter italic">{total} BDT</span>
+                  <span className="text-3xl font-black text-primary tracking-tighter">{total} BDT</span>
                 </div>
               </div>
             </div>
@@ -111,14 +111,14 @@ function PaymentForm() {
                   onClick={() => setMethod('BKASH')}
                   className={`flex items-center gap-4 px-8 py-4 rounded-2xl border-2 transition-all shrink-0 ${method === 'BKASH' ? 'border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg' : 'border-gray-100 grayscale hover:grayscale-0'}`}
                 >
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuArlksn8dO9iIov3uC-6U-HqY7bM-0zD2X09J5q5L4O" alt="bKash" className="h-10" />
+                  <img src="https://www.logo.wine/a/logo/BKash/BKash-Icon-Logo.wine.svg" alt="bKash" className="h-10 w-auto" />
                   <span className="font-black uppercase tracking-widest text-xs">bKash</span>
                 </button>
                 <button 
                   onClick={() => setMethod('NAGAD')}
                   className={`flex items-center gap-4 px-8 py-4 rounded-2xl border-2 transition-all shrink-0 ${method === 'NAGAD' ? 'border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg' : 'border-gray-100 grayscale hover:grayscale-0'}`}
                 >
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuArlksn8dO9iIov3uC-6U-HqY7bM-0zD2X09J5q5L4O" alt="Nagad" className="h-10" />
+                  <img src="https://www.logo.wine/a/logo/Nagad/Nagad-Vertical-Logo.wine.svg" alt="Nagad" className="h-10 w-auto" />
                   <span className="font-black uppercase tracking-widest text-xs">Nagad</span>
                 </button>
               </div>
@@ -133,7 +133,7 @@ function PaymentForm() {
                       </div>
                       <div>
                         <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Send Money To</p>
-                        <p className="text-2xl font-black text-primary tracking-tighter italic">01712-345678</p>
+                        <p className="text-2xl font-black text-primary tracking-tighter">01712-345678</p>
                       </div>
                     </div>
                     <button className="p-4 rounded-2xl bg-[#FAFAF7] text-primary hover:bg-[#1F3D2B] hover:text-white transition-all shadow-sm">
@@ -173,7 +173,7 @@ function PaymentForm() {
                   <button 
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-primary text-white font-black py-6 rounded-2xl hover:bg-black hover:shadow-2xl transition-all flex items-center justify-center gap-4 text-lg italic uppercase tracking-widest disabled:opacity-50"
+                    className="w-full bg-primary text-white font-black py-6 rounded-2xl hover:bg-black hover:shadow-2xl transition-all flex items-center justify-center gap-4 text-lg uppercase tracking-widest disabled:opacity-50"
                   >
                     {loading ? <Loader2 size={24} className="animate-spin" /> : (
                       <>

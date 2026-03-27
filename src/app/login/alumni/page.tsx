@@ -49,7 +49,7 @@ export default function AlumniLogin() {
         <div className="relative z-10 w-full max-w-md bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
           <div className="p-8 md:p-10">
             <div className="text-center mb-10">
-              <h1 className="text-3xl font-black text-primary mb-3 tracking-tight italic">অ্যালুমনাই লগইন</h1>
+              <h1 className="text-3xl font-black text-primary mb-3 tracking-tight">অ্যালুমনাই লগইন</h1>
               <p className="text-muted text-sm font-bold uppercase tracking-widest text-[10px]">Access Your Formal Profile</p>
             </div>
 

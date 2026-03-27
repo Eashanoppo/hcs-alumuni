@@ -15,7 +15,7 @@ export default function Step4() {
     <div className="p-8 md:p-12">
       <div className="mb-10 text-center sm:text-left">
         <h2 className="text-2xl font-bold text-primary mb-2">অংশগ্রহণ সংক্রান্ত তথ্য (Participation)</h2>
-        <p className="text-muted text-sm italic">অনুষ্ঠানে আপনার অংশগ্রহণ নিশ্চিত করুন।</p>
+        <p className="text-muted text-sm">অনুষ্ঠানে আপনার অংশগ্রহণ নিশ্চিত করুন।</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-10">
@@ -69,23 +69,6 @@ export default function Step4() {
               placeholder="0"
               onChange={(e) => updateData({ guests_count: parseInt(e.target.value) || 0 })}
             />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-bold text-primary">টি-শার্ট সাইজ <span className="text-red-500">*</span></label>
-            <div className="relative">
-              <Shirt size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
-              <select 
-                required
-                className="w-full bg-background border-none rounded-xl p-3 pl-12 focus:ring-2 focus:ring-accent transition-all"
-                onChange={(e) => updateData({ tshirt_size: e.target.value as any })}
-              >
-                <option value="">সাইজ নির্বাচন করুন</option>
-                <option value="S">S</option><option value="M">M</option>
-                <option value="L">L</option><option value="XL">XL</option>
-                <option value="XXL">XXL</option>
-              </select>
-            </div>
           </div>
         </div>
 

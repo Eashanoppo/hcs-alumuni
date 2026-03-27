@@ -45,7 +45,7 @@ export default function AdminLogin() {
             <div className="inline-flex p-5 rounded-[2rem] bg-primary text-white mb-8 shadow-2xl">
               <ShieldAlert size={44} />
             </div>
-            <h1 className="text-4xl font-black text-primary mb-3 tracking-tighter italic">Administrative Access</h1>
+            <h1 className="text-4xl font-black text-primary mb-3 tracking-tighter">Administrative Access</h1>
             <p className="text-muted text-lg font-bold">Authorized Personnel Only • HCS Portal</p>
           </div>
 

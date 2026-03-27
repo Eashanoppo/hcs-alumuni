@@ -133,7 +133,7 @@ export default function GalleryPage() {
             <div className="flex items-center gap-4 mb-12">
               <div className="w-2 h-12 bg-[#CEB888] rounded-full"></div>
               <div>
-                <h2 className="text-3xl font-black text-primary italic">
+                <h2 className="text-3xl font-black text-primary">
                   ভিডিও গ্যালারি
                 </h2>
                 <p className="text-muted text-sm font-bold uppercase tracking-widest">
@@ -186,7 +186,7 @@ export default function GalleryPage() {
               <span className="inline-block px-4 py-1.5 bg-[#CEB888] text-primary text-[10px] font-black rounded-lg mb-6 tracking-widest uppercase">
                 {selectedPhoto.tag} MEMORY
               </span>
-              <h2 className="text-4xl font-black mb-6 tracking-tight leading-tight italic">
+              <h2 className="text-4xl font-black mb-6 tracking-tight leading-tight">
                 {selectedPhoto.title}
               </h2>
               <div className="space-y-6 text-white/60">
@@ -221,7 +221,7 @@ export default function GalleryPage() {
               </div>
 
               <div className="mt-12 bg-white/5 p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-md">
-                <p className="text-sm font-medium leading-relaxed italic text-white/80">
+                <p className="text-sm font-medium leading-relaxed text-white/80">
                   "Memories are the treasures that we keep in our hearts
                   forever. This capture represents a beautiful chapter of our
                   HCS journey."

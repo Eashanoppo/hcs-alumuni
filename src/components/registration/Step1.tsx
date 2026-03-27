@@ -51,7 +51,7 @@ export default function Step1() {
   return (
     <div className="p-8 md:p-12">
       <div className="mb-10 text-center sm:text-left text-primary">
-        <h2 className="text-3xl font-black mb-2 italic tracking-tight">ব্যক্তিগত তথ্য (Personal Information)</h2>
+        <h2 className="text-3xl font-black mb-2 tracking-tight">ব্যক্তিগত তথ্য (Personal Information)</h2>
         <p className="text-muted text-sm font-bold uppercase tracking-widest opacity-60">Complete your institutional record</p>
       </div>
 

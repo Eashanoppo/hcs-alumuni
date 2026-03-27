@@ -64,7 +64,7 @@ export default function DirectoryPage() {
       
       <main className="flex-grow max-w-7xl mx-auto w-full px-4 py-12">
         <div className="mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tighter italic">Alumni Directory</h1>
+          <h1 className="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tighter">Alumni Directory</h1>
           <p className="text-muted font-black uppercase tracking-[0.3em] text-xs">Verified Members of Holy Crescent School</p>
         </div>
 
@@ -120,7 +120,7 @@ export default function DirectoryPage() {
                    <h3 className="text-lg font-black text-primary truncate">{person.full_name_en}</h3>
                    <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-4">SSC Batch {person.ssc_batch || person.batch}</p>
                    
-                   <p className="text-xs font-bold text-[#CEB888] mb-6 min-h-[1rem] italic">{person.occupation || 'Alumnus'}</p>
+                   <p className="text-xs font-bold text-[#CEB888] mb-6 min-h-[1rem]">{person.occupation || 'Alumnus'}</p>
                    
                    <Link 
                     href={`/directory/${toSlug(person.full_name_en, person.ssc_batch || person.batch || '0000')}`}

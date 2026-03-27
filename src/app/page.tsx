@@ -94,7 +94,7 @@ export default function Home() {
                 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 leading-[1.1] text-white text-center lg:text-left"
               >
                 Holy Crescent School <br />
-                <span className="text-accent italic font-serif font-medium">
+                <span className="text-accent font-serif font-medium">
                   Alumni Portal
                 </span>
               </motion.h1>
@@ -203,7 +203,7 @@ export default function Home() {
               <div className="space-y-16">
                 <div>
                   <div className="h-1.5 w-24 bg-accent mb-10"></div>
-                  <h2 className="text-5xl md:text-6xl font-black text-primary tracking-tighter mb-8 italic">
+                  <h2 className="text-5xl md:text-6xl font-black text-primary tracking-tighter mb-8">
                     আমাদের লক্ষ্য ও আদর্শ
                   </h2>
                   <p className="text-muted text-xl font-medium leading-loose">
@@ -254,7 +254,7 @@ export default function Home() {
         <section className="py-40 bg-white">
           <div className="max-w-7xl mx-auto px-8">
             <div className="text-center mb-24">
-              <h2 className="text-5xl md:text-7xl font-black text-primary tracking-tighter mb-6 uppercase italic">
+              <h2 className="text-5xl md:text-7xl font-black text-primary tracking-tighter mb-6 uppercase">
                 Voice of Alumni
               </h2>
               <p className="text-muted text-xl font-black tracking-[0.3em] uppercase text-[10px]">
@@ -293,7 +293,7 @@ export default function Home() {
                   <div className="mb-10 text-accent group-hover:text-white transition-colors">
                     <ImageIcon size={32} />
                   </div>
-                  <p className="text-primary text-xl font-bold leading-relaxed mb-10 italic group-hover:text-white/90 transition-colors">
+                  <p className="text-primary text-xl font-bold leading-relaxed mb-10 group-hover:text-white/90 transition-colors">
                     "{t.quote}"
                   </p>
                   <div>
@@ -319,7 +319,7 @@ export default function Home() {
                 <h2 className="text-4xl md:text-7xl font-black text-[#CEB888] tracking-tighter mb-4 md:mb-6 underline decoration-white/10 underline-offset-12">
                   Memory Lane
                 </h2>
-                <p className="text-white/60 text-lg md:text-xl font-bold italic">
+                <p className="text-white/60 text-lg md:text-xl font-bold">
                   Capturing moments that define us
                 </p>
               </div>

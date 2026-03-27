@@ -109,7 +109,7 @@ export default function TeachersPage() {
             <div>
               <span className="text-accent font-bold tracking-[0.3em] text-[10px] uppercase mb-4 block">Our Founder & Guide</span>
               <h2 className="text-3xl md:text-5xl font-black text-white mb-6">মরহুম আলহাজ্ব নাসির উদ্দিন</h2>
-              <p className="text-white/60 text-lg md:text-xl italic max-w-2xl">
+              <p className="text-white/60 text-lg md:text-xl max-w-2xl">
                 "শিক্ষাই হোক মুক্তির পথ — এই মূলমন্ত্র নিয়েই তিনি রোপণ করেছিলেন আজকের এই মহীরুহের চারাটি।"
               </p>
             </div>

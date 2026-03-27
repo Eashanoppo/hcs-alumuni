@@ -39,7 +39,7 @@ export default async function ProfilePage() {
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter italic">Alumni Portal</h1>
+            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">Alumni Portal</h1>
             <p className="text-muted font-black uppercase tracking-[0.3em] text-[10px] mt-2">Welcome Back, {profile.full_name_en}</p>
           </div>
           <form action={async () => {
@@ -83,7 +83,7 @@ export default async function ProfilePage() {
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 mb-2">Registration Status</p>
                 <div className="flex items-center gap-3 mb-4">
                   {profile.registration_status === 'APPROVED' ? <CheckCircle size={28} /> : profile.registration_status === 'REJECTED' ? <XCircle size={28} /> : <Clock size={28} />}
-                  <h3 className="text-2xl font-black italic tracking-tight uppercase">{profile.registration_status}</h3>
+                  <h3 className="text-2xl font-black tracking-tight uppercase">{profile.registration_status}</h3>
                 </div>
                 {profile.registration_status === 'PENDING' && (
                   <p className="text-xs font-bold opacity-90">Your application is currently under review by the administration. Please allow up to 48 hours for processing.</p>
@@ -98,7 +98,7 @@ export default async function ProfilePage() {
           {/* Details & Payment */}
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white rounded-[3rem] shadow-premium border border-gray-100 p-8 md:p-12">
-              <h3 className="text-lg font-black text-primary mb-8 tracking-tight italic border-b border-gray-50 pb-4">Personal Information</h3>
+              <h3 className="text-lg font-black text-primary mb-8 tracking-tight border-b border-gray-50 pb-4">Personal Information</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
                 <div>
@@ -119,7 +119,7 @@ export default async function ProfilePage() {
                 </div>
               </div>
 
-              <h3 className="text-lg font-black text-primary mt-12 mb-8 tracking-tight italic border-b border-gray-50 pb-4">Academic History</h3>
+              <h3 className="text-lg font-black text-primary mt-12 mb-8 tracking-tight border-b border-gray-50 pb-4">Academic History</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
                 <div>
@@ -141,7 +141,7 @@ export default async function ProfilePage() {
             <div className="bg-white rounded-[3rem] shadow-premium border border-gray-100 overflow-hidden">
                <div className="p-8 md:p-12">
                  <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
-                    <h3 className="text-lg font-black text-primary tracking-tight italic">Payment Status</h3>
+                    <h3 className="text-lg font-black text-primary tracking-tight">Payment Status</h3>
                     <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 
                        ${profile.payment_status === 'PAID' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                        <CreditCard size={14} />
