@@ -7,29 +7,29 @@ import { useState } from "react"
 
 const teachers = [
   {
-    name: "জনাব আব্দুল করিম",
-    role: "সিনিয়র সহকারী শিক্ষক",
-    dept: "Science",
+    name: "জনাব মো: আনোয়ার",
+    role: "অধ্যক্ষ",
+    dept: "Humanities",
     education: "BSc (Hons), MSc (DU)",
     photo: "https://lh3.googleusercontent.com/aida-public/AB6AXuBIvIRpcexNYlpXjRnv9eIItrtlJxj1HPPaR64jmbMwzfxXkaFCEwjTicxTp8_9FvkTMQEcT7aY6H5Mat2UaifI8x9LNJK2vHFMiGrAJQGksRlyo4KfS7LUeptMDXGvnIU7aj_qiyqSm5k4XGH-e3ZKSh8Qh3ZNy5fAIUHCgUqHFuCcLWooAJTkqjrKsRhMf_Ae6JrTVMN0yXLDb7jLV0P7twUbiwP6qkQVGUHn8vKDWeOGQhnSjbUU8U7y_Lb-U2fJPgs18Y8wJXQ"
   },
   {
-    name: "ড. সুরাইয়া বেগম",
-    role: "বিভাগীয় প্রধান, বাংলা",
+    name: "জনাব সমীর কুমার",
+    role: "উপাধ্যক্ষ",
     dept: "Humanities",
-    education: "PhD in Literature",
+    education: "PhD in English",
     photo: "https://lh3.googleusercontent.com/aida-public/AB6AXuBoI-2RCDd4r9Ui2cuB77_xvb_r_yEDCRS1wIQwmsg7IzB-R783RAluiUNRa6dS7qP41wFWKg6g8xcCLPbMrjnDpI9K8rYzYtci8Q4KhzbqF26ssJrh9arll_FAgBcGNfG30Yu4iQ5bfwAHTAZmf19RE0Tr4cs12aqZHmzoqPgwkzYmhsC2Z-F9xBt-l32nlBnq9MbkgDJurd0-DSC3crigH_b36nCwnYpQyiL4H2ort88Fyo7CWu5hjU7QVpadrXWlboPlrSodLJg"
   },
   {
-    name: "জনাব রাজিব আহমেদ",
-    role: "সহকারী শিক্ষক (হিসাববিজ্ঞান)",
+    name: "জনাব মো: সাইদুর রহমান",
+    role: "বিভাগীয় প্রধান,ইংরেজি",
     dept: "Business",
     education: "MBA (Finance)",
     photo: "https://lh3.googleusercontent.com/aida-public/AB6AXuC0gFCq0QVqs-Oi8x1d1J_lD4Mmq5icEicPd-Mo6UJwf6_EcL9BSGKNLKB93Dyje1LwV2CrrV2IV18p70_neIs4cf7aLerRde3xaUzw2zKFRRLHiboejtMOb7t3EQUJnPEglpyKTVhladL3uabUIzK769Og7XylHbDSwX6aXuoqhVBPB5x8efdByMQoieaZZ9XArC8qV8SEob9iot4f2wHYYOQNbkooZKl9gDP2LPDmZdGJzHosmtWZGBEIuXO5rJy303A2W4OtRmo"
   },
   {
-    name: "নাসরিন সুলতানা",
-    role: "সহকারী শিক্ষক (গণিত)",
+    name: "জনাব শামসুল হক শামীম",
+    role: "সিনিয়র শিক্ষক, ইংরেজি",
     dept: "Science",
     education: "BSc in Math",
     photo: "https://lh3.googleusercontent.com/aida-public/AB6AXuAs__z4rqYIoW6GxPaBiTAyRDQ2H6k3O-_gnprwSqTkYOqtrt7K6-xI_78hTkYESeOSyKkppgkt0wgoGhupEE6D9nXcWdqQxycj7wfmpu6R-MA7KOn-Cn9jyfV0ls-6cThuCnrAv0gHrj6b1eCJZ_l-Ov6CsdyoTaV7GEaFnwiWrmEfNXu36J3GDHRAXgMhbTdtkcMV-_oX_Yl7gQiSXEOIFvO7JmecB97CCUuH-29HTjNrHB4PZlQnk5r_sQOlK_HFcB_dLo4fbfY"
@@ -46,7 +46,7 @@ export default function TeachersPage() {
         <header className="max-w-7xl mx-auto px-8 mb-16">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-[2px] w-12 bg-accent"></span>
-            <span className="text-accent font-bold tracking-widest text-sm uppercase">Faculty of Excellence</span>
+            <span className="text-accent font-bold tracking-widest text-sm uppercase">Teachers of Excellence</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter mb-8 leading-tight">
             জ্ঞানের আলো ছড়াচ্ছেন যারা
@@ -108,7 +108,7 @@ export default function TeachersPage() {
             </div>
             <div>
               <span className="text-accent font-bold tracking-[0.3em] text-[10px] uppercase mb-4 block">Our Founder & Guide</span>
-              <h2 className="text-3xl md:text-5xl font-black text-white mb-6">মরহুম আলহাজ্ব নাসির উদ্দিন</h2>
+              <h2 className="text-3xl md:text-5xl font-black text-white mb-6">হুমায়ুন কবির স্যার</h2>
               <p className="text-white/60 text-lg md:text-xl max-w-2xl">
                 "শিক্ষাই হোক মুক্তির পথ — এই মূলমন্ত্র নিয়েই তিনি রোপণ করেছিলেন আজকের এই মহীরুহের চারাটি।"
               </p>
