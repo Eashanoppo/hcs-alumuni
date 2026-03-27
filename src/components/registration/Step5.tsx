@@ -4,7 +4,7 @@ import { useRegistration } from "./RegistrationContext"
 import { ArrowLeft, CheckCircle2, Edit3, User, School, Phone, Users, Camera, Loader2, Image as ImageIcon } from "lucide-react"
 import { useState } from "react"
 import { uploadToCloudinary } from "@/lib/cloudinary"
-import { submitRegistration } from "@/lib/db"
+import { submitRegistrationCheckMobile } from "@/app/actions/registration"
 import { useNotification } from "@/lib/contexts/NotificationContext"
 import { useRouter } from "next/navigation"
 
@@ -37,12 +37,23 @@ export default function Step5() {
         alumni_number
       }
 
-      const result = await submitRegistration(finalData)
-      updateData({ id: result.id })
+      const result = await submitRegistrationCheckMobile(finalData)
+      
+      if (!result.success) {
+        setUploading(false)
+        if (result.error === "MOBILE_ALREADY_EXISTS") {
+          notify('এই মোবাইল নম্বর দিয়ে ইতোমধ্যে একটি রেজিস্ট্রেশন করা হয়েছে।', 'error')
+        } else {
+          notify('রেজিস্ট্রেশন ব্যর্থ হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।', 'error')
+        }
+        return
+      }
+
+      updateData({ id: result.data.id })
       
       notify("আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে! পেমেন্ট পেজে রিডাইরেক্ট করা হচ্ছে...", 'success')
       router.push("/registration/payment")
-    } catch (error) {
+    } catch (error: any) {
       console.error('Submission failed:', error)
       notify('রেজিস্ট্রেশন ব্যর্থ হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।', 'error')
     } finally {
