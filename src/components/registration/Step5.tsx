@@ -6,10 +6,12 @@ import { useState } from "react"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { submitRegistration } from "@/lib/db"
 import { useNotification } from "@/lib/contexts/NotificationContext"
+import { useRouter } from "next/navigation"
 
 export default function Step5() {
   const { prevStep, data, setStep, updateData } = useRegistration()
   const { notify } = useNotification()
+  const router = useRouter()
 
   const [uploading, setUploading] = useState(false)
   const [photo, setPhoto] = useState<File | null>(null)
@@ -39,7 +41,7 @@ export default function Step5() {
       updateData({ id: result.id })
       
       notify("আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে! পেমেন্ট পেজে রিডাইরেক্ট করা হচ্ছে...", 'success')
-      window.location.href = "/registration/payment"
+      router.push("/registration/payment")
     } catch (error) {
       console.error('Submission failed:', error)
       notify('রেজিস্ট্রেশন ব্যর্থ হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।', 'error')
@@ -113,8 +115,12 @@ export default function Step5() {
         <ReviewSection title="অংশগ্রহণ ও অন্যান্য" icon={<Users size={22} />} step={4}>
           <InfoItem label="উপস্থিত থাকবেন?" value={data.attending ? 'হ্যাঁ' : 'না'} />
           <InfoItem label="টি-শার্ট সাইজ" value={data.tshirt_size} />
-          <InfoItem label="গেস্ট সংখ্যা" value={data.guests_count} />
-          <InfoItem label="শিশুর সংখ্যা" value={data.children_count} />
+          {data.attending && (
+            <>
+              <InfoItem label="স্ত্রী/স্বামী" value={data.spouse_attending ? 'হ্যাঁ' : 'না'} />
+              <InfoItem label="সন্তান সংখ্যা" value={data.children_count || 0} />
+            </>
+          )}
         </ReviewSection>
 
         {/* Media Previews */}

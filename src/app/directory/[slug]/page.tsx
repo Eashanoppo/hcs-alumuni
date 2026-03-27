@@ -1,9 +1,10 @@
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { User, School, Phone, Mail, MessageSquare, MapPin, Briefcase, Calendar, FileText, ArrowLeft, ExternalLink } from "lucide-react"
+import { User, School, Phone, Mail, MessageSquare, MapPin, Briefcase, Calendar, FileText, ArrowLeft, ExternalLink, Lock } from "lucide-react"
 import Link from "next/link"
 import { getRegistrantBySlug } from "@/lib/db"
 import { notFound } from "next/navigation"
+import { cookies } from "next/headers"
 
 export default async function AlumniProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -13,11 +14,15 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
     notFound()
   }
 
+  const cookieStore = await cookies()
+  const loggedInAlumniNumber = cookieStore.get('alumni_session')?.value
+  const isOwner = loggedInAlumniNumber === alumni.alumni_number
+
   return (
     <div className="min-h-screen flex flex-col pt-20 bg-[#FAFAF7]">
       <Navbar />
       
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-12">
+      <main className="grow max-w-7xl mx-auto w-full px-6 py-12">
         <div className="mb-10">
           <Link href="/directory" className="inline-flex items-center gap-2 text-primary/60 hover:text-primary font-bold text-xs uppercase tracking-widest transition-colors mb-4 group">
              <div className="p-2 bg-white rounded-xl border border-gray-100 group-hover:border-primary transition-colors">
@@ -31,8 +36,8 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
           {/* Left Column: Summary Card */}
           <div className="space-y-8">
             <div className="bg-white rounded-[2.5rem] shadow-premium border border-gray-100 p-10 text-center relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[4rem] -z-0"></div>
-               <div className="w-40 h-40 mx-auto rounded-[2rem] bg-[#FAFAF7] border border-gray-100 shadow-md overflow-hidden mb-8 relative z-10 flex items-center justify-center">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[4rem] z-0"></div>
+               <div className="w-40 h-40 mx-auto rounded-4xl bg-[#FAFAF7] border border-gray-100 shadow-md overflow-hidden mb-8 relative z-10 flex items-center justify-center">
                   {alumni.photo_url ? (
                     <img src={alumni.photo_url} alt={alumni.full_name_en} className="w-full h-full object-cover" />
                   ) : (
@@ -73,21 +78,29 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                <div className="space-y-6">
                  <div>
                    <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Mobile</p>
-                   <p className="font-bold text-primary tracking-wide text-sm">{alumni.mobile}</p>
+                   <p className="font-bold text-primary tracking-wide text-sm">
+                    {isOwner ? alumni.mobile : "Hidden"}
+                   </p>
                  </div>
                  <div>
                    <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Email</p>
-                   <p className="font-bold text-primary tracking-wide text-sm break-all">{alumni.email}</p>
+                   <p className="font-bold text-primary tracking-wide text-sm break-all">
+                    {isOwner ? alumni.email : "Hidden"}
+                   </p>
                  </div>
                  {alumni.whatsapp && (
                    <div>
                      <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">WhatsApp</p>
-                     <p className="font-bold text-primary tracking-wide text-sm">{alumni.whatsapp}</p>
+                     <p className="font-bold text-primary tracking-wide text-sm">
+                      {isOwner ? alumni.whatsapp : "Hidden"}
+                     </p>
                    </div>
                  )}
                  <div>
                     <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Present Address</p>
-                    <p className="font-bold text-primary tracking-wide text-xs leading-relaxed">{alumni.present_address}</p>
+                    <p className="font-bold text-primary tracking-wide text-xs leading-relaxed">
+                      {isOwner ? alumni.present_address : "Hidden"}
+                    </p>
                  </div>
                </div>
             </div>
@@ -134,16 +147,22 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                          <div className="space-y-4">
                             <div>
                                <p className="text-[10px] text-muted font-black uppercase tracking-widest mb-1">Bengali Name</p>
-                               <p className="font-bold text-primary text-lg">{alumni.full_name_bn || alumni.full_name_en}</p>
+                               <p className="font-bold text-primary text-lg">
+                                 {isOwner ? (alumni.full_name_bn || alumni.full_name_en) : "Hidden"}
+                               </p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                <div>
                                   <p className="text-[10px] text-muted font-black uppercase tracking-widest mb-1">Father's Name</p>
-                                  <p className="font-bold text-primary text-xs">{alumni.father_name}</p>
+                                  <p className="font-bold text-primary text-xs">
+                                    {isOwner ? alumni.father_name : "Hidden"}
+                                  </p>
                                </div>
                                <div>
                                   <p className="text-[10px] text-muted font-black uppercase tracking-widest mb-1">Date of Birth</p>
-                                  <p className="font-bold text-primary text-xs">{alumni.dob}</p>
+                                  <p className="font-bold text-primary text-xs">
+                                    {isOwner ? alumni.dob : "Hidden"}
+                                  </p>
                                </div>
                             </div>
                          </div>
@@ -181,12 +200,14 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                          </div>
                       </div>
                       
-                      <div className="bg-[#FAFAF7] p-8 rounded-[2rem] border border-gray-100 relative overflow-hidden group">
+                      <div className="bg-[#FAFAF7] p-8 rounded-4xl border border-gray-100 relative overflow-hidden group">
                          <div className="relative z-10">
                             <h4 className="text-sm font-black text-primary mb-2">Member ID</h4>
-                            <p className="text-4xl font-black text-primary/10 tracking-widest">#{alumni.alumni_number || 'PENDING'}</p>
+                            <p className="text-4xl font-black text-primary/10 tracking-widest uppercase">
+                              {isOwner ? `#${alumni.alumni_number}` : "#HIDDEN"}
+                            </p>
                          </div>
-                         <div className="absolute right-[-10px] bottom-[-10px] text-primary/5 -rotate-12 transition-transform group-hover:rotate-0">
+                         <div className="absolute -right-2.5 -bottom-2.5 text-primary/5 -rotate-12 transition-transform group-hover:rotate-0">
                             <School size={80} />
                          </div>
                       </div>
@@ -205,8 +226,16 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                    </div>
                 </div>
                 <div className="flex gap-4">
-                   <a href={`tel:${alumni.mobile}`} className="px-6 py-3 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg transition-all">Call Now</a>
-                   <a href={`mailto:${alumni.email}`} className="px-6 py-3 bg-white border border-gray-100 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-primary transition-all">Send Email</a>
+                   {isOwner ? (
+                     <>
+                       <a href={`tel:${alumni.mobile}`} className="px-6 py-3 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg transition-all">Call Now</a>
+                       <a href={`mailto:${alumni.email}`} className="px-6 py-3 bg-white border border-gray-100 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-primary transition-all">Send Email</a>
+                     </>
+                   ) : (
+                     <div className="flex items-center gap-2 px-6 py-3 bg-gray-50 text-muted/50 rounded-xl font-black text-[10px] uppercase tracking-widest cursor-not-allowed">
+                       <Lock size={14} /> Information Locked
+                     </div>
+                   )}
                 </div>
              </div>
           </div>

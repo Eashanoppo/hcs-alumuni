@@ -17,10 +17,10 @@ const RegistrationContext = createContext<RegistrationContextType | undefined>(u
 export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<Partial<Registrant>>({
-    guests_count: 0,
-    children_count: 0,
-    spouse_attending: false,
     attending: true,
+    spouse_attending: false,
+    children_count: 0,
+    guests_count: 0,
     admission_class: '',
     leaving_class: '',
     certificate: 'SSC',

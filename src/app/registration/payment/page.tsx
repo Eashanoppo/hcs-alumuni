@@ -8,9 +8,11 @@ import { useState, Suspense } from "react"
 import { submitPayment } from "@/lib/db"
 import { useSearchParams } from "next/navigation"
 import { useNotification } from "@/lib/contexts/NotificationContext"
+import { getRegistrantById } from "@/lib/db"
+import { useEffect } from "react"
 
 function PaymentForm() {
-  const { data } = useRegistration()
+  const { data, updateData } = useRegistration()
   const searchParams = useSearchParams()
   const urlId = searchParams.get('id')
   const registrantId = data.id || urlId || 'TEMP_ID'
@@ -20,11 +22,33 @@ function PaymentForm() {
   const [sender, setSender] = useState('')
   const { notify } = useNotification()
 
-  const BASE_FEE = 700
-  const GUEST_FEE = 300
-  const total = BASE_FEE + (data.guests_count || 0) * GUEST_FEE + (data.spouse_attending ? GUEST_FEE : 0)
-
   const [loading, setLoading] = useState(false)
+  const [dataLoaded, setDataLoaded] = useState(false)
+
+  useEffect(() => {
+    async function loadData() {
+      if (urlId && !data.id) {
+        try {
+          const remoteData = await getRegistrantById(urlId)
+          if (remoteData) {
+            updateData(remoteData)
+            setDataLoaded(true)
+          }
+        } catch (error) {
+          console.error('Failed to load registrant data:', error)
+        }
+      } else if (data.id) {
+        setDataLoaded(true)
+      }
+    }
+    loadData()
+  }, [urlId, data.id, updateData])
+
+  const ALUMNI_FEE = 700
+  const SPOUSE_FEE = data.spouse_attending ? 300 : 0
+  const childrenCount = data.children_count || 0
+  const CHILDREN_FEE = childrenCount > 1 ? (childrenCount - 1) * 200 : 0
+  const total = ALUMNI_FEE + SPOUSE_FEE + CHILDREN_FEE
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,19 +93,19 @@ function PaymentForm() {
               </h3>
               <div className="space-y-5 text-sm">
                 <div className="flex justify-between items-center p-4 bg-[#FAFAF7] rounded-2xl border border-gray-100/50">
-                  <span className="text-muted font-bold text-[10px] uppercase tracking-widest">রেজিস্ট্রেশন ফি</span>
-                  <span className="font-black text-primary">{BASE_FEE} BDT</span>
+                  <span className="text-muted font-bold text-[10px] uppercase tracking-widest">রেজিস্ট্রেশন ফি (Alumni)</span>
+                  <span className="font-black text-primary">{ALUMNI_FEE} BDT</span>
                 </div>
-                {data.guests_count ? (
-                  <div className="flex justify-between items-center p-4 bg-[#FAFAF7] rounded-2xl border border-gray-100/50">
-                    <span className="text-muted font-bold text-[10px] uppercase tracking-widest">গেস্ট ফি ({data.guests_count})</span>
-                    <span className="font-black text-primary">{data.guests_count * GUEST_FEE} BDT</span>
-                  </div>
-                ) : null}
                 {data.spouse_attending && (
                   <div className="flex justify-between items-center p-4 bg-[#FAFAF7] rounded-2xl border border-gray-100/50">
-                    <span className="text-muted font-bold text-[10px] uppercase tracking-widest">স্ত্রী/স্বামী ফি</span>
-                    <span className="font-black text-primary">{GUEST_FEE} BDT</span>
+                    <span className="text-muted font-bold text-[10px] uppercase tracking-widest">স্ত্রী/স্বামী ফি (Spouse)</span>
+                    <span className="font-black text-primary">{SPOUSE_FEE} BDT</span>
+                  </div>
+                )}
+                {childrenCount > 0 && (
+                  <div className="flex justify-between items-center p-4 bg-[#FAFAF7] rounded-2xl border border-gray-100/50">
+                    <span className="text-muted font-bold text-[10px] uppercase tracking-widest">সন্তান ফি ({childrenCount} জন)</span>
+                    <span className="font-black text-primary">{CHILDREN_FEE} BDT</span>
                   </div>
                 )}
                 <div className="pt-6 border-t border-dashed border-gray-200 flex justify-between items-center">
@@ -91,7 +115,7 @@ function PaymentForm() {
               </div>
             </div>
 
-            <div className="bg-[#1F3D2B] rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden group">
+            <div className="bg-[#1F3D2B] rounded-4xl p-8 text-white shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform"></div>
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">

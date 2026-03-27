@@ -153,7 +153,7 @@ export default function GalleryPage() {
                   <div className="w-full h-full bg-primary/5 rounded-[1.8rem]"></div>
                 </div>
                 <h4 className="mt-4 font-black text-primary group-hover:text-[#CEB888] transition-colors leading-tight">
-                  সিলভার জুবিলি ডকুমেন্টারি ২০২৪
+                  সিলভার জুবিলি ডকুমেন্টারি ২০২৬
                 </h4>
               </div>
             </div>

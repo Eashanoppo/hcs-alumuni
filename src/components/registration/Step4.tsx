@@ -56,50 +56,51 @@ export default function Step4() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-bold text-primary">
-              স্ত্রী/স্বামী কি সাথে থাকবেন?
-            </label>
-            <select
-              className="w-full bg-background border-none rounded-xl p-3 focus:ring-2 focus:ring-accent transition-all"
-              onChange={(e) =>
-                updateData({ spouse_attending: e.target.value === "yes" })
-              }
-            >
-              <option value="no">না (No)</option>
-              <option value="yes">হ্যাঁ (Yes)</option>
-            </select>
-          </div>
+          {data.attending && (
+            <>
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-primary">
+                  স্ত্রী/স্বামী কি অংশগ্রহণ করবেন? (Spouse Attending?)
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer group w-fit">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={data.spouse_attending || false}
+                      onChange={(e) => updateData({ spouse_attending: e.target.checked })}
+                    />
+                    <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:inset-s-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                  </div>
+                  <span className="text-sm font-bold text-muted group-hover:text-primary transition-colors">
+                    {data.spouse_attending ? 'হ্যাঁ' : 'না'}
+                  </span>
+                </label>
+              </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-bold text-primary">
-              সন্তান সংখ্যা (যদি থাকে)
-            </label>
-            <input
-              type="number"
-              min="0"
-              className="w-full bg-background border-none rounded-xl p-3 focus:ring-2 focus:ring-accent transition-all"
-              placeholder="0"
-              onChange={(e) =>
-                updateData({ children_count: parseInt(e.target.value) || 0 })
-              }
-            />
-          </div>
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-primary">
+                  সন্তান সংখ্যা (Total Children)
+                </label>
+                <div className="relative">
+                  <Users
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted"
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    className="w-full bg-background border-none rounded-xl p-3 pl-12 focus:ring-2 focus:ring-accent transition-all font-bold"
+                    value={data.children_count || 0}
+                    onChange={(e) => updateData({ children_count: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+                <p className="text-[10px] text-muted font-bold uppercase tracking-wider">প্রথম সন্তান ফ্রি, পরবর্তী প্রতিজন ২০০ টাকা</p>
+              </div>
+            </>
+          )}
 
-          <div className="space-y-2">
-            <label className="block text-sm font-bold text-primary">
-              অন্যান্য গেস্ট সংখ্যা
-            </label>
-            <input
-              type="number"
-              min="0"
-              className="w-full bg-background border-none rounded-xl p-3 focus:ring-2 focus:ring-accent transition-all"
-              placeholder="0"
-              onChange={(e) =>
-                updateData({ guests_count: parseInt(e.target.value) || 0 })
-              }
-            />
-          </div>
           <div className="space-y-2">
             <label className="block text-sm font-bold text-primary">
               টি-শার্ট সাইজ <span className="text-red-500">*</span>
@@ -112,6 +113,7 @@ export default function Step4() {
               <select
                 required
                 className="w-full bg-background border-none rounded-xl p-3 pl-12 focus:ring-2 focus:ring-accent transition-all"
+                value={data.tshirt_size || ""}
                 onChange={(e) =>
                   updateData({ tshirt_size: e.target.value as any })
                 }

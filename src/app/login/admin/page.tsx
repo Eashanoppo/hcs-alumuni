@@ -13,6 +13,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { loginAdmin } from "@/app/actions/admin";
 import Navbar from "@/components/layout/Navbar";
+import DeveloperCard from "@/components/ui/DeveloperCard";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
@@ -47,10 +48,10 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF7]">
       <Navbar />
-      <main className="flex-grow flex items-center justify-center px-4 py-24 relative overflow-hidden">
+      <main className="grow flex flex-col items-center justify-center px-4 py-24 relative overflow-hidden gap-12">
         <div className="relative z-10 w-full max-w-lg">
           <div className="text-center mb-12">
-            <div className="inline-flex p-5 rounded-[2rem] bg-primary text-white mb-8 shadow-2xl">
+            <div className="inline-flex p-5 rounded-4xl bg-primary text-white mb-8 shadow-2xl">
               <ShieldAlert size={44} />
             </div>
             <h1 className="text-4xl font-black text-primary mb-3 tracking-tighter">
@@ -147,6 +148,7 @@ export default function AdminLogin() {
             Institutional Grade Security • HCS 2026
           </p>
         </div>
+        <DeveloperCard />
       </main>
     </div>
   );

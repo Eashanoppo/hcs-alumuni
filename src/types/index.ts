@@ -34,9 +34,9 @@ export interface Registrant {
   
   // Participation
   attending: boolean;
-  guests_count: number;
-  spouse_attending: boolean;
-  children_count: number;
+  spouse_attending?: boolean;
+  children_count?: number;
+  guests_count?: number;
   tshirt_size: 'S' | 'M' | 'L' | 'XL' | 'XXL';
   facebook_url?: string;
   instagram_url?: string;

@@ -120,8 +120,8 @@ export default function RegistrantDetail({ params }: { params: Promise<{ id: str
         {/* Left Column: Summary & Photo */}
         <div className="space-y-8">
           <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-10 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#1F3D2B]/5 rounded-bl-[4rem] -z-0"></div>
-            <div className="w-40 h-40 mx-auto rounded-[2rem] bg-[#FAFAF7] border border-gray-100 shadow-md overflow-hidden mb-8 relative z-10 flex items-center justify-center">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#1F3D2B]/5 rounded-bl-[4rem] z-0"></div>
+            <div className="w-40 h-40 mx-auto rounded-4xl bg-[#FAFAF7] border border-gray-100 shadow-md overflow-hidden mb-8 relative z-10 flex items-center justify-center">
               {registrant.photo_url ? (
                 <img 
                   src={registrant.photo_url} 
@@ -263,10 +263,6 @@ export default function RegistrantDetail({ params }: { params: Promise<{ id: str
                     <div className="flex justify-between items-center p-4 bg-[#FAFAF7] border border-gray-100 rounded-2xl">
                       <span className="text-xs font-bold tracking-wide">Children</span>
                       <span className="font-black text-xs">{registrant.children_count || 0}</span>
-                    </div>
-                    <div className="flex justify-between items-center p-4 bg-[#FAFAF7] border border-gray-100 rounded-2xl">
-                      <span className="text-xs font-bold tracking-wide">Guests</span>
-                      <span className="font-black text-xs">{registrant.guests_count || 0} Members</span>
                     </div>
                     <div className="flex justify-between items-center p-4 bg-[#FAFAF7] border border-gray-100 rounded-2xl">
                       <span className="text-xs font-bold tracking-wide">T-shirt Size</span>
