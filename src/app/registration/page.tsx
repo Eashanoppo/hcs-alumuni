@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useRegistration } from "@/components/registration/RegistrationContext"
 import Stepper from "@/components/registration/Stepper"
 import Step1 from "@/components/registration/Step1"
@@ -14,6 +15,15 @@ export default function RegistrationPage() {
   return (
     <div className="space-y-8">
       <header className="text-center mb-12">
+        <div className="flex justify-center mb-6">
+          <Image 
+            src="/images/logo.png" 
+            alt="HCS Logo" 
+            width={100} 
+            height={100} 
+            className="w-24 h-24 md:w-32 md:h-32 object-contain"
+          />
+        </div>
         <h1 className="text-3xl md:text-5xl font-extrabold text-primary tracking-tight mb-4">
           পুনর্মিলনী ২০২৪ রেজিস্ট্রেশন
         </h1>

@@ -3,10 +3,12 @@
 import { useRegistration } from "./RegistrationContext"
 import { ArrowRight, ArrowLeft, GraduationCap, School, Upload, Image as ImageIcon } from "lucide-react"
 import { useState } from "react"
+import { useNotification } from "@/lib/contexts/NotificationContext"
 
 export default function Step2() {
   const { nextStep, prevStep, updateData, data } = useRegistration()
   const [uploading, setUploading] = useState(false)
+  const { notify } = useNotification()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,7 +31,7 @@ export default function Step2() {
       updateData({ school_photo_url: url })
     } catch (error) {
       console.error('Upload failed:', error)
-      alert('Photo upload failed. Please try again.')
+      notify('Photo upload failed. Please try again.', 'error')
     } finally {
       setUploading(false)
     }
@@ -134,7 +136,7 @@ export default function Step2() {
         {/* School-time Photo Upload */}
         <div className="space-y-6 pt-6">
           <label className="block text-sm font-black text-primary uppercase tracking-widest">স্কুলে থাকাকালীন কোনো ছবি (ঐচ্ছিক)</label>
-          <div className="group relative border-2 border-dashed border-gray-200 rounded-[2rem] p-12 transition-all hover:border-primary hover:bg-[#FAFAF7] flex flex-col items-center justify-center text-center cursor-pointer">
+          <div className="group relative border-2 border-dashed border-gray-200 rounded-4xl p-12 transition-all hover:border-primary hover:bg-[#FAFAF7] flex flex-col items-center justify-center text-center cursor-pointer">
             {data.school_photo_url ? (
                <div className="relative w-40 h-40 rounded-2xl overflow-hidden shadow-lg border-4 border-white">
                   <img src={data.school_photo_url} alt="School life" className="w-full h-full object-cover" />

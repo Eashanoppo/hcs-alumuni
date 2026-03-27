@@ -9,6 +9,7 @@ import Link from "next/link"
 import { adminCreateNotice, adminDeleteNotice } from "@/app/actions/admin"
 import { supabase } from "@/lib/supabase"
 import { uploadToCloudinary } from "@/lib/cloudinary"
+import { useNotification } from "@/lib/contexts/NotificationContext"
 
 const CATEGORIES = [
   { value: "General", label: "General News" },
@@ -42,6 +43,7 @@ export default function AdminNotices() {
   const [form, setForm] = useState(defaultForm)
   const [newHighlight, setNewHighlight] = useState("")
   const [fileLabel, setFileLabel] = useState("")
+  const { notify, confirm } = useNotification()
 
   const loadNotices = async () => {
     try {
@@ -70,7 +72,7 @@ export default function AdminNotices() {
       setForm(f => ({ ...f, attachment_url: url, attachment_name: file.name }))
       setFileLabel(file.name)
     } catch (err: any) {
-      alert(`Upload failed: ${err.message}`)
+      notify(`Upload failed: ${err.message}`, 'error')
     } finally {
       setUploading(false)
     }
@@ -89,7 +91,10 @@ export default function AdminNotices() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.title) return alert("Title is required")
+    if (!form.title) {
+      notify("Title is required", 'error')
+      return
+    }
     try {
       setSubmitting(true)
       await adminCreateNotice({
@@ -105,22 +110,24 @@ export default function AdminNotices() {
       setForm(defaultForm)
       setFileLabel("")
       setNewHighlight("")
-      alert("Notice published successfully!")
+      notify("Notice published successfully!", 'success')
       await loadNotices()
     } catch (error: any) {
-      alert(`Error: ${error.message}`)
+      notify(`Error: ${error.message}`, 'error')
     } finally {
       setSubmitting(false)
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this notice?")) return
+    const isConfirmed = await confirm("Delete this notice?")
+    if (!isConfirmed) return
     try {
       await adminDeleteNotice(id)
       await loadNotices()
+      notify("Notice deleted successfully", 'success')
     } catch (error: any) {
-      alert(`Delete failed: ${error.message}`)
+      notify(`Delete failed: ${error.message}`, 'error')
     }
   }
 
@@ -209,7 +216,7 @@ export default function AdminNotices() {
                   {form.highlights.map((h, i) => (
                     <div key={i} className="flex items-center gap-2 px-4 py-2.5 bg-[#FAFAF7] rounded-xl">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#CEB888] shrink-0" />
-                      <span className="text-sm font-medium text-primary flex-grow">{h}</span>
+                      <span className="text-sm font-medium text-primary grow">{h}</span>
                       <button type="button" onClick={() => removeHighlight(i)} className="text-rose-400 hover:text-rose-600 transition-colors shrink-0">
                         <XCircle size={16} />
                       </button>
@@ -221,7 +228,7 @@ export default function AdminNotices() {
                     type="text" value={newHighlight}
                     onChange={e => setNewHighlight(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addHighlight() } }}
-                    className="flex-grow px-4 py-3 bg-[#FAFAF7] border-none rounded-xl focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
+                    className="grow px-4 py-3 bg-[#FAFAF7] border-none rounded-xl focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
                     placeholder="Add a bullet point..."
                   />
                   <button
@@ -240,7 +247,7 @@ export default function AdminNotices() {
                   <div className={`p-3 rounded-xl ${form.attachment_url ? 'bg-green-100 text-green-600' : 'bg-primary/10 text-primary'}`}>
                     {uploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
                   </div>
-                  <div className="flex-grow min-w-0">
+                  <div className="grow min-w-0">
                     <p className="text-xs font-black text-primary uppercase tracking-widest">
                       {uploading ? "Uploading..." : form.attachment_url ? "File Attached" : "Click to Upload"}
                     </p>
@@ -311,7 +318,7 @@ export default function AdminNotices() {
               notices.map((n) => (
                 <div key={n.id} className="group bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:border-primary/20 transition-all">
                   <div className="flex flex-col md:flex-row gap-6 items-start justify-between">
-                    <div className="flex-grow">
+                    <div className="grow">
                       <div className="flex flex-wrap items-center gap-3 mb-4">
                         <span className="px-3 py-1 bg-[#FAFAF7] border border-gray-100 rounded-lg text-[10px] font-black uppercase tracking-widest text-[#CEB888]">
                           {n.category}

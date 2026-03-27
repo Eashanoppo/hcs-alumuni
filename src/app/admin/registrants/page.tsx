@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Users, Search, Eye, CheckCircle, XCircle, Loader2, ArrowLeft, Trash2, Filter } from "lucide-react"
 import Link from "next/link"
 import { adminUpdateRegistrantStatus, adminDeleteRegistrant, adminGetAllRegistrants } from "@/app/actions/admin"
+import { useNotification } from "@/lib/contexts/NotificationContext"
 import { Registrant } from "@/types"
 
 export default function AdminRegistrants() {
@@ -12,6 +13,7 @@ export default function AdminRegistrants() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [batchFilter, setBatchFilter] = useState('ALL')
+  const { notify, confirm } = useNotification()
 
   const loadData = async () => {
     try {
@@ -30,36 +32,38 @@ export default function AdminRegistrants() {
   }, [])
 
   const handleStatusUpdate = async (id: string, status: 'APPROVED' | 'REJECTED') => {
-    if(!confirm(`Are you sure you want to mark this application as ${status}?`)) return
+    const isConfirmed = await confirm(`Are you sure you want to mark this application as ${status}?`)
+    if (!isConfirmed) return
     
     try {
       setLoading(true)
       const result = await adminUpdateRegistrantStatus(id, status)
       if (result) {
-        alert(`Application successfully ${status.toLowerCase()}!`)
+        notify(`Application successfully ${status.toLowerCase()}!`, 'success')
         await loadData()
       } else {
-        alert("Failed to update status.")
+        notify("Failed to update status.", 'error')
       }
     } catch (error: any) {
       console.error("Status update failed", error)
-      alert(`Status update failed: ${error.message || 'Unknown error'}`)
+      notify(`Status update failed: ${error.message || 'Unknown error'}`, 'error')
     } finally {
       setLoading(false)
     }
   }
 
   const handleDelete = async (id: string) => {
-    if(!confirm("Are you sure you want to PERMANENTLY delete this registrant? This action cannot be undone.")) return
+    const isConfirmed = await confirm("Are you sure you want to PERMANENTLY delete this registrant? This action cannot be undone.")
+    if (!isConfirmed) return
     
     try {
       setLoading(true)
       await adminDeleteRegistrant(id)
-      alert("Registrant deleted successfully.")
+      notify("Registrant deleted successfully.", 'success')
       await loadData()
     } catch (error: any) {
       console.error("Delete failed", error)
-      alert(`Deletion failed: ${error.message || 'Unknown error'}`)
+      notify(`Deletion failed: ${error.message || 'Unknown error'}`, 'error')
     } finally {
       setLoading(false)
     }
@@ -112,7 +116,7 @@ export default function AdminRegistrants() {
               <select 
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value)}
-                className="flex-grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
+                className="grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
               >
                 <option value="ALL">All Status</option>
                 <option value="PENDING">Pending</option>
@@ -125,7 +129,7 @@ export default function AdminRegistrants() {
               <select 
                 value={batchFilter}
                 onChange={e => setBatchFilter(e.target.value)}
-                className="flex-grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
+                className="grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
               >
                 <option value="ALL">SSC Batch (All)</option>
                 {batches.map(b => <option key={b} value={b}>SSC Batch {b}</option>)}
@@ -135,8 +139,8 @@ export default function AdminRegistrants() {
         </div>
       </header>
 
-      <main className="flex-grow max-w-7xl mx-auto w-full p-8 md:p-12">
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-[500px]">
+      <main className="grow max-w-7xl mx-auto w-full p-8 md:p-12">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-125">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#FAFAF7] text-[10px] font-black tracking-widest text-muted uppercase">
@@ -181,7 +185,7 @@ export default function AdminRegistrants() {
                       </td>
                       <td className="px-8 py-6">
                         <p className="font-bold text-primary tracking-tight">{r.mobile}</p>
-                        <p className="text-[10px] text-muted font-bold tracking-widest truncate max-w-[150px]">{r.email}</p>
+                        <p className="text-[10px] text-muted font-bold tracking-widest truncate max-w-37.5">{r.email}</p>
                       </td>
                       <td className="px-8 py-6">
                         <span className="bg-[#1F3D2B]/5 border border-[#1F3D2B]/10 px-3 py-1.5 rounded-lg text-xs tracking-widest font-black text-primary">

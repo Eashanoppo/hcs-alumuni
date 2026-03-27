@@ -2,10 +2,12 @@ import { useRegistration } from "./RegistrationContext"
 import { ArrowRight, User, MapPin, Briefcase, Camera, Loader2, Image as ImageIcon } from "lucide-react"
 import { useState } from "react"
 import { uploadToCloudinary } from "@/lib/cloudinary"
+import { useNotification } from "@/lib/contexts/NotificationContext"
 
 export default function Step1() {
   const { nextStep, updateData, data } = useRegistration()
   const [uploading, setUploading] = useState(false)
+  const { notify } = useNotification()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,7 +24,7 @@ export default function Step1() {
       updateData({ photo_url: url })
     } catch (error) {
       console.error('Upload failed:', error)
-      alert('Photo upload failed. Please ensure your Cloudinary settings are correct.')
+      notify('Photo upload failed. Please ensure your Cloudinary settings are correct.', 'error')
     } finally {
       setUploading(false)
     }
@@ -179,7 +181,7 @@ export default function Step1() {
             <textarea 
               required
               value={data.present_address || ''}
-              className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-primary/10 transition-all font-bold text-primary min-h-[100px]"
+              className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-primary/10 transition-all font-bold text-primary min-h-25"
               onChange={(e) => updateData({ present_address: e.target.value })}
             ></textarea>
           </div>

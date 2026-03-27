@@ -17,6 +17,7 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { useNotification } from "@/lib/contexts/NotificationContext";
 
 const CATEGORY_LABELS: Record<string, string> = {
   General: "সাধারণ",
@@ -41,6 +42,7 @@ export default function NoticeDetailPage() {
   const [notice, setNotice] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { notify } = useNotification();
 
   useEffect(() => {
     if (!id) return;
@@ -61,7 +63,7 @@ export default function NoticeDetailPage() {
       navigator.share({ title: notice?.title, url: window.location.href });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard!");
+      notify("Link copied to clipboard!", "success");
     }
   };
 
@@ -154,7 +156,7 @@ export default function NoticeDetailPage() {
 
             {/* Highlights */}
             {notice.highlights && notice.highlights.length > 0 && (
-              <div className="bg-background p-8 rounded-3xl border-l-8 border-accent mb-10">
+              <div className="bg-background p-8 rounded-3xl mb-10">
                 <h4 className="text-primary font-black mb-4">গুরুত্বপূর্ণ তথ্যসমূহ:</h4>
                 <ul className="list-disc ml-6 space-y-3 font-bold text-primary/80">
                   {notice.highlights.map((item: string, i: number) => (

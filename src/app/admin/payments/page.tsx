@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { CreditCard, Search, CheckCircle, XCircle, Loader2, ArrowLeft, Phone, User, Calendar, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { adminUpdatePaymentStatus, adminDeletePayment, adminGetAllPayments } from "@/app/actions/admin"
+import { useNotification } from "@/lib/contexts/NotificationContext"
 
 export default function AdminPayments() {
   const [payments, setPayments] = useState<any[]>([])
@@ -11,6 +12,7 @@ export default function AdminPayments() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [batchFilter, setBatchFilter] = useState('ALL')
+  const { notify, confirm } = useNotification()
 
   const loadData = async () => {
     try {
@@ -29,31 +31,33 @@ export default function AdminPayments() {
   }, [])
 
   const handleVerify = async (paymentId: string, registrantId: string, status: 'VERIFIED' | 'FAILED') => {
-    if(!confirm(`Are you sure you want to mark this payment as ${status}?`)) return
+    const isConfirmed = await confirm(`Are you sure you want to mark this payment as ${status}?`)
+    if (!isConfirmed) return
     
     try {
       setLoading(true)
       await adminUpdatePaymentStatus(paymentId, status, registrantId)
-      alert(`✅ Payment successfully marked as ${status}!`)
+      notify(`Payment successfully marked as ${status}!`, 'success')
       await loadData()
     } catch (error: any) {
       console.error("Failed to update payment status", error)
-      alert(`❌ Verification failed: ${error.message || 'Unknown error. Check the browser console and server logs.'}`)
+      notify(`Verification failed: ${error.message || 'Unknown error.'}`, 'error')
     } finally {
       setLoading(false)
     }
   }
 
   const handleDelete = async (id: string) => {
-    if(!confirm("Are you sure you want to delete this payment record?")) return
+    const isConfirmed = await confirm("Are you sure you want to delete this payment record?")
+    if (!isConfirmed) return
     try {
       setLoading(true)
       await adminDeletePayment(id)
-      alert("✅ Payment record deleted.")
+      notify("Payment record deleted.", 'success')
       await loadData()
     } catch (error: any) {
       console.error("Failed to delete payment", error)
-      alert(`❌ Deletion failed: ${error.message || 'Unknown error'}`)
+      notify(`Deletion failed: ${error.message || 'Unknown error'}`, 'error')
     } finally {
       setLoading(false)
     }
@@ -109,7 +113,7 @@ export default function AdminPayments() {
               <select 
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value)}
-                className="flex-grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
+                className="grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
               >
                 <option value="ALL">All Payments</option>
                 <option value="PENDING">Pending</option>
@@ -122,7 +126,7 @@ export default function AdminPayments() {
               <select 
                 value={batchFilter}
                 onChange={e => setBatchFilter(e.target.value)}
-                className="flex-grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
+                className="grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
               >
                 <option value="ALL">SSC Batch (All)</option>
                 {batches.map(b => <option key={b} value={b}>SSC Batch {b}</option>)}
@@ -132,8 +136,8 @@ export default function AdminPayments() {
         </div>
       </header>
 
-      <main className="flex-grow max-w-7xl mx-auto w-full p-8 md:p-12">
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-[500px]">
+      <main className="grow max-w-7xl mx-auto w-full p-8 md:p-12">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-125">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#FAFAF7] text-[10px] font-black tracking-widest text-muted uppercase">

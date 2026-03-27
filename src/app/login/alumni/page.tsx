@@ -2,15 +2,18 @@
 
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
+import Image from "next/image"
 import { Lock, ArrowRight, ShieldCheck, User, Calendar } from "lucide-react"
 import { useState } from "react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
+import { useNotification } from "@/lib/contexts/NotificationContext"
 
 export default function AlumniLogin() {
   const [alumniNumber, setAlumniNumber] = useState('')
   const [dob, setDob] = useState('')
   const [loading, setLoading] = useState(false)
+  const { notify } = useNotification()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,7 +33,7 @@ export default function AlumniLogin() {
       document.cookie = `alumni_session=${data.alumni_number}; path=/; max-age=86400`
       window.location.href = `/profile`
     } catch (error: any) {
-      alert(error.message || "লগইন ব্যর্থ হয়েছে।")
+      notify(error.message || "লগইন ব্যর্থ হয়েছে।", 'error')
     } finally {
       setLoading(false)
     }
@@ -49,6 +52,15 @@ export default function AlumniLogin() {
         <div className="relative z-10 w-full max-w-md bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
           <div className="p-8 md:p-10">
             <div className="text-center mb-10">
+              <div className="flex justify-center mb-6">
+                <Image 
+                  src="/images/logo.png" 
+                  alt="HCS Logo" 
+                  width={80} 
+                  height={80} 
+                  className="w-20 h-20 object-contain drop-shadow-sm"
+                />
+              </div>
               <h1 className="text-3xl font-black text-primary mb-3 tracking-tight">অ্যালুমনাই লগইন</h1>
               <p className="text-muted text-sm font-bold uppercase tracking-widest text-[10px]">Access Your Formal Profile</p>
             </div>

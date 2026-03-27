@@ -104,10 +104,10 @@ export default function Home() {
                   hidden: { opacity: 0, x: -20 },
                   visible: { opacity: 1, x: 0 },
                 }}
-                className="mb-6 lg:mb-8 text-center lg:text-left"
+                className="mb-7 lg:mb-8 text-center lg:text-left"
               >
-                <span className="inline-block px-5 py-2 bg-accent/20 border border-accent/30 rounded-full text-accent font-black tracking-[0.2em] uppercase text-[10px] backdrop-blur-sm">
-                  Established 1999 • Celebrating 25 Years
+                <span className="inline-block px-6 py-4 bg-accent/20 border border-accent/30 rounded-full text-accent font-black tracking-[0.2em] uppercase text-[14px] backdrop-blur-sm">
+                  Established 2001 • Celebrating 25 Years
                 </span>
               </motion.div>
 
@@ -391,8 +391,14 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
               {loading ? (
                 [1, 2, 3].map((n) => (
-                  <div key={n} className="bg-white p-12 rounded-[3.5rem] h-64 animate-pulse flex items-center justify-center">
-                    <Loader2 className="animate-spin text-primary/5" size={40} />
+                  <div
+                    key={n}
+                    className="bg-white p-12 rounded-[3.5rem] h-64 animate-pulse flex items-center justify-center"
+                  >
+                    <Loader2
+                      className="animate-spin text-primary/5"
+                      size={40}
+                    />
                   </div>
                 ))
               ) : notices.length > 0 ? (
@@ -408,7 +414,9 @@ export default function Home() {
                           {notice.category}
                         </span>
                         <span className="text-muted font-black text-[10px] uppercase tracking-widest">
-                          {new Date(notice.created_at).toLocaleDateString("bn-BD")}
+                          {new Date(notice.created_at).toLocaleDateString(
+                            "bn-BD",
+                          )}
                         </span>
                       </div>
                       <h3 className="text-2xl font-black text-primary mb-8 leading-[1.2] group-hover:text-accent transition-colors">

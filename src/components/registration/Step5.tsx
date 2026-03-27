@@ -5,9 +5,11 @@ import { ArrowLeft, CheckCircle2, Edit3, User, School, Phone, Users, Camera, Loa
 import { useState } from "react"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { submitRegistration } from "@/lib/db"
+import { useNotification } from "@/lib/contexts/NotificationContext"
 
 export default function Step5() {
   const { prevStep, data, setStep, updateData } = useRegistration()
+  const { notify } = useNotification()
 
   const [uploading, setUploading] = useState(false)
   const [photo, setPhoto] = useState<File | null>(null)
@@ -36,11 +38,11 @@ export default function Step5() {
       const result = await submitRegistration(finalData)
       updateData({ id: result.id })
       
-      alert("আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে! পেমেন্ট পেজে রিডাইরেক্ট করা হচ্ছে...")
+      notify("আপনার তথ্য সফলভাবে সংরক্ষিত হয়েছে! পেমেন্ট পেজে রিডাইরেক্ট করা হচ্ছে...", 'success')
       window.location.href = "/registration/payment"
     } catch (error) {
       console.error('Submission failed:', error)
-      alert('রেজিস্ট্রেশন ব্যর্থ হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।')
+      notify('রেজিস্ট্রেশন ব্যর্থ হয়েছে। দয়া করে পুনরায় চেষ্টা করুন।', 'error')
     } finally {
       setUploading(false)
     }

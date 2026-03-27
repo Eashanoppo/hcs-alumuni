@@ -7,6 +7,7 @@ import { CheckCircle2, CreditCard, Copy, AlertCircle, Phone, ArrowRight, Loader2
 import { useState, Suspense } from "react"
 import { submitPayment } from "@/lib/db"
 import { useSearchParams } from "next/navigation"
+import { useNotification } from "@/lib/contexts/NotificationContext"
 
 function PaymentForm() {
   const { data } = useRegistration()
@@ -17,6 +18,7 @@ function PaymentForm() {
   const [method, setMethod] = useState<'BKASH' | 'NAGAD'>('BKASH')
   const [txId, setTxId] = useState('')
   const [sender, setSender] = useState('')
+  const { notify } = useNotification()
 
   const BASE_FEE = 700
   const GUEST_FEE = 300
@@ -38,11 +40,11 @@ function PaymentForm() {
         status: 'PENDING'
       })
 
-      alert("পেমেন্ট যাচাইয়ের জন্য পাঠানো হয়েছে। আমরা ২৪ ঘণ্টার মধ্যে নিশ্চিত করবো।")
+      notify("পেমেন্ট যাচাইয়ের জন্য পাঠানো হয়েছে। আমরা ২৪ ঘণ্টার মধ্যে নিশ্চিত করবো।", 'success')
       window.location.href = "/"
     } catch (error) {
        console.error('Payment submission failed:', error)
-       alert('পেমেন্ট সাবমিশন ব্যর্থ হয়েছে।')
+       notify('পেমেন্ট সাবমিশন ব্যর্থ হয়েছে।', 'error')
     } finally {
        setLoading(false)
     }
