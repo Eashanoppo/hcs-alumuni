@@ -71,6 +71,22 @@ export async function adminDeleteRegistrant(id: string) {
   return true
 }
 
+export async function adminBulkDeleteRegistrants(ids: string[]) {
+  console.log(`[AdminAction] Bulk deleting ${ids.length} registrants`)
+  const supabase = getAdminSupabase()
+  
+  const { error } = await supabase
+    .from('registrants')
+    .delete()
+    .in('id', ids)
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  return true
+}
+
 export async function adminGetAllRegistrants() {
   const supabase = getAdminSupabase()
   const { data, error } = await supabase
@@ -199,6 +215,210 @@ export async function adminDeleteGalleryPhoto(id: string) {
   const supabase = getAdminSupabase()
   const { error } = await supabase
     .from('gallery')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw new Error(error.message)
+  return true
+}
+
+export async function adminUpdateNotice(id: string, noticeData: any) {
+  console.log(`[AdminAction] Updating notice: ${id}`)
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('notices')
+    .update(noticeData)
+    .eq('id', id)
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminCreateVideo(videoData: any) {
+  console.log(`[AdminAction] Creating video: ${videoData.title}`)
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('videos')
+    .insert([videoData])
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminDeleteVideo(id: string) {
+  console.log(`[AdminAction] Deleting video: ${id}`)
+  const supabase = getAdminSupabase()
+  const { error } = await supabase
+    .from('videos')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw new Error(error.message)
+  return true
+}
+
+export async function adminUpdateAboutContent(section: string, contentData: any) {
+  console.log(`[AdminAction] Updating about content for: ${section}`)
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('about_content')
+    .update(contentData)
+    .eq('section', section)
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminCreateMilestone(milestoneData: any) {
+  console.log(`[AdminAction] Creating milestone for year: ${milestoneData.year}`)
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('milestones')
+    .insert([milestoneData])
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminUpdateMilestone(id: string, milestoneData: any) {
+  console.log(`[AdminAction] Updating milestone: ${id}`)
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('milestones')
+    .update(milestoneData)
+    .eq('id', id)
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminDeleteMilestone(id: string) {
+  console.log(`[AdminAction] Deleting milestone: ${id}`)
+  const supabase = getAdminSupabase()
+  const { error } = await supabase
+    .from('milestones')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw new Error(error.message)
+  return true
+}
+
+export async function adminBulkImportRegistrants(registrants: any[]) {
+  console.log(`[AdminAction] Bulk importing ${registrants.length} registrants`)
+  const supabase = getAdminSupabase()
+  
+  // Use chunking to avoid huge payload limits if many rows (e.g., 500 records)
+  const chunkSize = 100;
+  for (let i = 0; i < registrants.length; i += chunkSize) {
+    const chunk = registrants.slice(i, i + chunkSize);
+    const { error } = await supabase
+      .from('registrants')
+      .insert(chunk)
+      
+    if (error) {
+      console.error("[AdminAction] Bulk import chunk error:", error)
+      throw new Error(`Failed during bulk import: ${error.message}`)
+    }
+  }
+  
+  return true
+}
+
+// ============================================
+// Visions & Testimonials Actions
+// ============================================
+
+export async function adminGetVisions() {
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('visions')
+    .select('*')
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false })
+  
+  if (error) throw new Error(error.message)
+  return data || []
+}
+
+export async function adminAddVision(visionData: any) {
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('visions')
+    .insert([visionData])
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminUpdateVision(id: string, visionData: any) {
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('visions')
+    .update(visionData)
+    .eq('id', id)
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminDeleteVision(id: string) {
+  const supabase = getAdminSupabase()
+  const { error } = await supabase
+    .from('visions')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw new Error(error.message)
+  return true
+}
+
+export async function adminGetTestimonials() {
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select('*')
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false })
+  
+  if (error) throw new Error(error.message)
+  return data || []
+}
+
+export async function adminAddTestimonial(testimonialData: any) {
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('testimonials')
+    .insert([testimonialData])
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminUpdateTestimonial(id: string, testimonialData: any) {
+  const supabase = getAdminSupabase()
+  const { data, error } = await supabase
+    .from('testimonials')
+    .update(testimonialData)
+    .eq('id', id)
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data ? data[0] : null
+}
+
+export async function adminDeleteTestimonial(id: string) {
+  const supabase = getAdminSupabase()
+  const { error } = await supabase
+    .from('testimonials')
     .delete()
     .eq('id', id)
 

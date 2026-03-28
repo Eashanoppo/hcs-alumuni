@@ -13,6 +13,8 @@ import { supabase } from "@/lib/supabase";
 export default function Home() {
   const [galleryImages, setGalleryImages] = useState<any[]>([]);
   const [notices, setNotices] = useState<any[]>([]);
+  const [visions, setVisions] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [emblaRef] = useEmblaCarousel({ loop: true }, [
@@ -41,8 +43,26 @@ export default function Home() {
         .order("created_at", { ascending: false })
         .limit(3);
 
+      // Fetch visions
+      const { data: visionsData } = await supabase
+        .from("visions")
+        .select("*")
+        .order("display_order", { ascending: true })
+        .order("created_at", { ascending: false })
+        .limit(4);
+
+      // Fetch testimonials
+      const { data: testimonialsData } = await supabase
+        .from("testimonials")
+        .select("*")
+        .order("display_order", { ascending: true })
+        .order("created_at", { ascending: false })
+        .limit(3);
+
       if (galleryData) setGalleryImages(galleryData);
       if (noticeData) setNotices(noticeData);
+      if (visionsData) setVisions(visionsData);
+      if (testimonialsData) setTestimonials(testimonialsData);
       setLoading(false);
     }
     fetchData();
@@ -214,36 +234,25 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  {[
-                    {
-                      title: "নৈতিক শিক্ষা",
-                      desc: "মূল্যবোধ ও চারিত্রিক গঠনের গুরুত্ব।",
-                    },
-                    {
-                      title: "সৃজনশীলতা",
-                      desc: "নতুন কিছু করার উৎসাহ ও উদ্দীপনা।",
-                    },
-                    {
-                      title: "নেতৃত্ব",
-                      desc: "আগামীদিনের দায়িত্ব নিতে শেখানো।",
-                    },
-                    {
-                      title: "ঐতিহ্য",
-                      desc: "স্কুলের গৌরবময় ইতিহাস ধারণ করা।",
-                    },
-                  ].map((v, i) => (
-                    <div
-                      key={i}
-                      className="group p-8 border border-gray-100 rounded-3xl hover:border-accent transition-all hover:shadow-premium"
-                    >
-                      <h4 className="text-lg font-black text-primary mb-3 group-hover:text-accent transition-colors">
-                        {v.title}
-                      </h4>
-                      <p className="text-muted font-bold text-sm leading-relaxed">
-                        {v.desc}
-                      </p>
-                    </div>
-                  ))}
+                  {loading ? (
+                    [1, 2, 3, 4].map(n => <div key={n} className="h-32 bg-gray-50 rounded-3xl animate-pulse" />)
+                  ) : visions.length > 0 ? (
+                    visions.map((v, i) => (
+                      <div
+                        key={v.id || i}
+                        className="group p-8 border border-gray-100 rounded-3xl hover:border-accent transition-all hover:shadow-premium bg-[#FAFAF7] md:bg-white"
+                      >
+                        <h4 className="text-lg font-black text-primary mb-3 group-hover:text-accent transition-colors">
+                          {v.title}
+                        </h4>
+                        <p className="text-muted font-bold text-sm leading-relaxed">
+                          {v.description}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-2 py-8 text-muted">এই মুহূর্তে কোনো তথ্য নেই।</div>
+                  )}
                 </div>
               </div>
             </div>
@@ -262,50 +271,39 @@ export default function Home() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-              {[
-                {
-                  name: "Dr. Ahmed Sharif",
-                  batch: "SSC 2005",
-                  quote:
-                    "পবিত্র ক্রিসেন্ট স্কুল আমার জীবনের ভিত্তিপ্রস্তর স্থাপন করেছে। এখানকার শৃঙ্খলা ও শিক্ষা আমাকে আজকের এই অবস্থানে নিয়ে এসেছে।",
-                },
-                {
-                  name: "Sultana Razia",
-                  batch: "SSC 2012",
-                  quote:
-                    "স্কুলের দিনগুলো আজও খুব মনে পড়ে। বন্ধুদের সাথে আড্ডা আর শিক্ষকদের শাসন দুটোই ছিল আশীর্বাদস্বরূপ।",
-                },
-                {
-                  name: "Tanvir Hasan",
-                  batch: "SSC 2018",
-                  quote:
-                    "শিক্ষার পাশাপাশি সৃজনশীল সব কাজে অংশ নেওয়ার সুযোগ আমার আত্মবিশ্বাস বাড়িয়ে দিয়েছিল বহুগুণ।",
-                },
-              ].map((t, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="p-12 bg-[#FAFAF7] rounded-[3rem] border border-gray-100 flex flex-col justify-between group hover:bg-primary transition-all duration-500"
-                >
-                  <div className="mb-10 text-accent group-hover:text-white transition-colors">
-                    <ImageIcon size={32} />
-                  </div>
-                  <p className="text-primary text-xl font-bold leading-relaxed mb-10 group-hover:text-white/90 transition-colors">
-                    "{t.quote}"
-                  </p>
-                  <div>
-                    <h4 className="font-black text-primary group-hover:text-[#CEB888] transition-colors">
-                      {t.name}
-                    </h4>
-                    <p className="text-[10px] uppercase font-black tracking-widest text-muted group-hover:text-white/50 transition-colors">
-                      {t.batch}
+              {loading ? (
+                [1, 2, 3].map(n => <div key={n} className="h-64 bg-[#FAFAF7] rounded-[3rem] animate-pulse" />)
+              ) : testimonials.length > 0 ? (
+                testimonials.map((t, i) => (
+                  <motion.div
+                    key={t.id || i}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="p-12 bg-[#FAFAF7] rounded-[3rem] border border-gray-100 flex flex-col justify-between group hover:bg-primary transition-all duration-500 shadow-sm"
+                  >
+                    <div className="mb-10 text-accent group-hover:text-white transition-colors">
+                      <ImageIcon size={32} />
+                    </div>
+                    <p className="text-primary text-xl font-bold leading-relaxed mb-10 group-hover:text-white/90 transition-colors italic">
+                      "{t.quote}"
                     </p>
-                  </div>
-                </motion.div>
-              ))}
+                    <div>
+                      <h4 className="font-black text-primary group-hover:text-[#CEB888] transition-colors">
+                        {t.name}
+                      </h4>
+                      <p className="text-[10px] uppercase font-black tracking-widest text-muted group-hover:text-white/50 transition-colors">
+                        {t.batch}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full py-20 text-center text-muted">
+                  No testimonials found.
+                </div>
+              )}
             </div>
           </div>
         </section>

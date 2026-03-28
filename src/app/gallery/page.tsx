@@ -16,7 +16,9 @@ import { supabase } from "@/lib/supabase";
 
 export default function GalleryPage() {
   const [photos, setPhotos] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [videoLoading, setVideoLoading] = useState(true);
   const [selectedPhoto, setSelectedPhoto] = useState<any>(null);
   const [activeFilter, setActiveFilter] = useState("All");
 
@@ -32,8 +34,38 @@ export default function GalleryPage() {
       }
       setLoading(false);
     }
+    
+    async function fetchVideos() {
+      const { data, error } = await supabase
+        .from("videos")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (!error && data) {
+        setVideos(data);
+      }
+      setVideoLoading(false);
+    }
+
     fetchPhotos();
+    fetchVideos();
   }, []);
+
+  const getEmbedInfo = (v: any) => {
+    if (v.platform === 'youtube') {
+      let videoId = ""
+      if (v.video_url.includes('youtu.be/')) {
+        videoId = v.video_url.split('youtu.be/')[1].split('?')[0]
+      } else if (v.video_url.includes('youtube.com/watch')) {
+        try {
+          videoId = new URL(v.video_url).searchParams.get('v') || ""
+        } catch(e) {}
+      }
+      return { src: `https://www.youtube.com/embed/${videoId}`, type: 'youtube' }
+    } else {
+      return { src: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(v.video_url)}&show_text=0&width=560`, type: 'facebook' }
+    }
+  }
 
   const categories = ["All", ...Array.from(new Set(photos.map((p) => p.tag)))];
   const filteredPhotos =
@@ -143,19 +175,31 @@ export default function GalleryPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-              <div className="group cursor-pointer">
-                <div className="aspect-video bg-white rounded-[2.5rem] border border-gray-100 p-2 overflow-hidden shadow-sm relative group-hover:shadow-xl transition-all h-full flex items-center justify-center">
-                  <div className="absolute inset-0 flex items-center justify-center z-10">
-                    <div className="w-16 h-16 bg-[#CEB888] text-primary rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-all">
-                      <Play size={24} fill="currentColor" />
+              {videoLoading ? (
+                 <div className="col-span-full py-10 flex justify-center"><Loader2 className="animate-spin text-primary/20" size={32} /></div>
+              ) : videos.length === 0 ? (
+                 <div className="col-span-full py-10 text-center text-muted font-bold">কোনো ভিডিও পাওয়া যায়নি।</div>
+              ) : (
+                videos.map((v, i) => {
+                  const embed = getEmbedInfo(v)
+                  return (
+                    <div key={i} className="group relative">
+                      <div className="aspect-video bg-black rounded-[2.5rem] overflow-hidden shadow-sm relative group-hover:shadow-xl transition-all h-full">
+                        <iframe 
+                          src={embed.src} 
+                          title={v.title}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                          allowFullScreen
+                          className="w-full h-full border-none"
+                        ></iframe>
+                      </div>
+                      <h4 className="mt-4 font-black text-primary group-hover:text-[#CEB888] transition-colors leading-tight">
+                        {v.title}
+                      </h4>
                     </div>
-                  </div>
-                  <div className="w-full h-full bg-primary/5 rounded-[1.8rem]"></div>
-                </div>
-                <h4 className="mt-4 font-black text-primary group-hover:text-[#CEB888] transition-colors leading-tight">
-                  সিলভার জুবিলি ডকুমেন্টারি ২০২৬
-                </h4>
-              </div>
+                  )
+                })
+              )}
             </div>
           </div>
         </section>

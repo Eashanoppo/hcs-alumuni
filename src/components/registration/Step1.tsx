@@ -11,6 +11,10 @@ export default function Step1() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!data.workplace && !data.current_institution) {
+      notify('কর্মস্থল (Workplace) অথবা শিক্ষা প্রতিষ্ঠান (Current Institution) এর যেকোনো একটি পূরণ করা বাধ্যতামূলক।', 'error')
+      return
+    }
     nextStep()
   }
 
@@ -183,6 +187,16 @@ export default function Step1() {
               value={data.present_address || ''}
               className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-primary/10 transition-all font-bold text-primary min-h-25"
               onChange={(e) => updateData({ present_address: e.target.value })}
+            ></textarea>
+          </div>
+
+          <div className="md:col-span-2 space-y-2">
+            <label className="block text-xs font-black uppercase tracking-widest text-primary ml-1">স্থায়ী ঠিকানা <span className="text-red-500">*</span></label>
+            <textarea 
+              required
+              value={data.permanent_address || ''}
+              className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-primary/10 transition-all font-bold text-primary min-h-25"
+              onChange={(e) => updateData({ permanent_address: e.target.value })}
             ></textarea>
           </div>
 

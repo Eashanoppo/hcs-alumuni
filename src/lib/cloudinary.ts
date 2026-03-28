@@ -1,3 +1,5 @@
+import imageCompression from 'browser-image-compression';
+
 /**
  * Uploads a file to Cloudinary.
  * Uses 'raw' resource type for non-image files (PDF, DOC, etc.) and 'image' for images.
@@ -13,8 +15,23 @@ export async function uploadToCloudinary(file: File): Promise<string> {
   const isImage = file.type.startsWith("image/")
   const resourceType = isImage ? "image" : "raw"
 
+  let fileToUpload = file;
+  if (isImage) {
+    try {
+      // Compress the image before uploading to drastically reduce upload time
+      const options = {
+        maxSizeMB: 0.5, // Super fast uploads
+        maxWidthOrHeight: 1200, // Enough for profile and web
+        useWebWorker: true,
+      }
+      fileToUpload = await imageCompression(file, options);
+    } catch (error) {
+      console.warn("Image compression failed, falling back to original file.", error);
+    }
+  }
+
   const formData = new FormData()
-  formData.append('file', file)
+  formData.append('file', fileToUpload)
   formData.append('upload_preset', uploadPreset)
 
   try {

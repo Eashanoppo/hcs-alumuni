@@ -42,16 +42,21 @@ export default async function ProfilePage() {
             <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">Alumni Portal</h1>
             <p className="text-muted font-black uppercase tracking-[0.3em] text-[10px] mt-2">Welcome Back, {profile.full_name_en}</p>
           </div>
-          <form action={async () => {
-             "use server"
-             const c = await cookies()
-             c.delete('alumni_session')
-             redirect('/')
-          }}>
-            <button type="submit" className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-2xl text-primary font-black text-xs uppercase tracking-widest hover:border-rose-100 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm">
-              <LogOut size={16} /> Logout
-            </button>
-          </form>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link href="/profile/edit" className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1F3D2B] rounded-2xl text-white font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl hover:shadow-2xl">
+              Edit Profile
+            </Link>
+            <form action={async () => {
+               "use server"
+               const c = await cookies()
+               c.delete('alumni_session')
+               redirect('/')
+            }}>
+              <button type="submit" className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-2xl text-primary font-black text-xs uppercase tracking-widest hover:border-rose-100 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm">
+                <LogOut size={16} /> Logout
+              </button>
+            </form>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

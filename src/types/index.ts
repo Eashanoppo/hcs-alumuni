@@ -33,7 +33,8 @@ export interface Registrant {
   whatsapp?: string;
   
   // Participation
-  attending: boolean;
+  attending: string;
+  volunteer_status?: boolean;
   spouse_attending?: boolean;
   children_count?: number;
   guests_count?: number;

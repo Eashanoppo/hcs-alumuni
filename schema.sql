@@ -122,3 +122,33 @@ CREATE POLICY "Allow public read gallery" ON public.gallery FOR SELECT USING (tr
 -- Only service_role handles inserts/updates/deletes for security
 CREATE POLICY "Allow service_role full access notices" ON public.notices USING (true) WITH CHECK (true);
 CREATE POLICY "Allow service_role full access gallery" ON public.gallery USING (true) WITH CHECK (true);
+
+-- 10. Create table for Visions (Our Vision Cards)
+CREATE TABLE IF NOT EXISTS public.visions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 11. Create table for Testimonials (Voice of Alumni)
+CREATE TABLE IF NOT EXISTS public.testimonials (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  batch TEXT NOT NULL,
+  quote TEXT NOT NULL,
+  display_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Allow public read access on new tables
+ALTER TABLE public.visions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read access on visions" ON public.visions FOR SELECT USING (true);
+CREATE POLICY "Allow public read access on testimonials" ON public.testimonials FOR SELECT USING (true);
+-- Service role full access via getAdminSupabase() handles writes
+

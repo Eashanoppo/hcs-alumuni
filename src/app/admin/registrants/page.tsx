@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { Users, Search, Eye, CheckCircle, XCircle, Loader2, ArrowLeft, Trash2, Filter } from "lucide-react"
 import Link from "next/link"
-import { adminUpdateRegistrantStatus, adminDeleteRegistrant, adminGetAllRegistrants } from "@/app/actions/admin"
+import { adminUpdateRegistrantStatus, adminDeleteRegistrant, adminGetAllRegistrants, adminBulkDeleteRegistrants } from "@/app/actions/admin"
 import { useNotification } from "@/lib/contexts/NotificationContext"
 import { Registrant } from "@/types"
+import RegistrantImportModal from "@/components/admin/RegistrantImportModal"
 
 export default function AdminRegistrants() {
   const [registrants, setRegistrants] = useState<Registrant[]>([])
@@ -13,6 +14,8 @@ export default function AdminRegistrants() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [batchFilter, setBatchFilter] = useState('ALL')
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const { notify, confirm } = useNotification()
 
   const loadData = async () => {
@@ -69,6 +72,25 @@ export default function AdminRegistrants() {
     }
   }
 
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return
+    const isConfirmed = await confirm(`Are you sure you want to PERMANENTLY delete ${selectedIds.size} registrants?`)
+    if (!isConfirmed) return
+    
+    try {
+      setLoading(true)
+      await adminBulkDeleteRegistrants(Array.from(selectedIds))
+      notify(`Successfully deleted ${selectedIds.size} registrants.`, 'success')
+      setSelectedIds(new Set())
+      await loadData()
+    } catch (error: any) {
+      console.error("Bulk delete failed", error)
+      notify(`Bulk deletion failed: ${error.message || 'Unknown error'}`, 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Generate fixed range 2009-2026 as per user request
   const batches = Array.from({ length: 2026 - 2009 + 1 }, (_, i) => (2009 + i).toString()).reverse()
 
@@ -86,6 +108,28 @@ export default function AdminRegistrants() {
     return matchesSearch && matchesStatus && matchesBatch;
   })
 
+  const allFilteredIds = filteredRegistrants.map(r => r.id)
+  const isAllSelected = filteredRegistrants.length > 0 && filteredRegistrants.every(r => selectedIds.has(r.id))
+  
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      const newSet = new Set(selectedIds)
+      allFilteredIds.forEach(id => newSet.delete(id))
+      setSelectedIds(newSet)
+    } else {
+      const newSet = new Set(selectedIds)
+      allFilteredIds.forEach(id => newSet.add(id))
+      setSelectedIds(newSet)
+    }
+  }
+
+  const toggleSelect = (id: string) => {
+    const newSet = new Set(selectedIds)
+    if (newSet.has(id)) newSet.delete(id)
+    else newSet.add(id)
+    setSelectedIds(newSet)
+  }
+
   return (
     <div className="min-h-screen bg-[#FAFAF7] flex flex-col">
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -100,8 +144,22 @@ export default function AdminRegistrants() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full lg:w-auto text-primary">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto text-primary">
+            {selectedIds.size > 0 && (
+              <button 
+                onClick={handleBulkDelete} 
+                className="w-full sm:w-auto px-6 py-3 bg-rose-50 text-rose-600 border border-rose-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-100 transition-all shadow-sm flex items-center justify-center gap-2"
+              >
+                <Trash2 size={16} /> Delete Selected ({selectedIds.size})
+              </button>
+            )}
+            <button 
+              onClick={() => setIsImportModalOpen(true)} 
+              className="w-full sm:w-auto px-6 py-3 bg-[#1F3D2B] rounded-2xl text-white font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl hover:shadow-2xl whitespace-nowrap"
+            >
+              Import Registrants
+            </button>
+            <div className="relative w-full sm:w-auto">
               <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input 
                 type="text" 
@@ -145,6 +203,9 @@ export default function AdminRegistrants() {
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#FAFAF7] text-[10px] font-black tracking-widest text-muted uppercase">
                 <tr>
+                  <th className="px-6 py-5 w-12 text-center">
+                    <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-primary cursor-pointer" checked={isAllSelected} onChange={toggleSelectAll} disabled={filteredRegistrants.length === 0} />
+                  </th>
                   <th className="px-8 py-5">Registrant</th>
                   <th className="px-8 py-5">Contact</th>
                   <th className="px-8 py-5">SSC Batch</th>
@@ -156,18 +217,21 @@ export default function AdminRegistrants() {
               <tbody className="divide-y divide-gray-50 text-sm">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-8 py-16 text-center text-muted">
+                    <td colSpan={7} className="px-8 py-16 text-center text-muted">
                       <Loader2 className="animate-spin mx-auto mb-3" size={32} />
                       <p className="text-sm font-bold tracking-widest uppercase">Fetching Records...</p>
                     </td>
                   </tr>
                 ) : filteredRegistrants.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-8 py-16 text-center text-muted font-bold tracking-widest uppercase">No applications found matching your criteria.</td>
+                    <td colSpan={7} className="px-8 py-16 text-center text-muted font-bold tracking-widest uppercase">No applications found matching your criteria.</td>
                   </tr>
                 ) : (
                   filteredRegistrants.map((r) => (
-                    <tr key={r.id} className="hover:bg-[#FAFAF7]/50 transition-colors group">
+                    <tr key={r.id} className={`hover:bg-[#FAFAF7]/50 transition-colors group ${selectedIds.has(r.id) ? 'bg-[#1F3D2B]/5' : ''}`}>
+                      <td className="px-6 py-6 text-center" onClick={(e) => e.stopPropagation()}>
+                        <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-primary cursor-pointer" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} />
+                      </td>
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-[#1F3D2B]/5 border border-[#1F3D2B]/10 flex items-center justify-center font-black text-primary overflow-hidden">
@@ -240,6 +304,12 @@ export default function AdminRegistrants() {
           </div>
         </div>
       </main>
+
+      <RegistrantImportModal 
+        isOpen={isImportModalOpen} 
+        onClose={() => setIsImportModalOpen(false)} 
+        onSuccess={() => { setIsImportModalOpen(false); loadData(); }} 
+      />
     </div>
   )
 }

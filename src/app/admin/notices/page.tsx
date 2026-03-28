@@ -6,10 +6,11 @@ import {
   FileText, Link2, ExternalLink, PlusCircle, XCircle, Upload
 } from "lucide-react"
 import Link from "next/link"
-import { adminCreateNotice, adminDeleteNotice } from "@/app/actions/admin"
+import { adminCreateNotice, adminDeleteNotice, adminUpdateNotice } from "@/app/actions/admin"
 import { supabase } from "@/lib/supabase"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { useNotification } from "@/lib/contexts/NotificationContext"
+import { Edit2 } from "lucide-react"
 
 const CATEGORIES = [
   { value: "General", label: "General News" },
@@ -43,6 +44,7 @@ export default function AdminNotices() {
   const [form, setForm] = useState(defaultForm)
   const [newHighlight, setNewHighlight] = useState("")
   const [fileLabel, setFileLabel] = useState("")
+  const [editId, setEditId] = useState<string | null>(null)
   const { notify, confirm } = useNotification()
 
   const loadNotices = async () => {
@@ -97,7 +99,7 @@ export default function AdminNotices() {
     }
     try {
       setSubmitting(true)
-      await adminCreateNotice({
+      const payload = {
         ...form,
         highlights: form.highlights.length > 0 ? form.highlights : null,
         attachment_url: form.attachment_url || null,
@@ -106,11 +108,20 @@ export default function AdminNotices() {
         action_url: form.action_url || null,
         body_bn: form.body_bn || null,
         title_bn: form.title_bn || null,
-      })
+      }
+
+      if (editId) {
+        await adminUpdateNotice(editId, payload)
+        notify("Notice updated successfully!", 'success')
+      } else {
+        await adminCreateNotice(payload)
+        notify("Notice published successfully!", 'success')
+      }
+      
       setForm(defaultForm)
       setFileLabel("")
       setNewHighlight("")
-      notify("Notice published successfully!", 'success')
+      setEditId(null)
       await loadNotices()
     } catch (error: any) {
       notify(`Error: ${error.message}`, 'error')
@@ -147,10 +158,20 @@ export default function AdminNotices() {
         {/* Creation Form */}
         <div className="lg:col-span-1">
           <div className="bg-white p-8 rounded-[2.5rem] shadow-premium border border-gray-100 sticky top-12 max-h-[calc(100vh-6rem)] overflow-y-auto">
-            <h3 className="text-xl font-black text-primary mb-8 flex items-center gap-3">
-              <Plus size={24} className="text-[#CEB888]" />
-              New Notice
-            </h3>
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-black text-primary flex items-center gap-3">
+                {editId ? <Edit2 size={24} className="text-[#CEB888]" /> : <Plus size={24} className="text-[#CEB888]" />}
+                {editId ? "Edit Notice" : "New Notice"}
+              </h3>
+              {editId && (
+                <button 
+                  onClick={() => { setEditId(null); setForm(defaultForm); setFileLabel(""); setNewHighlight(""); }}
+                  className="text-xs font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-lg hover:bg-rose-100 transition-colors"
+                >
+                  Cancel Edit
+                </button>
+              )}
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Title EN */}
@@ -294,7 +315,7 @@ export default function AdminNotices() {
                 type="submit" disabled={submitting || uploading}
                 className="w-full bg-primary text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:shadow-xl transition-all disabled:opacity-50"
               >
-                {submitting ? <Loader2 className="animate-spin" size={18} /> : <><Megaphone size={18} /> Publish Notice</>}
+                {submitting ? <Loader2 className="animate-spin" size={18} /> : <>{editId ? <Edit2 size={18} /> : <Megaphone size={18} />} {editId ? "Update Notice" : "Publish Notice"}</>}
               </button>
             </form>
           </div>
@@ -360,6 +381,30 @@ export default function AdminNotices() {
                       >
                         <ExternalLink size={16} />
                       </Link>
+                      <button
+                        onClick={() => {
+                           setEditId(n.id)
+                           setForm({
+                             title: n.title,
+                             title_bn: n.title_bn || "",
+                             body: n.body || "",
+                             body_bn: n.body_bn || "",
+                             category: n.category || "General",
+                             is_featured: n.is_featured || false,
+                             highlights: n.highlights || [],
+                             attachment_url: n.attachment_url || "",
+                             attachment_name: n.attachment_name || "",
+                             action_label: n.action_label || "",
+                             action_url: n.action_url || ""
+                           })
+                           setFileLabel(n.attachment_name || "")
+                           window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        className="p-4 bg-amber-50 text-amber-600 rounded-2xl hover:bg-amber-600 hover:text-white transition-all border border-amber-100"
+                        title="Edit Notice"
+                      >
+                        <Edit2 size={20} />
+                      </button>
                       <button
                         onClick={() => handleDelete(n.id)}
                         className="p-4 bg-rose-50 text-rose-600 rounded-2xl hover:bg-rose-600 hover:text-white transition-all border border-rose-100"

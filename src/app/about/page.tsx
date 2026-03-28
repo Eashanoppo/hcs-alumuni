@@ -2,16 +2,45 @@
 
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { Lightbulb, Eye, GraduationCap, Users, Trophy, School, ArrowRight } from "lucide-react"
+import { Lightbulb, Eye, GraduationCap, Users, Trophy, School, ArrowRight, Loader2 } from "lucide-react"
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+import { supabase } from "@/lib/supabase"
 
 export default function AboutPage() {
-  const milestones = [
-    { year: "১৯৯৯", title: "স্কুল প্রতিষ্ঠা", desc: "হলি ক্রিসেন্ট স্কুলের প্রথম পথচলা শুরু।" },
-    { year: "২০১০", title: "প্রথম এসএসসি ব্যাচ", desc: "শতভাগ পাশের হার নিয়ে প্রথম ব্যাচ উত্তীর্ণ।" },
-    { year: "২০১৫", title: "নতুন ক্যাম্পাস", desc: "আধুনিক সুযোগ-সুবিধা সম্বলিত নতুন ভবনের উদ্বোধন।" },
-    { year: "২০২৬", title: "রজত জয়ন্তী", desc: "২৫ বছরের দীর্ঘ গৌরবময় ইতিহাসের উদযাপন।" },
-  ]
+  const [milestones, setMilestones] = useState<any[]>([])
+  const [content, setContent] = useState<any>({
+    mission: { title: "আমাদের লক্ষ্য", content: "আমাদের লক্ষ্য হলো প্রতিটি শিক্ষার্থীকে সুশিক্ষায় শিক্ষিত করে তোলা এবং তাদের সৃজনশীল প্রতিভার বিকাশ ঘটানো।" },
+    vision: { title: "আমাদের উদ্দেশ্য", content: "আধুনিক শিক্ষার সাথে নৈতিক মূল্যবোধের সমন্বয় ঘটিয়ে এমন একটি প্রজন্ম গড়ে তোলা যারা আগামীর নেতৃত্ব দিবে।" },
+    headmaster: { title: "শিক্ষাই আলো, শিক্ষার আলো ছড়িয়ে পড়ুক সবার মাঝে।", content: "২৫ বছরের এই পথচলায় আপনারা যেভাবে আমাদের পাশে ছিলেন, আশা করি আগামীদিনেও সেভাবেই আপনাদের সমর্থন অব্যাহত থাকবে। আমরা প্রতিটি শিক্ষার্থীর নৈতিক উন্নয়ন ও চারিত্রিক গঠনের ওপর গুরুত্বারোপ করি।", image_url: "https://lh3.googleusercontent.com/aida-public/AB6AXuBzEFrzIQWCFK0kOzG3IKGGiIqLSBL4YS5DRiEKJewRBgKd5v9xdDh0VK3Bqio7uXImz6XH4bkL8AG9LjP2L8u5SAPjnBZDS3KR48LckE0MXjYGgHZ_ZnGDhsT53IOnJDQMpmBG7F_oZJ9-8XfUZlZEn-VyU68GRHoKgeeSQm-_koUIzS0piDPjwNuPp5mX1I2d5RtunwaYgo1xfqE3XITaXohUCMYTAqfOGWfVaL0416SBUH0ESCt1eDnuTHX8LUE91Hn6w1EKeAc" }
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      const [mRes, cRes] = await Promise.all([
+        supabase.from('milestones').select('*').order('year', { ascending: true }),
+        supabase.from('about_content').select('*')
+      ])
+      
+      if (mRes.data && mRes.data.length > 0) setMilestones(mRes.data);
+      if (cRes.data) {
+        const newContent = { ...content }
+        cRes.data.forEach(item => {
+          if (newContent[item.section as keyof typeof newContent]) {
+            newContent[item.section as keyof typeof newContent] = {
+               title: item.title || newContent[item.section as keyof typeof newContent].title,
+               content: item.content || newContent[item.section as keyof typeof newContent].content,
+               image_url: item.image_url || newContent[item.section as keyof typeof newContent]?.image_url
+            }
+          }
+        })
+        setContent(newContent)
+      }
+      setLoading(false)
+    }
+    fetchData()
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -41,22 +70,26 @@ export default function AboutPage() {
 
         {/* Mission Vision */}
         <section className="max-w-7xl mx-auto py-24 px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="bg-white p-12 rounded-3xl shadow-sm group hover:shadow-xl transition-all">
-              <Lightbulb className="text-accent mb-8 w-12 h-12 group-hover:scale-110 transition-transform" />
-              <h2 className="text-3xl font-bold text-primary mb-6">আমাদের লক্ষ্য</h2>
-              <p className="text-muted leading-loose text-lg">
-                আমাদের লক্ষ্য হলো প্রতিটি শিক্ষার্থীকে সুশিক্ষায় শিক্ষিত করে তোলা এবং তাদের সৃজনশীল প্রতিভার বিকাশ ঘটানো।
-              </p>
+          {loading ? (
+             <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary/20" size={48} /></div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="bg-white p-12 rounded-3xl shadow-sm group hover:shadow-xl transition-all">
+                <Lightbulb className="text-accent mb-8 w-12 h-12 group-hover:scale-110 transition-transform" />
+                <h2 className="text-3xl font-bold text-primary mb-6">{content.mission.title}</h2>
+                <p className="text-muted leading-loose text-lg">
+                  {content.mission.content}
+                </p>
+              </div>
+              <div className="bg-primary p-12 rounded-3xl text-white shadow-xl flex flex-col justify-center">
+                <Eye className="text-accent mb-8 w-12 h-12" />
+                <h2 className="text-3xl font-bold mb-6 text-accent">{content.vision.title}</h2>
+                <p className="text-white/80 leading-loose text-lg">
+                  {content.vision.content}
+                </p>
+              </div>
             </div>
-            <div className="bg-primary p-12 rounded-3xl text-white shadow-xl flex flex-col justify-center">
-              <Eye className="text-accent mb-8 w-12 h-12" />
-              <h2 className="text-3xl font-bold mb-6 text-accent">আমাদের উদ্দেশ্য</h2>
-              <p className="text-white/80 leading-loose text-lg">
-                আধুনিক শিক্ষার সাথে নৈতিক মূল্যবোধের সমন্বয় ঘটিয়ে এমন একটি প্রজন্ম গড়ে তোলা যারা আগামীর নেতৃত্ব দিবে।
-              </p>
-            </div>
-          </div>
+          )}
         </section>
 
         {/* Timeline */}
@@ -93,7 +126,7 @@ export default function AboutPage() {
                       {m.year}
                     </div>
                     <h3 className="text-3xl font-black text-primary mb-4 tracking-tight group-hover:text-accent transition-colors">{m.title}</h3>
-                    <p className="text-muted text-lg font-medium leading-relaxed">{m.desc}</p>
+                    <p className="text-muted text-lg font-medium leading-relaxed">{m.desc || m.description}</p>
                   </div>
                   
                   <div className="relative z-10 hidden md:block">
@@ -101,10 +134,16 @@ export default function AboutPage() {
                   </div>
                   
                   <div className="md:w-1/2 w-full">
-                    <div className="aspect-[16/10] glass rounded-[2.5rem] shadow-premium p-3 group hover:scale-105 transition-transform duration-500 overflow-hidden border border-white/40">
-                      <div className="w-full h-full bg-primary/5 rounded-[2rem] flex items-center justify-center text-primary/10 group-hover:bg-accent/5 transition-colors">
-                        <School size={64} className="group-hover:text-accent/20 transition-colors" />
-                      </div>
+                    <div className="aspect-[16/10] bg-white rounded-[2.5rem] shadow-premium p-3 group hover:scale-105 transition-transform duration-500 overflow-hidden border border-gray-100">
+                      {m.image_url ? (
+                        <div className="w-full h-full rounded-[2rem] overflow-hidden bg-gray-50">
+                           <img src={m.image_url} alt={m.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        </div>
+                      ) : (
+                        <div className="w-full h-full bg-primary/5 rounded-[2rem] flex items-center justify-center text-primary/10 group-hover:bg-accent/5 transition-colors">
+                          <School size={64} className="group-hover:text-accent/20 transition-colors" />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -116,25 +155,27 @@ export default function AboutPage() {
 
         {/* Headmaster Message */}
         <section className="max-w-7xl mx-auto py-32 px-8">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            <div className="lg:w-1/3">
-              <div className="aspect-[3/4] rounded-[3rem] bg-accent/10 overflow-hidden shadow-2xl skew-y-3">
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzEFrzIQWCFK0kOzG3IKGGiIqLSBL4YS5DRiEKJewRBgKd5v9xdDh0VK3Bqio7uXImz6XH4bkL8AG9LjP2L8u5SAPjnBZDS3KR48LckE0MXjYGgHZ_ZnGDhsT53IOnJDQMpmBG7F_oZJ9-8XfUZlZEn-VyU68GRHoKgeeSQm-_koUIzS0piDPjwNuPp5mX1I2d5RtunwaYgo1xfqE3XITaXohUCMYTAqfOGWfVaL0416SBUH0ESCt1eDnuTHX8LUE91Hn6w1EKeAc" className="w-full h-full object-cover grayscale" />
+          {!loading && (
+            <div className="flex flex-col lg:flex-row items-center gap-16">
+              <div className="lg:w-1/3">
+                <div className="aspect-[3/4] rounded-[3rem] bg-accent/10 overflow-hidden shadow-2xl skew-y-3">
+                  <img src={content.headmaster.image_url} className="w-full h-full object-cover grayscale" />
+                </div>
+              </div>
+              <div className="lg:w-2/3">
+                <h2 className="text-3xl md:text-5xl font-bold text-primary mb-8 leading-tight">
+                  "{content.headmaster.title}"
+                </h2>
+                <p className="text-muted text-lg leading-relaxed mb-8 whitespace-pre-wrap">
+                  {content.headmaster.content}
+                </p>
+                <div className="border-l-4 border-accent pl-6">
+                  <p className="text-xl font-bold text-primary">প্রফেসর ড. মাহফুজুর রহমান</p>
+                  <p className="text-accent font-bold uppercase tracking-widest text-xs">প্রধান শিক্ষক, হলি ক্রিসেন্ট স্কুল</p>
+                </div>
               </div>
             </div>
-            <div className="lg:w-2/3">
-              <h2 className="text-3xl md:text-5xl font-bold text-primary mb-8 leading-tight">
-                "শিক্ষাই আলো, শিক্ষার আলো ছড়িয়ে পড়ুক সবার মাঝে।"
-              </h2>
-              <p className="text-muted text-lg leading-relaxed mb-8">
-                ২৫ বছরের এই পথচলায় আপনারা যেভাবে আমাদের পাশে ছিলেন, আশা করি আগামীদিনেও সেভাবেই আপনাদের সমর্থন অব্যাহত থাকবে। আমরা প্রতিটি শিক্ষার্থীর নৈতিক উন্নয়ন ও চারিত্রিক গঠনের ওপর গুরুত্বারোপ করি।
-              </p>
-              <div className="border-l-4 border-accent pl-6">
-                <p className="text-xl font-bold text-primary">প্রফেসর ড. মাহফুজুর রহমান</p>
-                <p className="text-accent font-bold uppercase tracking-widest text-xs">প্রধান শিক্ষক, হলি ক্রিসেন্ট স্কুল</p>
-              </div>
-            </div>
-          </div>
+          )}
         </section>
       </main>
       <Footer />

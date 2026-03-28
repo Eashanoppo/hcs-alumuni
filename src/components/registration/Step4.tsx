@@ -35,28 +35,31 @@ export default function Step4() {
               আপনি কি অনুষ্ঠানে উপস্থিত থাকবেন?{" "}
               <span className="text-red-500">*</span>
             </label>
-            <div className="flex gap-6">
-              {["হ্যাঁ (Yes)", "না (No)"].map((opt) => (
+            <div className="flex flex-col gap-4">
+              {[
+                { label: "হ্যাঁ (Yes)", value: "yes" }, 
+                { label: "না (No)", value: "no" }, 
+                { label: "সম্ভবত (Probably)", value: "probably" }
+              ].map((opt) => (
                 <label
-                  key={opt}
-                  className="flex items-center gap-2 cursor-pointer"
+                  key={opt.value}
+                  className="flex items-center gap-3 cursor-pointer group"
                 >
                   <input
+                    required
                     type="radio"
                     name="attending"
-                    checked={data.attending === (opt === "হ্যাঁ (Yes)")}
-                    onChange={() =>
-                      updateData({ attending: opt === "হ্যাঁ (Yes)" })
-                    }
-                    className="w-4 h-4 text-primary focus:ring-accent"
+                    checked={data.attending === opt.value}
+                    onChange={() => updateData({ attending: opt.value })}
+                    className="w-5 h-5 text-primary focus:ring-accent"
                   />
-                  <span className="text-sm font-medium">{opt}</span>
+                  <span className="text-sm font-bold group-hover:text-primary transition-colors">{opt.label}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          {data.attending && (
+          {data.attending === "yes" && (
             <>
               <div className="space-y-4">
                 <label className="block text-sm font-bold text-primary">
@@ -125,6 +128,33 @@ export default function Step4() {
                 <option value="XL">XL</option>
                 <option value="XXL">XXL</option>
               </select>
+            </div>
+          </div>
+
+          <div className="space-y-4 md:col-span-2">
+            <label className="block text-sm font-bold text-primary">
+              স্বেচ্ছাসেবক/আয়োজক টিমে যুক্ত হতে চান? <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-6">
+              {[
+                { label: "হ্যাঁ", value: true }, 
+                { label: "না", value: false }
+              ].map((opt) => (
+                <label
+                  key={opt.label}
+                  className="flex items-center gap-2 cursor-pointer group"
+                >
+                  <input
+                    required
+                    type="radio"
+                    name="volunteer"
+                    checked={data.volunteer_status === opt.value}
+                    onChange={() => updateData({ volunteer_status: opt.value })}
+                    className="w-4 h-4 text-primary focus:ring-accent"
+                  />
+                  <span className="text-sm font-bold group-hover:text-primary transition-colors">{opt.label}</span>
+                </label>
+              ))}
             </div>
           </div>
         </div>
