@@ -14,13 +14,16 @@ export default function AboutPage() {
     vision: { title: "আমাদের উদ্দেশ্য", content: "আধুনিক শিক্ষার সাথে নৈতিক মূল্যবোধের সমন্বয় ঘটিয়ে এমন একটি প্রজন্ম গড়ে তোলা যারা আগামীর নেতৃত্ব দিবে।" },
     headmaster: { title: "শিক্ষাই আলো, শিক্ষার আলো ছড়িয়ে পড়ুক সবার মাঝে।", content: "২৫ বছরের এই পথচলায় আপনারা যেভাবে আমাদের পাশে ছিলেন, আশা করি আগামীদিনেও সেভাবেই আপনাদের সমর্থন অব্যাহত থাকবে। আমরা প্রতিটি শিক্ষার্থীর নৈতিক উন্নয়ন ও চারিত্রিক গঠনের ওপর গুরুত্বারোপ করি।", image_url: "https://lh3.googleusercontent.com/aida-public/AB6AXuBzEFrzIQWCFK0kOzG3IKGGiIqLSBL4YS5DRiEKJewRBgKd5v9xdDh0VK3Bqio7uXImz6XH4bkL8AG9LjP2L8u5SAPjnBZDS3KR48LckE0MXjYGgHZ_ZnGDhsT53IOnJDQMpmBG7F_oZJ9-8XfUZlZEn-VyU68GRHoKgeeSQm-_koUIzS0piDPjwNuPp5mX1I2d5RtunwaYgo1xfqE3XITaXohUCMYTAqfOGWfVaL0416SBUH0ESCt1eDnuTHX8LUE91Hn6w1EKeAc" }
   })
+  const [headmasterName, setHeadmasterName] = useState("প্রফেসর ড. মাহফুজুর রহমান")
+  const [headmasterPost, setHeadmasterPost] = useState("প্রধান শিক্ষক, হলি ক্রিসেন্ট স্কুল")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchData() {
-      const [mRes, cRes] = await Promise.all([
+      const [mRes, cRes, sRes] = await Promise.all([
         supabase.from('milestones').select('*').order('year', { ascending: true }),
-        supabase.from('about_content').select('*')
+        supabase.from('about_content').select('*'),
+        supabase.from('site_settings').select('*').in('id', ['headmaster_name', 'headmaster_post'])
       ])
       
       if (mRes.data && mRes.data.length > 0) setMilestones(mRes.data);
@@ -37,6 +40,14 @@ export default function AboutPage() {
         })
         setContent(newContent)
       }
+      
+      if (sRes.data) {
+        sRes.data.forEach(item => {
+          if (item.id === 'headmaster_name' && item.value?.text) setHeadmasterName(item.value.text);
+          if (item.id === 'headmaster_post' && item.value?.text) setHeadmasterPost(item.value.text);
+        });
+      }
+      
       setLoading(false)
     }
     fetchData()
@@ -170,8 +181,8 @@ export default function AboutPage() {
                   {content.headmaster.content}
                 </p>
                 <div className="border-l-4 border-accent pl-6">
-                  <p className="text-xl font-bold text-primary">প্রফেসর ড. মাহফুজুর রহমান</p>
-                  <p className="text-accent font-bold uppercase tracking-widest text-xs">প্রধান শিক্ষক, হলি ক্রিসেন্ট স্কুল</p>
+                  <p className="text-xl font-bold text-primary">{headmasterName}</p>
+                  <p className="text-accent font-bold uppercase tracking-widest text-xs">{headmasterPost}</p>
                 </div>
               </div>
             </div>

@@ -152,3 +152,17 @@ CREATE POLICY "Allow public read access on visions" ON public.visions FOR SELECT
 CREATE POLICY "Allow public read access on testimonials" ON public.testimonials FOR SELECT USING (true);
 -- Service role full access via getAdminSupabase() handles writes
 
+-- 12. Create table for Site Settings (Contact, etc)
+CREATE TABLE IF NOT EXISTS public.site_settings (
+  id TEXT PRIMARY KEY,
+  value JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access
+CREATE POLICY "Allow public read access on site_settings" ON public.site_settings FOR SELECT USING (true);
+CREATE POLICY "Allow service_role full access site_settings" ON public.site_settings USING (true) WITH CHECK (true);

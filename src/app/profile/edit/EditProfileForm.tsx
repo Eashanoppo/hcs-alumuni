@@ -52,7 +52,8 @@ export default function EditProfileForm({ profile }: { profile: any }) {
     e.preventDefault()
     try {
       setLoading(true)
-      await updateAlumniProfile(profile.alumni_number, data, oldPhotoUrl)
+      // Use alumni_number if available, otherwise fall back to database id
+      await updateAlumniProfile(profile.alumni_number || profile.id, data, oldPhotoUrl)
       notify("Profile updated successfully", "success")
       router.push("/profile")
       router.refresh()

@@ -1,10 +1,42 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { MapPin, Phone, Mail, Clock, Send, MessageSquare } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Send, MessageSquare, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function ContactPage() {
+  const [contactInfo, setContactInfo] = useState({
+    address: "হলি ক্রিসেন্ট স্কুল ক্যাম্পাস, ঢাকা-চট্টগ্রাম রোড",
+    phone_primary: "+৮৮০ ১২৩৪ ৫৬৭৮৯০",
+    email: "info@holycrescent.edu",
+    office_hours: "শনিবার - বৃহস্পতিবার (সকাল ৮টা - বিকেল ৩টা)",
+    emergency_guidance: "অ্যালুমনাই রেজিস্ট্রেশন সংক্রান্ত যেকোনো জটিলতায় আমাদের হটলাইনে যোগাযগ করুন।",
+    emergency_phone: "০১৭ ১২৩৪ ৫৬৭৮"
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchContact() {
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('value')
+          .eq('id', 'contact_info')
+          .single();
+          
+        if (data && data.value) {
+          setContactInfo({ ...contactInfo, ...data.value });
+        }
+      } catch (err) {
+        console.error("Error fetching contact info", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchContact();
+  }, []);
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
@@ -29,49 +61,55 @@ export default function ContactPage() {
           {/* Contact Details */}
           <div className="space-y-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                {
-                  icon: <MapPin />,
-                  label: "ঠিকানা",
-                  val: "হলি ক্রিসেন্ট স্কুল ক্যাম্পাস, ঢাকা-চট্টগ্রাম রোড",
-                  color: "bg-blue-500",
-                },
-                {
-                  icon: <Phone />,
-                  label: "ফোন নম্বর",
-                  val: "+৮৮০ ১২৩৪ ৫৬৭৮৯০",
-                  color: "bg-emerald-500",
-                },
-                {
-                  icon: <Mail />,
-                  label: "ইমেইল",
-                  val: "info@holycrescent.edu",
-                  color: "bg-amber-500",
-                },
-                {
-                  icon: <Clock />,
-                  label: "অফিস আওয়ার",
-                  val: "শনিবার - বৃহস্পতিবার (সকাল ৮টা - বিকেল ৩টা)",
-                  color: "bg-primary",
-                },
-              ].map((c, i) => (
-                <div
-                  key={i}
-                  className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col items-start hover:shadow-xl transition-all h-full"
-                >
-                  <div
-                    className={`${c.color} p-4 rounded-2xl text-white mb-6 shadow-lg`}
-                  >
-                    {c.icon}
-                  </div>
-                  <h3 className="text-[10px] font-black tracking-widest uppercase text-muted mb-2">
-                    {c.label}
-                  </h3>
-                  <p className="font-bold text-primary leading-relaxed">
-                    {c.val}
-                  </p>
+              {loading ? (
+                <div className="col-span-full flex justify-center py-20">
+                  <Loader2 className="animate-spin text-primary" size={40} />
                 </div>
-              ))}
+              ) : (
+                <>
+                  {[
+                    {
+                      icon: <MapPin />,
+                      label: "ঠিকানা",
+                      val: contactInfo.address,
+                      color: "bg-blue-500",
+                    },
+                    {
+                      icon: <Phone />,
+                      label: "ফোন নম্বর",
+                      val: contactInfo.phone_primary,
+                      color: "bg-emerald-500",
+                    },
+                    {
+                      icon: <Mail />,
+                      label: "ইমেইল",
+                      val: contactInfo.email,
+                      color: "bg-amber-500",
+                    },
+                    {
+                      icon: <Clock />,
+                      label: "অফিস আওয়ার",
+                      val: contactInfo.office_hours,
+                      color: "bg-primary",
+                    },
+                  ].map((c, i) => (
+                    <div
+                      key={i}
+                      className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col items-start hover:shadow-xl transition-all h-full"
+                    >
+                      <div className={`${c.color} p-4 rounded-2xl text-white mb-6 shadow-lg`}>
+                        {c.icon}
+                      </div>
+                      <h3 className="text-[10px] font-black tracking-widest uppercase text-muted mb-2">
+                        {c.label}
+                      </h3>
+                      <p className="font-bold text-primary leading-relaxed">
+                        {c.val}
+                      </p>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
 
             <div className="bg-primary p-12 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
@@ -80,12 +118,11 @@ export default function ContactPage() {
                   জরুরি সহায়তা
                 </h3>
                 <p className="text-white/60 mb-8 leading-relaxed">
-                  অ্যালুমনাই রেজিস্ট্রেশন সংক্রান্ত যেকোনো জটিলতায় আমাদের
-                  হটলাইনে যোগাযগ করুন।
+                  {contactInfo.emergency_guidance}
                 </p>
                 <div className="flex items-center gap-4 text-2xl font-bold">
                   <Phone className="text-accent" size={32} />
-                  ০১৭ ১২৩৪ ৫৬৭৮
+                  {contactInfo.emergency_phone}
                 </div>
               </div>
               <MessageSquare

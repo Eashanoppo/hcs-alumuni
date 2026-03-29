@@ -7,13 +7,23 @@ import { User, LogOut, CheckCircle, Clock, Award, XCircle, CreditCard } from "lu
 import Link from "next/link"
 
 async function getProfileData(alumniNumber: string) {
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('registrants')
     .select('*')
     .eq('alumni_number', alumniNumber)
     .single()
     
-  if (error || !data) return null
+  if (error || !data) {
+    // Try lookup by ID if alumni_number fails
+    const { data: idData, error: idError } = await supabase
+      .from('registrants')
+      .select('*')
+      .eq('id', alumniNumber)
+      .single()
+    
+    if (idError || !idData) return null
+    return idData
+  }
   return data
 }
 

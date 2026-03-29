@@ -14,6 +14,7 @@ export default function Home() {
   const [galleryImages, setGalleryImages] = useState<any[]>([]);
   const [notices, setNotices] = useState<any[]>([]);
   const [visions, setVisions] = useState<any[]>([]);
+  const [visionCover, setVisionCover] = useState<string>("/images/pic-3.webp");
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,10 +60,20 @@ export default function Home() {
         .order("created_at", { ascending: false })
         .limit(3);
 
+      // Fetch Vision Cover
+      const { data: coverData } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("id", "vision_main")
+        .single();
+
       if (galleryData) setGalleryImages(galleryData);
       if (noticeData) setNotices(noticeData);
       if (visionsData) setVisions(visionsData);
       if (testimonialsData) setTestimonials(testimonialsData);
+      if (coverData && coverData.value && coverData.value.image_url) {
+        setVisionCover(coverData.value.image_url);
+      }
       setLoading(false);
     }
     fetchData();
@@ -203,7 +214,7 @@ export default function Home() {
               >
                 <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-premium relative">
                   <img
-                    src="/images/pic-3.webp"
+                    src={visionCover}
                     alt="School Mascot/Heritage"
                     className="w-full h-full object-cover"
                   />

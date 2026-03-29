@@ -13,14 +13,25 @@ export default async function EditProfilePage() {
     redirect('/login/alumni')
   }
 
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from('registrants')
     .select('*')
     .eq('alumni_number', session.value)
     .single()
 
   if (!profile) {
-    redirect('/login/alumni')
+    // Try lookup by ID if alumni_number fails
+    const { data: idData } = await supabase
+      .from('registrants')
+      .select('*')
+      .eq('id', session.value)
+      .single()
+    
+    if (idData) {
+      profile = idData
+    } else {
+      redirect('/login/alumni')
+    }
   }
 
   return (

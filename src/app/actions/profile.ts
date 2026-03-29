@@ -51,14 +51,39 @@ export async function deleteCloudinaryImage(url: string) {
 
 export async function updateAlumniProfile(alumniNumber: string, data: any, oldPhotoUrl?: string) {
   const supabase = getAdminSupabase()
-  
-  // Verify the session
+  let record = null;
+  let { data: alumniMatch } = alumniNumber ? await supabase
+    .from('registrants')
+    .select('id, alumni_number')
+    .eq('alumni_number', alumniNumber)
+    .single() : { data: null };
+    
+  if (alumniMatch) {
+    record = alumniMatch;
+  } else {
+    // Try lookup by UUID if alumni_number fails or wasn't provided
+    const { data: idRecord, error: idFindError } = await supabase
+      .from('registrants')
+      .select('id, alumni_number')
+      .eq('id', alumniNumber)
+      .single()
+      
+    if (idFindError || !idRecord) throw new Error("Registrant not found")
+    record = idRecord
+  }
+
+  // 2. Verify the session matches EITHER identifier
   const cookieStore = await cookies()
   const session = cookieStore.get('alumni_session')
   
-  if (session?.value !== alumniNumber) {
+  const isAuthorized = session?.value === record.alumni_number || session?.value === record.id
+  
+  if (!isAuthorized) {
     throw new Error("Unauthorized request")
   }
+  
+  // Use the verified database ID for the update for precision
+  const targetId = record.id
   
   // Restrict sensitive fields from being updated just in case
   delete data.dob
@@ -76,7 +101,7 @@ export async function updateAlumniProfile(alumniNumber: string, data: any, oldPh
   const { data: updated, error } = await supabase
     .from('registrants')
     .update(data)
-    .eq('alumni_number', alumniNumber)
+    .eq('id', targetId)
     .select()
     .single()
 

@@ -12,15 +12,28 @@ import DeveloperCard from "@/components/ui/DeveloperCard"
 
 export default function AlumniLogin() {
   const [alumniNumber, setAlumniNumber] = useState('')
-  const [dob, setDob] = useState('')
+  const [dobDay, setDobDay] = useState('')
+  const [dobMonth, setDobMonth] = useState('')
+  const [dobYear, setDobYear] = useState('')
   const [loading, setLoading] = useState(false)
   const { notify } = useNotification()
+
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+
+  // Build D-MonthName-YYYY string to match DB storage format (e.g. 15-March-1990)
+  const buildDob = () => {
+    if (!dobDay || !dobMonth || !dobYear) return ''
+    return `${parseInt(dobDay)}-${dobMonth}-${dobYear}`
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     
     try {
+      const dob = buildDob()
+      if (!dob) throw new Error("অনুগ্রহ করে জন্মতারিখ সম্পূর্ণভাবে পূরণ করুন।")
+
       const { data, error } = await supabase
         .from('registrants')
         .select('*')
@@ -30,8 +43,9 @@ export default function AlumniLogin() {
 
       if (error || !data) throw new Error("অবৈধ অ্যালুমনাই নম্বর বা জন্মতারিখ।")
       
-      // Set a session cookie
-      document.cookie = `alumni_session=${data.alumni_number}; path=/; max-age=86400`
+      // Set a session cookie - Use alumni_number if available, otherwise fall back to database id
+      const sessionIdentifier = data.alumni_number || data.id
+      document.cookie = `alumni_session=${sessionIdentifier}; path=/; max-age=86400`
       window.location.href = `/profile`
     } catch (error: any) {
       notify(error.message || "লগইন ব্যর্থ হয়েছে।", 'error')
@@ -92,11 +106,9 @@ export default function AlumniLogin() {
                   <div className="grid grid-cols-3 gap-3">
                      <select 
                       required
+                      value={dobDay}
                       className="bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-[#1F3D2B]/10 transition-all font-bold text-primary text-xs outline-none"
-                      onChange={(e) => {
-                        const parts = dob.split('-')
-                        setDob(`${e.target.value}-${parts[1] || ''}-${parts[2] || ''}`)
-                      }}
+                      onChange={(e) => setDobDay(e.target.value)}
                      >
                        <option value="">Day</option>
                        {Array.from({ length: 31 }, (_, i) => (i + 1).toString()).map(d => <option key={d} value={d}>{d}</option>)}
@@ -104,23 +116,19 @@ export default function AlumniLogin() {
 
                      <select 
                       required
+                      value={dobMonth}
                       className="bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-[#1F3D2B]/10 transition-all font-bold text-primary text-xs outline-none"
-                      onChange={(e) => {
-                        const parts = dob.split('-')
-                        setDob(`${parts[0] || ''}-${e.target.value}-${parts[2] || ''}`)
-                      }}
+                      onChange={(e) => setDobMonth(e.target.value)}
                      >
                        <option value="">Month</option>
-                       {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map(m => <option key={m} value={m}>{m}</option>)}
+                       {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
                      </select>
 
                      <select 
                       required
+                      value={dobYear}
                       className="bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-[#1F3D2B]/10 transition-all font-bold text-primary text-xs outline-none"
-                      onChange={(e) => {
-                        const parts = dob.split('-')
-                        setDob(`${parts[0] || ''}-${parts[1] || ''}-${e.target.value}`)
-                      }}
+                      onChange={(e) => setDobYear(e.target.value)}
                      >
                        <option value="">Year</option>
                        {Array.from({ length: 2026 - 1940 + 1 }, (_, i) => (2026 - i).toString()).map(y => <option key={y} value={y}>{y}</option>)}

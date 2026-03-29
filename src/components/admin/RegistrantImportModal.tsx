@@ -87,14 +87,40 @@ export default function RegistrantImportModal({ isOpen, onClose, onSuccess }: Pr
           else full_name_en = nameField
 
           // Try to get others, provide fallbacks
-          let dobValue = getBestMatch(['dob', 'birth', 'জন্ম'])
+          let rawDob = getBestMatch(['dob', 'birth', 'জন্ম'])
+          let dobValue = rawDob ? String(rawDob).trim() : ""
+
+          // Convert CSV date (mm/dd/yyyy or mm/dd/yy) → D-MonthName-YYYY  
+          // This matches the format used by site-registered accounts for login
+          const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"]
           
+          if (dobValue && dobValue.includes('/')) {
+            const parts = dobValue.split('/')
+            if (parts.length === 3) {
+              let [m, d, y] = parts
+              // Fix 2-digit year
+              if (y.length === 2) {
+                const yearNum = parseInt(y)
+                y = yearNum > 30 ? `19${y}` : `20${y}`
+              }
+              const monthName = MONTH_NAMES[parseInt(m) - 1] || m
+              // Store as D-MonthName-YYYY  e.g. "15-March-1990"
+              dobValue = `${parseInt(d)}-${monthName}-${y}`
+            }
+          }
+          if (!dobValue) dobValue = "1-January-1990"
+
+          const batchValue = String(getBestMatch(['batch', 'ssc', 'ব্যাচ', 'পাসের সাল', 'পাস']) || "")
+          const yearStr = (batchValue && batchValue.length >= 4) ? batchValue.substring(0, 4) : new Date().getFullYear().toString()
+          const randomDigits = Math.floor(1000 + Math.random() * 9000).toString()
+          const generatedAlumniNumber = `HCS-${yearStr}-${randomDigits}`
+
           const record = {
             full_name_en: full_name_en || "N/A",
             full_name_bn,
             father_name: getBestMatch(['father', 'পিতা', 'বাবার']) || "N/A",
             mother_name: getBestMatch(['mother', 'মাতা', 'মায়ের']) || "N/A",
-            dob: dobValue || "01/01/1990",
+            dob: dobValue,
             present_address: getBestMatch(['present address', 'বর্তমান ঠিকানা', 'address', 'ঠিকানা'], ['permanent', 'স্থায়ী']) || "N/A",
             permanent_address: getBestMatch(['permanent', 'স্থায়ী ঠিকানা', 'স্থায়ী']) || "",
             occupation: getBestMatch(['occupation', 'profession', 'job', 'work', 'পেশা']) || "N/A",
@@ -104,7 +130,8 @@ export default function RegistrantImportModal({ isOpen, onClose, onSuccess }: Pr
             leaving_class: String(getBestMatch(['leaving class', 'পর্যন্ত পড়েছেন']) || "10"),
             mobile,
             email,
-            batch: String(getBestMatch(['batch', 'ssc', 'ব্যাচ', 'পাসের সাল', 'পাস']) || ""),
+            batch: batchValue,
+            alumni_number: generatedAlumniNumber,
             attending: "yes", 
             volunteer_status: false,
             registration_status: "APPROVED" // Automatically approve bulk imported ones

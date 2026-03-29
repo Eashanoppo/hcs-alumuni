@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import {
-  Star, Plus, Trash2, Loader2, ArrowLeft, Edit2
+  Star, Plus, Trash2, Loader2, ArrowLeft, Edit2, Image as ImageIcon, Save
 } from "lucide-react"
 import Link from "next/link"
-import { adminAddVision, adminDeleteVision, adminUpdateVision } from "@/app/actions/admin"
+import { adminAddVision, adminDeleteVision, adminUpdateVision, adminUpdateSiteSettings } from "@/app/actions/admin"
 import { supabase } from "@/lib/supabase"
+import { uploadToCloudinary } from "@/lib/cloudinary"
 import { useNotification } from "@/lib/contexts/NotificationContext"
 
 const defaultForm = {
@@ -22,6 +23,10 @@ export default function AdminVisions() {
   const [form, setForm] = useState(defaultForm)
   const [editId, setEditId] = useState<string | null>(null)
   
+  // Vision Section Cover Image state
+  const [coverImage, setCoverImage] = useState("")
+  const [uploadingCover, setUploadingCover] = useState(false)
+  
   // Minimal notification mock since context might differ 
   // Wait, I am using useNotification which is in the codebase!
   const { notify, confirm } = useNotification()
@@ -29,13 +34,25 @@ export default function AdminVisions() {
   const loadVisions = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('visions')
-        .select('*')
-        .order('display_order', { ascending: true })
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      setVisions(data || [])
+      const [visionsData, coverData] = await Promise.all([
+        supabase
+          .from('visions')
+          .select('*')
+          .order('display_order', { ascending: true })
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('site_settings')
+          .select('value')
+          .eq('id', 'vision_main')
+          .single()
+      ])
+      
+      if (visionsData.error) throw visionsData.error
+      setVisions(visionsData.data || [])
+      
+      if (coverData.data && coverData.data.value && coverData.data.value.image_url) {
+        setCoverImage(coverData.data.value.image_url)
+      }
     } catch (error) {
       console.error("Failed to load visions", error)
     } finally {
@@ -44,6 +61,26 @@ export default function AdminVisions() {
   }
 
   useEffect(() => { loadVisions() }, [])
+
+  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      setUploadingCover(true)
+      const url = await uploadToCloudinary(file)
+      setCoverImage(url)
+      
+      await adminUpdateSiteSettings([
+        { id: 'vision_main', value: { image_url: url } }
+      ])
+      
+      notify("Vision section cover image updated successfully!", "success")
+    } catch (err: any) {
+      notify(`Upload failed: ${err.message}`, 'error')
+    } finally {
+      setUploadingCover(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -116,7 +153,35 @@ export default function AdminVisions() {
       <main className="flex-1 p-6 md:p-8">
         <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
           
-          <div className="order-2 lg:order-1 space-y-4">
+          <div className="order-2 lg:order-1 space-y-8">
+            
+            {/* Vision Section Cover Image Setup */}
+            <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden group">
+              <h3 className="text-xl font-black text-primary mb-4 flex items-center gap-3">
+                <ImageIcon size={24} className="text-[#CEB888]" /> Vision Cover Image
+              </h3>
+              <p className="text-sm text-muted mb-6">This is the large image displayed alongside "আমাদের লক্ষ্য ও আদর্শ" on the homepage.</p>
+              
+              <label className="block w-full h-48 sm:h-64 rounded-3xl border-2 border-dashed border-gray-200 bg-[#FAFAF7] flex flex-col items-center justify-center cursor-pointer hover:border-[#CEB888] hover:bg-white transition-all overflow-hidden relative group">
+                {coverImage ? (
+                  <>
+                    <img src={coverImage} alt="Cover" className="absolute inset-0 w-full h-full object-cover group-hover:opacity-40 transition-opacity duration-300" />
+                    <div className="relative z-10 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity text-primary font-black">
+                       <ImageIcon size={32} className="mb-2" />
+                       Click to Change Cover Image
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center text-muted group-hover:text-primary transition-colors">
+                    {uploadingCover ? <Loader2 size={32} className="animate-spin mb-2" /> : <ImageIcon size={32} className="mb-2" />}
+                    <span className="font-bold text-sm tracking-widest uppercase">{uploadingCover ? "Uploading..." : "Click to Upload Cover Image"}</span>
+                  </div>
+                )}
+                <input type="file" className="hidden" accept="image/*" onChange={handleCoverImageUpload} disabled={uploadingCover} />
+              </label>
+            </div>
+
+            <div className="space-y-4">
             {loading ? (
               <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary" /></div>
             ) : visions.length === 0 ? (
@@ -153,6 +218,7 @@ export default function AdminVisions() {
                 </div>
               ))
             )}
+            </div>
           </div>
 
           <div className="order-1 lg:order-2">

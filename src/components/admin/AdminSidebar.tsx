@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, Users, CreditCard, LogOut, ChevronRight, Megaphone, Image as ImageIcon, Menu, X, Star, MessageSquare } from "lucide-react"
+import { LayoutDashboard, Users, CreditCard, LogOut, ChevronRight, Megaphone, Image as ImageIcon, Menu, X, Star, MessageSquare, Phone, Info, Video } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { logoutAdmin } from "@/app/actions/admin"
@@ -27,10 +27,11 @@ export default function AdminSidebar() {
     { label: "Payments", href: "/admin/payments", icon: <CreditCard size={20} /> },
     { label: "Notices", href: "/admin/notices", icon: <Megaphone size={20} /> },
     { label: "Gallery", href: "/admin/gallery", icon: <ImageIcon size={20} /> },
-    { label: "Videos", href: "/admin/videos", icon: <ImageIcon size={20} /> },
+    { label: "Videos", href: "/admin/videos", icon: <Video size={20} /> },
     { label: "Visions", href: "/admin/visions", icon: <Star size={20} /> },
     { label: "Testimonials", href: "/admin/testimonials", icon: <MessageSquare size={20} /> },
-    { label: "About Page", href: "/admin/about", icon: <LayoutDashboard size={20} /> },
+    { label: "About Page", href: "/admin/about", icon: <Info size={20} /> },
+    { label: "Contact Settings", href: "/admin/contact", icon: <Phone size={20} /> },
   ]
 
   const handleSignOut = async () => {

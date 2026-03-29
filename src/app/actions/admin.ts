@@ -425,3 +425,20 @@ export async function adminDeleteTestimonial(id: string) {
   if (error) throw new Error(error.message)
   return true
 }
+
+// ============================================
+// Site Settings Actions
+// ============================================
+
+export async function adminUpdateSiteSettings(settingsData: { id: string, value: any }[]) {
+  console.log(`[AdminAction] Updating site settings`)
+  const supabase = getAdminSupabase()
+  
+  const { data, error } = await supabase
+    .from('site_settings')
+    .upsert(settingsData, { onConflict: 'id' })
+    .select()
+
+  if (error) throw new Error(error.message)
+  return data
+}

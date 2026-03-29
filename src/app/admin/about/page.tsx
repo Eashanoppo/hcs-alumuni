@@ -7,7 +7,8 @@ import {
   adminUpdateAboutContent,
   adminCreateMilestone,
   adminUpdateMilestone,
-  adminDeleteMilestone
+  adminDeleteMilestone,
+  adminUpdateSiteSettings
 } from "@/app/actions/admin"
 import { supabase } from "@/lib/supabase"
 import { uploadToCloudinary } from "@/lib/cloudinary"
@@ -20,6 +21,8 @@ export default function AdminAbout() {
   const [mission, setMission] = useState({ title: "", content: "" })
   const [vision, setVision] = useState({ title: "", content: "" })
   const [headmaster, setHeadmaster] = useState({ title: "", content: "", image_url: "" })
+  const [headmasterName, setHeadmasterName] = useState("প্রফেসর ড. মাহফুজুর রহমান")
+  const [headmasterPost, setHeadmasterPost] = useState("প্রধান শিক্ষক, হলি ক্রিসেন্ট স্কুল")
   const [contentLoading, setContentLoading] = useState(true)
   const [savingContent, setSavingContent] = useState(false)
   
@@ -37,9 +40,10 @@ export default function AdminAbout() {
       setContentLoading(true)
       setMilestonesLoading(true)
       
-      const [contentRes, milestonesRes] = await Promise.all([
+      const [contentRes, milestonesRes, settingsRes] = await Promise.all([
         supabase.from('about_content').select('*'),
-        supabase.from('milestones').select('*').order('year', { ascending: true })
+        supabase.from('milestones').select('*').order('year', { ascending: true }),
+        supabase.from('site_settings').select('*').in('id', ['headmaster_name', 'headmaster_post'])
       ])
       
       if (contentRes.data) {
@@ -47,6 +51,13 @@ export default function AdminAbout() {
           if (item.section === 'mission') setMission({ title: item.title || "", content: item.content || "" })
           if (item.section === 'vision') setVision({ title: item.title || "", content: item.content || "" })
           if (item.section === 'headmaster') setHeadmaster({ title: item.title || "", content: item.content || "", image_url: item.image_url || "" })
+        })
+      }
+      
+      if (settingsRes.data) {
+        settingsRes.data.forEach(item => {
+          if (item.id === 'headmaster_name' && item.value?.text) setHeadmasterName(item.value.text)
+          if (item.id === 'headmaster_post' && item.value?.text) setHeadmasterPost(item.value.text)
         })
       }
       
@@ -71,7 +82,11 @@ export default function AdminAbout() {
       await Promise.all([
         adminUpdateAboutContent('mission', mission),
         adminUpdateAboutContent('vision', vision),
-        adminUpdateAboutContent('headmaster', headmaster)
+        adminUpdateAboutContent('headmaster', headmaster),
+        adminUpdateSiteSettings([
+          { id: 'headmaster_name', value: { text: headmasterName } },
+          { id: 'headmaster_post', value: { text: headmasterPost } }
+        ])
       ])
       notify("Content updated successfully", "success")
     } catch (error: any) {
@@ -184,11 +199,16 @@ export default function AdminAbout() {
 
               {/* Headmaster */}
               <div className="bg-white p-8 rounded-[2.5rem] shadow-premium border border-gray-100">
-                <h3 className="text-xl font-black text-primary mb-6">Headmaster Message</h3>
+                <h3 className="text-xl font-black text-primary mb-6">Headmaster Section</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <input type="text" value={headmaster.title} onChange={e => setHeadmaster({...headmaster, title: e.target.value})} placeholder="Quote / Title" className="w-full px-5 py-3.5 bg-[#FAFAF7] rounded-2xl font-bold" />
-                    <textarea rows={6} value={headmaster.content} onChange={e => setHeadmaster({...headmaster, content: e.target.value})} placeholder="Message" className="w-full px-5 py-3.5 bg-[#FAFAF7] rounded-2xl font-medium" />
+                    <input type="text" value={headmasterName} onChange={e => setHeadmasterName(e.target.value)} placeholder="Name (e.g. প্রফেসর ড. মাহফুজুর রহমান)" className="w-full px-5 py-3.5 bg-[#FAFAF7] rounded-2xl font-bold" />
+                    <input type="text" value={headmasterPost} onChange={e => setHeadmasterPost(e.target.value)} placeholder="Post / Role" className="w-full px-5 py-3.5 bg-[#FAFAF7] rounded-2xl font-medium" />
+                    
+                    <div className="h-px bg-gray-100 my-4"></div>
+                    
+                    <input type="text" value={headmaster.title} onChange={e => setHeadmaster({...headmaster, title: e.target.value})} placeholder="Quote / Catchphrase" className="w-full px-5 py-3.5 bg-[#FAFAF7] rounded-2xl font-bold" />
+                    <textarea rows={6} value={headmaster.content} onChange={e => setHeadmaster({...headmaster, content: e.target.value})} placeholder="Message" className="w-full px-5 py-3.5 bg-[#FAFAF7] rounded-2xl font-medium resize-none" />
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-muted uppercase tracking-widest block mb-2">Headmaster Image</label>
