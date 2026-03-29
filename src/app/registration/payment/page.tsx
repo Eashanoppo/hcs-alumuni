@@ -1,8 +1,6 @@
 "use client";
 
 import { useRegistration } from "@/components/registration/RegistrationContext";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import {
   CheckCircle2,
   CreditCard,
@@ -86,17 +84,15 @@ function PaymentForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col pt-28 bg-[#FAFAF7]">
-      <Navbar />
-      <main className="flex-grow max-w-5xl mx-auto w-full px-4 pb-20">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-black text-primary mb-4 tracking-tighter uppercase">
-            Payment Verification
-          </h1>
-          <p className="text-muted font-black uppercase tracking-[0.3em] text-[10px]">
-            Secure Institutional Transaction Portal
-          </p>
-        </div>
+    <div className="w-full">
+      <div className="text-center mb-16">
+        <h1 className="text-4xl md:text-6xl font-black text-primary mb-4 tracking-tighter uppercase">
+          Payment Verification
+        </h1>
+        <p className="text-muted font-black uppercase tracking-[0.3em] text-[10px]">
+          Secure Institutional Transaction Portal
+        </p>
+      </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Order Summary */}
@@ -173,15 +169,15 @@ function PaymentForm() {
           {/* Payment Form */}
           <div className="lg:col-span-2 space-y-10">
             <div className="bg-white rounded-[3.5rem] shadow-premium border border-gray-100 p-10 md:p-14">
-              <div className="flex items-center gap-8 mb-12 overflow-x-auto pb-4 scrollbar-hide">
+              <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-12">
                 <button
                   onClick={() => setMethod("BKASH")}
-                  className={`flex items-center gap-4 px-8 py-4 rounded-2xl border-2 transition-all shrink-0 ${method === "BKASH" ? "border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg" : "border-gray-100 grayscale hover:grayscale-0"}`}
+                  className={`flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-2 sm:px-8 py-4 rounded-2xl border-2 transition-all w-full ${method === "BKASH" ? "border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg" : "border-gray-100 grayscale hover:grayscale-0"}`}
                 >
                   <img
                     src="https://www.logo.wine/a/logo/BKash/BKash-Icon-Logo.wine.svg"
                     alt="bKash"
-                    className="h-10 w-auto"
+                    className="h-8 sm:h-10 w-auto object-contain"
                   />
                   <span className="font-black uppercase tracking-widest text-xs">
                     bKash
@@ -189,12 +185,12 @@ function PaymentForm() {
                 </button>
                 <button
                   onClick={() => setMethod("NAGAD")}
-                  className={`flex items-center gap-4 px-8 py-4 rounded-2xl border-2 transition-all shrink-0 ${method === "NAGAD" ? "border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg" : "border-gray-100 grayscale hover:grayscale-0"}`}
+                  className={`flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-2 sm:px-8 py-4 rounded-2xl border-2 transition-all w-full ${method === "NAGAD" ? "border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg" : "border-gray-100 grayscale hover:grayscale-0"}`}
                 >
                   <img
                     src="https://www.logo.wine/a/logo/Nagad/Nagad-Vertical-Logo.wine.svg"
                     alt="Nagad"
-                    className="h-10 w-auto"
+                    className="h-8 sm:h-10 w-auto object-contain"
                   />
                   <span className="font-black uppercase tracking-widest text-xs">
                     Nagad
@@ -207,16 +203,16 @@ function PaymentForm() {
                   Payment Instructions
                 </p>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-6 bg-white rounded-3xl shadow-sm border border-gray-100">
-                    <div className="flex items-center gap-4">
-                      <div className="p-4 bg-[#1F3D2B]/5 rounded-2xl text-[#1F3D2B]">
+                  <div className="flex flex-col sm:flex-row items-center justify-between p-6 bg-white rounded-3xl shadow-sm border border-gray-100 gap-4">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto text-center sm:text-left">
+                      <div className="p-4 bg-[#1F3D2B]/5 rounded-2xl text-[#1F3D2B] shrink-0">
                         <Phone size={24} />
                       </div>
-                      <div>
-                        <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">
+                      <div className="min-w-0">
+                        <p className="text-[10px] sm:text-xs font-black text-muted uppercase tracking-[0.2em] mb-1 break-words whitespace-normal">
                           Send Money To
                         </p>
-                        <p className="text-2xl font-black text-primary tracking-tighter">
+                        <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter break-words whitespace-normal">
                           01912-591492
                         </p>
                       </div>
@@ -228,7 +224,7 @@ function PaymentForm() {
                         navigator.clipboard.writeText("01912-591492");
                         notify("নাম্বার কপি করা হয়েছে।", "success");
                       }}
-                      className="p-4 rounded-2xl bg-[#FAFAF7] text-primary hover:bg-[#1F3D2B] hover:text-white transition-all shadow-sm"
+                      className="p-4 rounded-2xl bg-[#FAFAF7] text-primary hover:bg-[#1F3D2B] hover:text-white transition-all shadow-sm w-full sm:w-auto flex justify-center shrink-0"
                     >
                       <Copy size={22} />
                     </button>
@@ -270,14 +266,14 @@ function PaymentForm() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-primary text-white font-black py-6 rounded-2xl hover:bg-black hover:shadow-2xl transition-all flex items-center justify-center gap-4 text-lg uppercase tracking-widest disabled:opacity-50"
+                    className="w-full bg-primary text-white font-black py-4 sm:py-6 px-4 rounded-2xl hover:bg-black hover:shadow-2xl transition-all flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm lg:text-lg uppercase tracking-widest disabled:opacity-50 text-center"
                   >
                     {loading ? (
                       <Loader2 size={24} className="animate-spin" />
                     ) : (
                       <>
                         Verify & Confirm Payment
-                        <ArrowRight size={24} />
+                        <ArrowRight size={20} className="sm:w-6 sm:h-6 shrink-0" />
                       </>
                     )}
                   </button>
@@ -286,9 +282,7 @@ function PaymentForm() {
             </div>
           </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </div>
   );
 }
 

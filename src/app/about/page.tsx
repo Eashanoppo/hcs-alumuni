@@ -2,8 +2,8 @@
 
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { Lightbulb, Eye, GraduationCap, Users, Trophy, School, ArrowRight, Loader2 } from "lucide-react"
-import { motion } from "framer-motion"
+import { Lightbulb, Eye, GraduationCap, Users, Trophy, School, ArrowRight, Loader2, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 
@@ -17,6 +17,7 @@ export default function AboutPage() {
   const [headmasterName, setHeadmasterName] = useState("প্রফেসর ড. মাহফুজুর রহমান")
   const [headmasterPost, setHeadmasterPost] = useState("প্রধান শিক্ষক, হলি ক্রিসেন্ট স্কুল")
   const [loading, setLoading] = useState(true)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -55,6 +56,32 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <button
+              className="absolute top-6 right-6 text-white hover:text-accent transition-colors bg-white/10 hover:bg-white/20 rounded-full p-2 z-[101]"
+              onClick={() => setSelectedImage(null)}
+            >
+              <X size={24} />
+            </button>
+            <motion.img
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              src={selectedImage}
+              className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl border border-white/10"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Navbar />
       <main className="flex-grow pt-32 pb-24 bg-[#FAFAF7]">
         {/* Minimalist Hero */}
@@ -145,7 +172,10 @@ export default function AboutPage() {
                   </div>
                   
                   <div className="md:w-1/2 w-full">
-                    <div className="aspect-[16/10] bg-white rounded-[2.5rem] shadow-premium p-3 group hover:scale-105 transition-transform duration-500 overflow-hidden border border-gray-100">
+                    <div 
+                      className="aspect-[16/10] bg-white rounded-[2.5rem] shadow-premium p-3 group hover:scale-105 transition-transform duration-500 overflow-hidden border border-gray-100 cursor-pointer"
+                      onClick={() => m.image_url && setSelectedImage(m.image_url)}
+                    >
                       {m.image_url ? (
                         <div className="w-full h-full rounded-[2rem] overflow-hidden bg-gray-50">
                            <img src={m.image_url} alt={m.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
@@ -169,8 +199,11 @@ export default function AboutPage() {
           {!loading && (
             <div className="flex flex-col lg:flex-row items-center gap-16">
               <div className="lg:w-1/3">
-                <div className="aspect-[3/4] rounded-[3rem] bg-accent/10 overflow-hidden shadow-2xl skew-y-3">
-                  <img src={content.headmaster.image_url} className="w-full h-full object-cover grayscale" />
+                <div 
+                  className="aspect-[3/4] rounded-[3rem] bg-accent/10 overflow-hidden shadow-2xl skew-y-3 cursor-pointer group"
+                  onClick={() => content.headmaster.image_url && setSelectedImage(content.headmaster.image_url)}
+                >
+                  <img src={content.headmaster.image_url} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                 </div>
               </div>
               <div className="lg:w-2/3">
