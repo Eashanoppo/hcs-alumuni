@@ -9,6 +9,7 @@ import { adminAddVision, adminDeleteVision, adminUpdateVision, adminUpdateSiteSe
 import { supabase } from "@/lib/supabase"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { useNotification } from "@/lib/contexts/NotificationContext"
+import ImageCropperModal from "@/components/ui/ImageCropperModal"
 
 const defaultForm = {
   title: "",
@@ -26,6 +27,7 @@ export default function AdminVisions() {
   // Vision Section Cover Image state
   const [coverImage, setCoverImage] = useState("")
   const [uploadingCover, setUploadingCover] = useState(false)
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null)
   
   // Minimal notification mock since context might differ 
   // Wait, I am using useNotification which is in the codebase!
@@ -65,9 +67,19 @@ export default function AdminVisions() {
   const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    
+    const reader = new FileReader()
+    reader.onload = () => {
+      setImageToCrop(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const onCropComplete = async (croppedFile: File) => {
+    setImageToCrop(null)
     try {
       setUploadingCover(true)
-      const url = await uploadToCloudinary(file)
+      const url = await uploadToCloudinary(croppedFile)
       setCoverImage(url)
       
       await adminUpdateSiteSettings([
@@ -138,6 +150,14 @@ export default function AdminVisions() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF7] flex flex-col">
+      {imageToCrop && (
+        <ImageCropperModal 
+          image={imageToCrop}
+          onClose={() => setImageToCrop(null)}
+          onCropComplete={onCropComplete}
+          aspect={16 / 9}
+        />
+      )}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-6">
           <Link href="/admin/dashboard" className="p-3 hover:bg-[#FAFAF7] rounded-2xl transition-all border border-transparent hover:border-gray-100">

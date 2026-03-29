@@ -13,6 +13,7 @@ import {
 import { supabase } from "@/lib/supabase"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { useNotification } from "@/lib/contexts/NotificationContext"
+import ImageCropperModal from "@/components/ui/ImageCropperModal"
 
 export default function AdminAbout() {
   const [activeTab, setActiveTab] = useState<'content'|'milestones'>('content')
@@ -25,6 +26,8 @@ export default function AdminAbout() {
   const [headmasterPost, setHeadmasterPost] = useState("প্রধান শিক্ষক, হলি ক্রিসেন্ট স্কুল")
   const [contentLoading, setContentLoading] = useState(true)
   const [savingContent, setSavingContent] = useState(false)
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null)
+  const [cropType, setCropType] = useState<'headmaster' | 'milestone' | null>(null)
   
   // Milestones Tab States
   const [milestones, setMilestones] = useState<any[]>([])
@@ -99,15 +102,42 @@ export default function AdminAbout() {
   const handleHeadmasterImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    try {
-      setSavingContent(true)
-      const url = await uploadToCloudinary(file)
-      setHeadmaster(prev => ({ ...prev, image_url: url }))
-      notify("Image uploaded successfully! Remember to save changes.", "success")
-    } catch (err: any) {
-      notify(`Upload failed: ${err.message}`, 'error')
-    } finally {
-      setSavingContent(false)
+    
+    const reader = new FileReader()
+    reader.onload = () => {
+      setImageToCrop(reader.result as string)
+      setCropType('headmaster')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const onCropComplete = async (croppedFile: File) => {
+    setImageToCrop(null)
+    const type = cropType
+    setCropType(null)
+
+    if (type === 'headmaster') {
+      try {
+        setSavingContent(true)
+        const url = await uploadToCloudinary(croppedFile)
+        setHeadmaster(prev => ({ ...prev, image_url: url }))
+        notify("Image uploaded successfully! Remember to save changes.", "success")
+      } catch (err: any) {
+        notify(`Upload failed: ${err.message}`, 'error')
+      } finally {
+        setSavingContent(false)
+      }
+    } else if (type === 'milestone') {
+      try {
+        setMilestoneSubmitting(true)
+        const url = await uploadToCloudinary(croppedFile)
+        setMilestoneForm(prev => ({ ...prev, image_url: url }))
+        notify("Image uploaded successfully!", "success")
+      } catch (err: any) {
+        notify(`Upload failed: ${err.message}`, 'error')
+      } finally {
+        setMilestoneSubmitting(false)
+      }
     }
   }
 
@@ -146,6 +176,14 @@ export default function AdminAbout() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF7] p-8 md:p-12">
+      {imageToCrop && (
+        <ImageCropperModal 
+          image={imageToCrop}
+          onClose={() => { setImageToCrop(null); setCropType(null); }}
+          onCropComplete={onCropComplete}
+          aspect={cropType === 'headmaster' ? 1 : 4 / 3}
+        />
+      )}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div className="flex items-center gap-6">
           <Link href="/admin/dashboard" className="p-3 hover:bg-white rounded-2xl transition-all border border-transparent hover:border-gray-100 shadow-sm">
@@ -282,19 +320,15 @@ export default function AdminAbout() {
                         <span className="text-xs font-bold">Upload Image</span>
                       </div>
                     )}
-                    <input type="file" className="hidden" accept="image/*" disabled={milestoneSubmitting} onChange={async (e) => {
+                    <input type="file" className="hidden" accept="image/*" disabled={milestoneSubmitting} onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (!file) return
-                      try {
-                        setMilestoneSubmitting(true)
-                        const url = await uploadToCloudinary(file)
-                        setMilestoneForm(prev => ({ ...prev, image_url: url }))
-                        notify("Image uploaded successfully!", "success")
-                      } catch (err: any) {
-                        notify(`Upload failed: ${err.message}`, 'error')
-                      } finally {
-                        setMilestoneSubmitting(false)
+                      const reader = new FileReader()
+                      reader.onload = () => {
+                        setImageToCrop(reader.result as string)
+                        setCropType('milestone')
                       }
+                      reader.readAsDataURL(file)
                     }} />
                   </label>
                 </div>

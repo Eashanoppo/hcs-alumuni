@@ -20,12 +20,14 @@ import {
 import { supabase } from "@/lib/supabase";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { useNotification } from "@/lib/contexts/NotificationContext";
+import ImageCropperModal from "@/components/ui/ImageCropperModal";
 
 export default function AdminGallery() {
   const [photos, setPhotos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: "",
     title_bn: "",
@@ -54,6 +56,22 @@ export default function AdminGallery() {
   useEffect(() => {
     loadPhotos();
   }, []);
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageToCrop(reader.result as string);
+    };
+    reader.readAsDataURL(selectedFile);
+  };
+
+  const onCropComplete = (croppedFile: File) => {
+    setImageToCrop(null);
+    setFile(croppedFile);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,6 +112,14 @@ export default function AdminGallery() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF7] p-8 md:p-12">
+      {imageToCrop && (
+        <ImageCropperModal 
+          image={imageToCrop}
+          onClose={() => setImageToCrop(null)}
+          onCropComplete={onCropComplete}
+          aspect={4 / 3}
+        />
+      )}
       <header className="flex items-center gap-6 mb-12">
         <Link
           href="/admin/dashboard"
@@ -129,7 +155,7 @@ export default function AdminGallery() {
                   <input
                     type="file"
                     required
-                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                    onChange={handlePhotoSelect}
                     className="absolute inset-0 opacity-0 cursor-pointer z-20"
                     accept="image/*"
                   />
