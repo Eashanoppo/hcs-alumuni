@@ -14,7 +14,7 @@ export default function DeveloperCard() {
         />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-medium text-muted">Created By:</p>
+        <p className="text-sm font-medium text-muted">Developed By:</p>
         <h4 className="text-xl font-black text-primary leading-tight">Golam Morshed Eashan</h4>
         <p className="text-sm font-medium text-muted">Developer at <span className="text-primary font-bold">UNLEFT</span></p>
         <a 

@@ -45,8 +45,28 @@ export default function Footer() {
           </Link>
         </div>
 
-        <div className="text-muted dark:text-gray-400 text-sm">
-          © 2026 Holy Crescent School.
+        <div className="text-muted dark:text-gray-400 text-sm text-center md:text-right flex flex-col gap-1">
+          <p>© 2026 Holy Crescent School.</p>
+          <p className="text-xs opacity-80 tracking-wide">
+            Maintained By:{" "}
+            <a
+              href="https://www.instagram.com/golammorshedeashan/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary dark:text-accent hover:underline decoration-primary/30 underline-offset-4 transition-all font-semibold"
+            >
+              Golam Morshed Eashan
+            </a>
+            {" & "}
+            <a
+              href="https://djrcx.unleft.space/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary dark:text-accent hover:underline decoration-primary/30 underline-offset-4 transition-all font-semibold"
+            >
+              Mahtabul Al Nahian
+            </a>  
+          </p>
         </div>
       </div>
 
@@ -55,9 +75,9 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 text-xs font-bold uppercase tracking-widest text-muted/60 dark:text-gray-500">
           <p>
             A Project of{" "}
-            <a 
-              href="https://www.unleft.space" 
-              target="_blank" 
+            <a
+              href="https://www.unleft.space"
+              target="_blank"
               rel="noopener noreferrer"
               className="text-primary dark:text-accent hover:underline decoration-primary/30 underline-offset-4 transition-all"
             >
@@ -65,7 +85,7 @@ export default function Footer() {
             </a>
           </p>
           <div className="hidden md:block w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-          <Link 
+          <Link
             href="https://www.unleft.space/about"
             target="_blank"
             className="hover:text-primary dark:hover:text-accent transition-colors underline decoration-gray-300 dark:decoration-gray-700 underline-offset-4"
