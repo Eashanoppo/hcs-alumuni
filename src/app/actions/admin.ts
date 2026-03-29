@@ -87,6 +87,26 @@ export async function adminBulkDeleteRegistrants(ids: string[]) {
   return true
 }
 
+export async function adminBulkUpdateRegistrantStatus(ids: string[], status: 'PENDING' | 'PAID' | 'APPROVED' | 'REJECTED') {
+  console.log(`[AdminAction] Bulk updating ${ids.length} registrants to ${status}`)
+  const supabase = getAdminSupabase()
+  
+  const { error } = await supabase
+    .from('registrants')
+    .update({ 
+      registration_status: status,
+      updated_at: new Date().toISOString()
+    })
+    .in('id', ids)
+
+  if (error) {
+    console.error(`[AdminAction] Bulk update failed:`, error)
+    throw new Error(error.message)
+  }
+
+  return true
+}
+
 export async function adminGetAllRegistrants() {
   const supabase = getAdminSupabase()
   const { data, error } = await supabase

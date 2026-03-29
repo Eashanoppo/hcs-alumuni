@@ -172,7 +172,16 @@ export default function EditProfileForm({ profile }: { profile: any }) {
               <input value={data.current_institution} onChange={e => setData({...data, current_institution: e.target.value})} className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 font-bold text-primary" />
             </div>
 
-            <div className="pt-6 border-t border-gray-50 mt-4 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="pt-6 border-t border-gray-50 mt-4 md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="space-y-4">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-primary ml-1">T-shirt Size <span className="text-red-500">*</span></label>
+                <select value={data.tshirt_size} onChange={e => setData({...data, tshirt_size: e.target.value})} className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 font-bold text-primary appearance-none cursor-pointer">
+                  {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className="space-y-4">
                 <label className="block text-[10px] font-black uppercase tracking-widest text-primary ml-1">Event Attendance <span className="text-red-500">*</span></label>
                 <div className="flex flex-col gap-3 ml-1">

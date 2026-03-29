@@ -50,8 +50,8 @@ export default function DirectoryPage() {
     setFilteredAlumni(result)
   }, [selectedBatch, searchQuery, alumni])
 
-  // Fixed SSC Batch range 2009-2026 for consistency with Admin
-  const batches = ["All", ...Array.from({ length: 2026 - 2009 + 1 }, (_, i) => (2009 + i).toString()).reverse()]
+  // Leaving year range 2002-2026
+  const batches = ["All", ...Array.from({ length: 2026 - 2002 + 1 }, (_, i) => (2002 + i).toString()).reverse()]
 
   // Helper for generating slugs
   const toSlug = (name: string, batch: string) => {
@@ -87,9 +87,9 @@ export default function DirectoryPage() {
               onChange={(e) => setSelectedBatch(e.target.value)}
               className="bg-[#FAFAF7] border-none rounded-2xl py-4 px-6 font-bold text-primary focus:ring-2 focus:ring-primary/10 transition-all w-full md:w-56"
             >
-              <option value="All">All SSC Batches</option>
+              <option value="All">Leaving Year (All)</option>
               {batches.filter(b => b !== "All").map(b => (
-                <option key={b as string} value={b as string}>SSC Batch {b}</option>
+                <option key={b as string} value={b as string}>Year {b}</option>
               ))}
             </select>
           </div>
