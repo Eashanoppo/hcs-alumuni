@@ -11,9 +11,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] flex">
+    <div className="h-dvh bg-[#FAFAF7] flex overflow-hidden">
       <AdminSidebar />
-      <main className="grow overflow-y-auto max-h-screen pt-16 lg:pt-0">
+      <main className="grow overflow-y-auto pt-16 lg:pt-0 pb-20">
         {children}
       </main>
     </div>

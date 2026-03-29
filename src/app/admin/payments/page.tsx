@@ -139,7 +139,8 @@ export default function AdminPayments() {
       <main className="grow max-w-7xl mx-auto w-full p-8 md:p-12">
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-125">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            {/* Desktop Table View */}
+            <table className="w-full text-left border-collapse hidden lg:table">
               <thead className="bg-[#FAFAF7] text-[10px] font-black tracking-widest text-muted uppercase">
                 <tr>
                   <th className="px-8 py-5">Transaction Details</th>
@@ -229,6 +230,81 @@ export default function AdminPayments() {
                 )}
               </tbody>
             </table>
+
+            {/* Mobile & Tablet Card View */}
+            <div className="lg:hidden divide-y divide-gray-50 px-4">
+              {loading ? (
+                <div className="py-16 text-center text-muted">
+                  <Loader2 className="animate-spin mx-auto mb-3" size={32} />
+                  <p className="text-sm font-bold tracking-widest uppercase">Fetching Records...</p>
+                </div>
+              ) : filteredPayments.length === 0 ? (
+                <div className="py-16 text-center text-muted font-bold tracking-widest uppercase">No payment records found.</div>
+              ) : (
+                filteredPayments.map((p) => (
+                  <div key={p.id} className="py-6 flex flex-col gap-6">
+                    {/* Row 1: Transaction Details & Registrant */}
+                    <div className="flex justify-between items-start gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center font-black transition-all ${p.method === 'BKASH' ? 'bg-[#D12053]/10 text-[#D12053]' : 'bg-[#F37021]/10 text-[#F37021]'}`}>
+                          <CreditCard size={20} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-black text-primary tracking-tight uppercase truncate">{p.transaction_id || "No ID"}</p>
+                          <p className="text-[10px] text-muted font-bold tracking-widest uppercase truncate">{p.method} • {p.sender_number}</p>
+                        </div>
+                      </div>
+                      <div className="text-right flex-1 min-w-0">
+                        <p className="font-bold text-primary tracking-tight text-xs">{p.registrants?.full_name_en}</p>
+                        <p className="text-[10px] text-muted font-bold tracking-widest">SSC {p.registrants?.ssc_batch || p.registrants?.batch}</p>
+                      </div>
+                    </div>
+
+                    {/* Row 2: Amount, Status, Actions */}
+                    <div className="flex justify-between items-center gap-4 bg-[#FAFAF7] p-4 rounded-2xl border border-gray-50">
+                      <div className="flex flex-col gap-1">
+                        <p className="font-black text-primary tracking-tighter text-base">৳{p.amount}</p>
+                        <span className={`flex items-center gap-2 text-[10px] uppercase font-black tracking-widest w-fit
+                          ${p.status === 'VERIFIED' ? 'text-emerald-700' : 
+                            p.status === 'FAILED' ? 'text-rose-700' : 'text-amber-700'}
+                        `}>
+                          <div className={`w-1.5 h-1.5 rounded-full ${p.status === 'VERIFIED' ? 'bg-emerald-500' : p.status === 'FAILED' ? 'bg-rose-500' : 'bg-amber-500 animate-pulse'}`}></div>
+                          {p.status}
+                        </span>
+                      </div>
+
+                      <div className="flex gap-2">
+                        {p.status === 'PENDING' && (
+                          <>
+                            <button 
+                              onClick={() => handleVerify(p.id, p.registrant_id, 'VERIFIED')}
+                              className="p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-600 shadow-sm"
+                              title="Verify"
+                            >
+                              <CheckCircle size={18} />
+                            </button>
+                            <button 
+                              onClick={() => handleVerify(p.id, p.registrant_id, 'FAILED')}
+                              className="p-2.5 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 shadow-sm"
+                              title="Fail"
+                            >
+                              <XCircle size={18} />
+                            </button>
+                          </>
+                        )}
+                        <button 
+                          onClick={() => handleDelete(p.id)}
+                          className="p-2.5 bg-gray-50 border border-gray-100 rounded-xl text-muted shadow-sm"
+                          title="Delete"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
           <div className="p-10 border-t border-gray-50 flex justify-between items-center text-muted">
             <span className="text-[10px] font-black tracking-widest uppercase">Showing {filteredPayments.length} transactions • Payment Verification Portal</span>

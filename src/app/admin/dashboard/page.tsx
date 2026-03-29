@@ -97,7 +97,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px]">
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-100">
         <div className="p-8 border-b border-gray-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <h3 className="font-black text-primary text-xl tracking-tight">Recent Applications</h3>
           <div className="flex flex-wrap bg-[#FAFAF7] p-1.5 rounded-2xl border border-gray-100">
@@ -113,7 +113,8 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          {/* Desktop Table View */}
+          <table className="w-full text-left border-collapse hidden lg:table">
             <thead className="bg-[#FAFAF7] text-[10px] font-black tracking-widest text-muted uppercase">
               <tr>
                 <th className="px-8 py-5">Registrant</th>
@@ -209,6 +210,78 @@ export default function AdminDashboard() {
               )}
             </tbody>
           </table>
+
+          {/* Mobile & Tablet Card View */}
+          <div className="lg:hidden divide-y divide-gray-50 px-4">
+            {loading ? (
+              <div className="py-12 text-center text-muted">
+                <Loader2 className="animate-spin mx-auto mb-2" size={24} />
+                <p className="text-sm font-bold tracking-widest uppercase">Loading Data...</p>
+              </div>
+            ) : filteredRegistrants.length === 0 ? (
+              <div className="py-12 text-center text-muted font-bold tracking-widest uppercase">No registrants found.</div>
+            ) : (
+              filteredRegistrants.slice(0, 10).map((r) => (
+                <div key={r.id} className="py-6 flex flex-col gap-6">
+                  {/* Row 1: Registrant & SSC Batch */}
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 shrink-0 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center font-black text-primary overflow-hidden">
+                        {r.photo_url ? (
+                           <img src={r.photo_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                            r.full_name_en.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-black text-primary tracking-tight">{r.full_name_en}</p>
+                        <p className="text-[10px] text-muted font-bold tracking-widest">{r.alumni_number || r.mobile}</p>
+                      </div>
+                    </div>
+                    <span className="shrink-0 bg-[#1F3D2B]/5 border border-[#1F3D2B]/10 px-3 py-1.5 rounded-lg text-[10px] tracking-widest font-black text-primary whitespace-nowrap">
+                      SSC {r.ssc_batch || r.batch || 'N/A'}
+                    </span>
+                  </div>
+
+                  {/* Row 2: Status, Payment, Action */}
+                  <div className="flex justify-between items-center gap-4 bg-[#FAFAF7] p-4 rounded-2xl border border-gray-50">
+                    <div className="flex flex-col gap-3">
+                      <span className={`flex items-center gap-2 text-[10px] uppercase font-black tracking-widest w-fit
+                        ${r.registration_status === 'APPROVED' ? 'text-emerald-700' : 
+                          r.registration_status === 'REJECTED' ? 'text-rose-700' : 'text-amber-700'}
+                      `}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${r.registration_status === 'APPROVED' ? 'bg-emerald-500' : r.registration_status === 'REJECTED' ? 'bg-rose-500' : 'bg-amber-500 animate-pulse'}`}></div>
+                        {r.registration_status}
+                      </span>
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${r.payment_status === 'PAID' ? 'text-emerald-600' : 'text-muted'}`}>
+                        {r.payment_status}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Link href={`/admin/registrants/${r.id}`} className="p-2.5 bg-white border border-gray-100 rounded-xl text-primary shadow-sm">
+                        <Eye size={18} />
+                      </Link>
+                      {r.registration_status !== 'APPROVED' && (
+                        <button 
+                          onClick={() => handleStatusUpdate(r.id, 'APPROVED')}
+                          className="p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-600"
+                        >
+                          <CheckCircle size={18} />
+                        </button>
+                      )}
+                      <button 
+                        onClick={() => handleDelete(r.id)}
+                        className="p-2.5 bg-rose-50 border border-rose-100 rounded-xl text-rose-600"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>

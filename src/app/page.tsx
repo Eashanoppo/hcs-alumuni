@@ -73,7 +73,7 @@ export default function Home() {
       <Navbar />
       <main>
         {/* Cinematic Hero */}
-        <section className="relative h-screen min-h-[700px] overflow-hidden bg-primary-dark">
+        <section className="relative min-h-screen lg:h-screen bg-primary-dark">
           {/* Background Carousel */}
           <div className="absolute inset-0 z-0" ref={emblaRef}>
             <div className="flex h-full">
@@ -92,7 +92,7 @@ export default function Home() {
           </div>
 
           {/* Content Container */}
-          <div className="relative z-10 h-full max-w-7xl mx-auto px-8 flex flex-col justify-center items-center lg:justify-end lg:items-start lg:pb-24">
+          <div className="relative z-10 min-h-screen max-w-7xl mx-auto px-8 flex flex-col justify-center items-start pt-32 pb-20">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -111,7 +111,7 @@ export default function Home() {
                   hidden: { opacity: 0, y: 30 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 leading-[1.1] text-white text-center lg:text-left"
+                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 leading-[1.1] text-white text-left"
               >
                 Holy Crescent School <br />
                 <span className="text-accent font-serif font-medium">
@@ -124,7 +124,7 @@ export default function Home() {
                   hidden: { opacity: 0, x: -20 },
                   visible: { opacity: 1, x: 0 },
                 }}
-                className="mb-7 lg:mb-8 text-center lg:text-left"
+                className="mb-7 lg:mb-8 text-left"
               >
                 <span className="inline-block px-6 py-4 bg-accent/20 border border-accent/30 rounded-full text-accent font-black tracking-[0.2em] uppercase text-[14px] backdrop-blur-sm">
                   Established 2001 • Celebrating 25 Years
@@ -136,7 +136,7 @@ export default function Home() {
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className="text-white/90 text-lg md:text-xl lg:text-2xl mb-10 max-w-2xl leading-relaxed font-normal text-center lg:text-left"
+                className="text-white/90 text-lg md:text-xl lg:text-2xl mb-10 max-w-2xl leading-relaxed font-normal text-left"
               >
                 আড়াই দশকের জ্ঞান ও নৈতিকতার এক অনন্য যাত্রা। আমাদের প্রাক্তন
                 শিক্ষার্থীদের এই বিশাল পরিবারে আপনাকে স্বাগতম।
@@ -147,7 +147,7 @@ export default function Home() {
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 mb-12"
+                className="flex flex-col sm:flex-row items-center justify-start gap-5 mb-12"
               >
                 <Link
                   href="/registration"
@@ -170,14 +170,14 @@ export default function Home() {
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0 },
                 }}
-                className="flex flex-wrap items-center justify-center lg:justify-start gap-10 lg:gap-16 py-6 border-t border-white/10"
+                className="flex flex-wrap items-center justify-start gap-10 lg:gap-16 py-6 border-t border-white/10"
               >
                 {[
                   { label: "স্মৃতিময় বছর", val: "২৫+" },
                   { label: "প্রাক্তন শিক্ষার্থী", val: "৫০০০+" },
                   { label: "সাফল্যের হার", val: "১০০%" },
                 ].map((s, i) => (
-                  <div key={i} className="text-center lg:text-left group/item">
+                  <div key={i} className="text-left group/item">
                     <p className="text-3xl font-bold text-white leading-none mb-1">
                       {s.val}
                     </p>
@@ -214,7 +214,7 @@ export default function Home() {
                     জ্ঞানের পথে এক অনবদ্য যাত্রা
                   </h3>
                   <p className="text-white/80 font-bold leading-relaxed">
-                    ১৯৯৯ সাল থেকে আজ পর্যন্ত আমরা শিক্ষার গুণগত মান ধরে রাখতে
+                    ২০০১ সাল থেকে আজ পর্যন্ত আমরা শিক্ষার গুণগত মান ধরে রাখতে
                     নিরলসভাবে কাজ করে যাচ্ছি।
                   </p>
                 </div>
@@ -227,7 +227,7 @@ export default function Home() {
                     আমাদের লক্ষ্য ও আদর্শ
                   </h2>
                   <p className="text-muted text-xl font-medium leading-loose">
-                    পবিত্র ক্রিসেন্ট স্কুলে আমরা বিশ্বাস করি প্রতিটি শিক্ষার্থীই
+                    হলি ক্রিসেন্ট স্কুলে আমরা বিশ্বাস করি প্রতিটি শিক্ষার্থীই
                     অনন্য। আমাদের লক্ষ্য হলো তাদের মেধা ও চিন্তার বিকাশ ঘটিয়ে
                     ভবিষ্যতের যোগ্য নাগরিক হিসেবে গড়ে তোলা।
                   </p>
@@ -235,7 +235,12 @@ export default function Home() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   {loading ? (
-                    [1, 2, 3, 4].map(n => <div key={n} className="h-32 bg-gray-50 rounded-3xl animate-pulse" />)
+                    [1, 2, 3, 4].map((n) => (
+                      <div
+                        key={n}
+                        className="h-32 bg-gray-50 rounded-3xl animate-pulse"
+                      />
+                    ))
                   ) : visions.length > 0 ? (
                     visions.map((v, i) => (
                       <div
@@ -251,7 +256,7 @@ export default function Home() {
                       </div>
                     ))
                   ) : (
-                    <div className="col-span-2 py-8 text-muted">এই মুহূর্তে কোনো তথ্য নেই।</div>
+                    null
                   )}
                 </div>
               </div>
@@ -272,7 +277,12 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {loading ? (
-                [1, 2, 3].map(n => <div key={n} className="h-64 bg-[#FAFAF7] rounded-[3rem] animate-pulse" />)
+                [1, 2, 3].map((n) => (
+                  <div
+                    key={n}
+                    className="h-64 bg-[#FAFAF7] rounded-[3rem] animate-pulse"
+                  />
+                ))
               ) : testimonials.length > 0 ? (
                 testimonials.map((t, i) => (
                   <motion.div

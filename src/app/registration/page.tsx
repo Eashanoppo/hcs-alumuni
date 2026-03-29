@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react"
 import Image from "next/image";
 import { useRegistration } from "@/components/registration/RegistrationContext";
 import Stepper from "@/components/registration/Stepper";
@@ -11,6 +12,10 @@ import Step5 from "@/components/registration/Step5";
 
 export default function RegistrationPage() {
   const { step } = useRegistration();
+  
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [step]);
 
   return (
     <div className="space-y-8">
