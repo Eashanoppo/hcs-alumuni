@@ -112,15 +112,23 @@ export async function getRegistrantBySlug(slug: string) {
   const batch = parts.pop()
   const namePart = parts.join('-')
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('registrants')
     .select('*')
     .eq('registration_status', 'APPROVED')
-    .or(`batch.eq.${batch},ssc_batch.eq.${batch}`)
+
+  // If batch is 0000, look for literal or null/empty
+  if (batch === '0000') {
+    query = query.or(`batch.eq.${batch},ssc_batch.eq.${batch},batch.is.null,ssc_batch.is.null,batch.eq.'',ssc_batch.eq.''`)
+  } else {
+    query = query.or(`batch.eq.${batch},ssc_batch.eq.${batch}`)
+  }
+
+  const { data, error } = await query
 
   if (error) throw error
 
-  return data.find(r => {
+  return data?.find(r => {
     const generatedNameSlug = r.full_name_en.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
     return generatedNameSlug === namePart
   })

@@ -12,7 +12,8 @@ export default function DirectoryPage() {
   const [alumni, setAlumni] = useState<Registrant[]>([])
   const [filteredAlumni, setFilteredAlumni] = useState<Registrant[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedBatch, setSelectedBatch] = useState("All")
+  const [selectedLeavingYear, setSelectedLeavingYear] = useState("All")
+  const [selectedSSCBatch, setSelectedSSCBatch] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedAlumnus, setSelectedAlumnus] = useState<Registrant | null>(null)
 
@@ -38,8 +39,11 @@ export default function DirectoryPage() {
 
   useEffect(() => {
     let result = alumni
-    if (selectedBatch !== "All") {
-      result = result.filter(a => (a.ssc_batch || a.batch) === selectedBatch)
+    if (selectedLeavingYear !== "All") {
+      result = result.filter(a => a.leaving_year === selectedLeavingYear)
+    }
+    if (selectedSSCBatch !== "All") {
+      result = result.filter(a => a.ssc_batch === selectedSSCBatch)
     }
     if (searchQuery) {
       result = result.filter(a => 
@@ -48,10 +52,11 @@ export default function DirectoryPage() {
       )
     }
     setFilteredAlumni(result)
-  }, [selectedBatch, searchQuery, alumni])
+  }, [selectedLeavingYear, selectedSSCBatch, searchQuery, alumni])
 
-  // Leaving year range 2002-2026
-  const batches = ["All", ...Array.from({ length: 2026 - 2002 + 1 }, (_, i) => (2002 + i).toString()).reverse()]
+  // Filter ranges
+  const leavingYears = ["All", ...Array.from({ length: 2026 - 2002 + 1 }, (_, i) => (2002 + i).toString()).reverse()]
+  const sscBatches = ["All", ...Array.from({ length: 2026 - 2009 + 1 }, (_, i) => (2009 + i).toString()).reverse()]
 
   // Helper for generating slugs
   const toSlug = (name: string, batch: string) => {
@@ -80,18 +85,33 @@ export default function DirectoryPage() {
               className="w-full pl-12 pr-4 py-4 bg-[#FAFAF7] border-none rounded-2xl focus:ring-2 focus:ring-primary/10 transition-all font-bold text-primary"
             />
           </div>
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <Filter size={20} className="text-primary" />
-            <select 
-              value={selectedBatch}
-              onChange={(e) => setSelectedBatch(e.target.value)}
-              className="bg-[#FAFAF7] border-none rounded-2xl py-4 px-6 font-bold text-primary focus:ring-2 focus:ring-primary/10 transition-all w-full md:w-56"
-            >
-              <option value="All">Leaving Year (All)</option>
-              {batches.filter(b => b !== "All").map(b => (
-                <option key={b as string} value={b as string}>Year {b}</option>
-              ))}
-            </select>
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Filter size={16} className="text-[#CEB888] shrink-0" />
+              <select 
+                value={selectedLeavingYear}
+                onChange={(e) => setSelectedLeavingYear(e.target.value)}
+                className="bg-[#FAFAF7] border-none rounded-2xl py-3 px-4 font-bold text-primary focus:ring-2 focus:ring-primary/10 transition-all text-xs w-full sm:w-40"
+              >
+                <option value="All">Leaving Year (All)</option>
+                {leavingYears.filter(y => y !== "All").map(y => (
+                  <option key={y} value={y}>Year {y}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <select 
+                value={selectedSSCBatch}
+                onChange={(e) => setSelectedSSCBatch(e.target.value)}
+                className="bg-[#FAFAF7] border-none rounded-2xl py-3 px-4 font-bold text-primary focus:ring-2 focus:ring-primary/10 transition-all text-xs w-full sm:w-44"
+              >
+                <option value="All">SSC Batch (All)</option>
+                {sscBatches.filter(b => b !== "All").map(b => (
+                  <option key={b} value={b}>SSC Batch {b}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
