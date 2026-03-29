@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2, Edit3, User, School, Phone, Users, Camera, Loa
 import { useState } from "react"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { submitRegistrationCheckMobile } from "@/app/actions/registration"
+import ImageCropperModal from "@/components/ui/ImageCropperModal"
 import { useNotification } from "@/lib/contexts/NotificationContext"
 import { useRouter } from "next/navigation"
 
@@ -15,6 +16,23 @@ export default function Step5() {
 
   const [uploading, setUploading] = useState(false)
   const [photo, setPhoto] = useState<File | null>(null)
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null)
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      setImageToCrop(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const onCropComplete = (croppedFile: File) => {
+    setImageToCrop(null)
+    setPhoto(croppedFile)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,6 +109,14 @@ export default function Step5() {
 
   return (
     <div className="p-8 md:p-16 bg-white rounded-[2.5rem] shadow-premium border border-gray-100">
+      {imageToCrop && (
+        <ImageCropperModal 
+          image={imageToCrop}
+          onClose={() => setImageToCrop(null)}
+          onCropComplete={onCropComplete}
+          aspect={1}
+        />
+      )}
       <div className="mb-14 text-center sm:text-left">
         <h2 className="text-3xl font-black text-primary mb-3 tracking-tighter">তথ্য যাচাই (Review & Submit)</h2>
         <p className="text-muted text-lg font-medium">রেজিস্ট্রেশন চূড়ান্ত করার আগে আপনার তথ্যগুলো পুনরায় যাচাই করে নিন।</p>
@@ -139,7 +165,7 @@ export default function Step5() {
           <div className="space-y-4">
              <label className="text-[10px] font-black text-muted uppercase tracking-[0.2em] block ml-2">প্রোফাইল ফটো (Update)</label>
              <div className="relative border-2 border-dashed border-gray-100 rounded-[2rem] p-4 text-center hover:border-primary transition-all cursor-pointer bg-[#FAFAF7] group h-[180px] flex items-center justify-center overflow-hidden">
-                <input type="file" onChange={(e) => setPhoto(e.target.files?.[0] || null)} className="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" />
+                <input type="file" onChange={handlePhotoSelect} className="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" />
                 {photo ? (
                   <img src={URL.createObjectURL(photo)} alt="New" className="absolute inset-0 w-full h-full object-cover z-10" />
                 ) : data.photo_url ? (
