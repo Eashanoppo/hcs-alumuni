@@ -53,11 +53,11 @@ export default function ImageCropperModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-8">
-      <div className="bg-white rounded-[2.5rem] w-full max-w-2xl overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300">
+    <div className="fixed inset-0 z-[100] grid place-items-center overflow-y-auto bg-black/80 backdrop-blur-sm p-4 md:p-8">
+      <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-2xl overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 my-auto">
         
         {/* Header */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-[#FAFAF7]">
+        <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between bg-[#FAFAF7]">
           <div>
             <h2 className="text-xl font-black text-primary tracking-tight">Crop Image</h2>
             <p className="text-muted text-[10px] font-bold uppercase tracking-widest mt-1">Adjust position and zoom</p>
@@ -71,7 +71,7 @@ export default function ImageCropperModal({
         </div>
 
         {/* Cropper Container */}
-        <div className="relative h-[400px] md:h-[500px] bg-gray-900 border-y border-gray-100">
+        <div className="relative h-[300px] sm:h-[400px] md:h-[500px] bg-gray-900 border-y border-gray-100">
           <Cropper
             image={image}
             crop={crop}
@@ -91,8 +91,8 @@ export default function ImageCropperModal({
         </div>
 
         {/* Controls */}
-        <div className="p-8 bg-[#FAFAF7] space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="p-5 sm:p-8 bg-[#FAFAF7] space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
             {/* Zoom Control */}
             <div className="space-y-3">
               <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted">
@@ -131,16 +131,16 @@ export default function ImageCropperModal({
           </div>
 
           {/* Footer Actions */}
-          <div className="flex justify-end gap-4 pt-4">
+          <div className="flex justify-end gap-3 sm:gap-4 pt-2 sm:pt-4">
             <button 
               onClick={onClose}
-              className="px-8 py-4 font-bold text-muted hover:bg-white rounded-2xl transition-all"
+              className="px-6 py-3 sm:px-8 sm:py-4 font-bold text-muted hover:bg-white rounded-2xl transition-all text-sm sm:text-base"
             >
               Cancel
             </button>
             <button 
               onClick={handleDone}
-              className="px-10 py-4 bg-[#1F3D2B] text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl hover:shadow-2xl hover:bg-black transition-all flex items-center gap-3"
+              className="px-6 py-3 sm:px-10 sm:py-4 bg-[#1F3D2B] text-white rounded-2xl font-black uppercase tracking-widest text-xs sm:text-sm shadow-xl hover:shadow-2xl hover:bg-black transition-all flex items-center gap-2 sm:gap-3"
             >
               <Check size={20} />
               Apply Crop
