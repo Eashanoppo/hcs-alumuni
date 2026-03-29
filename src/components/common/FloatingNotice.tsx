@@ -30,10 +30,10 @@ export default function FloatingNotice() {
 
         if (data) {
           setNotice(data);
+          setIsVisible(true);
           // Auto-show logic
           const dismissed = sessionStorage.getItem(`notice_dismissed_${data.id}`);
           if (!dismissed) {
-            setIsVisible(true);
             setTimeout(() => setIsExpanded(true), 1500); // Auto-expand after a brief delay
             // Auto collapse after 10 seconds to not be too intrusive
             setTimeout(() => setIsExpanded(false), 10000);
@@ -56,7 +56,7 @@ export default function FloatingNotice() {
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsVisible(false);
+    setIsExpanded(false);
     sessionStorage.setItem(`notice_dismissed_${notice.id}`, "true");
   };
 

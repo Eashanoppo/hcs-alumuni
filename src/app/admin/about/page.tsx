@@ -295,17 +295,17 @@ export default function AdminAbout() {
             ) : (
               <div className="space-y-6">
                 {milestones.map(m => (
-                  <div key={m.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 flex items-center justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-6">
-                      <div className="bg-primary/5 text-primary font-black px-4 py-2 rounded-xl text-lg min-w-20 text-center">
+                  <div key={m.id} className="bg-white p-6 rounded-4xl border border-gray-100 flex items-start justify-between gap-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-start gap-6 flex-1">
+                      <div className="bg-primary/5 text-primary font-black px-4 py-2 rounded-xl text-lg min-w-20 text-center shrink-0">
                         {m.year}
                       </div>
-                      <div>
-                        <h4 className="font-bold text-primary text-lg">{m.title}</h4>
-                        <p className="text-sm text-muted mt-1">{m.description}</p>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-primary text-lg leading-tight pt-1">{m.title}</h4>
+                        <p className="text-sm text-muted mt-1.5">{m.description}</p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 shrink-0">
                       <button onClick={()=>{setMilestoneEditId(m.id); setMilestoneForm({year: m.year, title: m.title, description: m.description, image_url: m.image_url || ""}); window.scrollTo(0,0)}} className="p-3 bg-amber-50 text-amber-600 rounded-xl hover:bg-amber-100"><Edit2 size={18}/></button>
                       <button onClick={()=>handleDeleteMilestone(m.id)} className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100"><Trash2 size={18}/></button>
                     </div>

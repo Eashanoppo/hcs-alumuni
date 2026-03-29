@@ -38,7 +38,7 @@ export default function Footer() {
             Contact Us
           </Link>
           <Link
-            href="/alumni"
+            href="/directory"
             className="text-muted dark:text-gray-400 hover:text-accent transition-colors"
           >
             Alumni

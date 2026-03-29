@@ -1,13 +1,34 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, Bell, Menu, X } from 'lucide-react'
+import { Search, Bell, Menu, X, User } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+
+import { supabase } from '@/lib/supabase'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userPhoto, setUserPhoto] = useState<string | null>(null)
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const match = document.cookie.match(/(^| )alumni_session=([^;]+)/)
+      if (match) {
+        setIsLoggedIn(true)
+        const sessionVal = match[2]
+        if (sessionVal !== 'undefined' && sessionVal !== 'null') {
+          const { data } = await supabase.from('registrants').select('photo_url').eq('alumni_number', sessionVal).single()
+          if (data?.photo_url) {
+            setUserPhoto(data.photo_url)
+          }
+        }
+      }
+    }
+    checkAuth()
+  }, [])
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -44,10 +65,22 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4 md:gap-6">
-          <Link href="/login/alumni" className="hidden sm:block text-primary/60 hover:text-primary font-bold text-xs uppercase tracking-[0.2em]">Login</Link>
-          <Link href="/registration" className="hidden sm:flex bg-primary text-white px-8 py-3 rounded-xl font-black hover:shadow-xl hover:bg-black transition-all text-xs uppercase tracking-[0.2em]">
-            Join Now
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/profile" className="hidden sm:flex w-10 h-10 rounded-full border-2 border-primary/20 bg-[#FAFAF7] items-center justify-center overflow-hidden hover:border-primary transition-all">
+              {userPhoto ? (
+                <img src={userPhoto} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <User size={20} className="text-primary" />
+              )}
+            </Link>
+          ) : (
+            <>
+              <Link href="/login/alumni" className="hidden sm:block text-primary/60 hover:text-primary font-bold text-xs uppercase tracking-[0.2em]">Login</Link>
+              <Link href="/registration" className="hidden sm:flex bg-primary text-white px-8 py-3 rounded-xl font-black hover:shadow-xl hover:bg-black transition-all text-xs uppercase tracking-[0.2em]">
+                Join Now
+              </Link>
+            </>
+          )}
           
           {/* Hamburger Button */}
           <button 
@@ -79,20 +112,32 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="mt-auto pb-10 flex flex-col gap-4">
-              <Link 
-                href="/login/alumni" 
-                onClick={() => setIsOpen(false)}
-                className="w-full py-4 text-center text-primary/60 font-black uppercase tracking-widest border border-primary/10 rounded-xl"
-              >
-                Login
-              </Link>
-              <Link 
-                href="/registration" 
-                onClick={() => setIsOpen(false)}
-                className="w-full py-4 text-center bg-primary text-white font-black uppercase tracking-widest rounded-xl shadow-lg"
-              >
-                Join Now
-              </Link>
+              {isLoggedIn ? (
+                <Link 
+                  href="/profile" 
+                  onClick={() => setIsOpen(false)}
+                  className="w-full py-4 text-center bg-primary text-white font-black uppercase tracking-widest rounded-xl shadow-lg flex items-center justify-center gap-3"
+                >
+                  <User size={18} /> My Profile
+                </Link>
+              ) : (
+                <>
+                  <Link 
+                    href="/login/alumni" 
+                    onClick={() => setIsOpen(false)}
+                    className="w-full py-4 text-center text-primary/60 font-black uppercase tracking-widest border border-primary/10 rounded-xl"
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    href="/registration" 
+                    onClick={() => setIsOpen(false)}
+                    className="w-full py-4 text-center bg-primary text-white font-black uppercase tracking-widest rounded-xl shadow-lg"
+                  >
+                    Join Now
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}

@@ -76,7 +76,7 @@ export default function AdminSidebar() {
   return (
     <>
       {/* ── Desktop sidebar (lg+) ── */}
-      <aside className="w-72 bg-[#1F3D2B] text-white hidden lg:flex flex-col p-8 h-screen sticky top-0 border-r border-white/5 z-100 overflow-y-auto custom-scrollbar">
+      <aside className="shrink-0 w-72 bg-[#1F3D2B] text-white hidden lg:flex flex-col p-8 h-full border-r border-white/5 z-100 overflow-y-auto custom-scrollbar">
         <div className="mb-14">
           <h2 className="text-2xl font-black text-[#CEB888] tracking-tighter">HCS Admin</h2>
           <p className="text-[10px] uppercase font-black text-white/30 tracking-[0.3em] mt-1">Institutional Portal</p>
