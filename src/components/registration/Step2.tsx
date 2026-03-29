@@ -4,10 +4,12 @@ import { useRegistration } from "./RegistrationContext"
 import { ArrowRight, ArrowLeft, GraduationCap, School, Upload, Image as ImageIcon } from "lucide-react"
 import { useState } from "react"
 import { useNotification } from "@/lib/contexts/NotificationContext"
+import ImageCropperModal from "@/components/ui/ImageCropperModal"
 
 export default function Step2() {
   const { nextStep, prevStep, updateData, data } = useRegistration()
   const [uploading, setUploading] = useState(false)
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null)
   const { notify } = useNotification()
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -24,11 +26,21 @@ export default function Step2() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    const reader = new FileReader()
+    reader.onload = () => {
+      setImageToCrop(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const onCropComplete = async (croppedFile: File) => {
+    setImageToCrop(null)
     setUploading(true)
     try {
       const { uploadToCloudinary } = await import("@/lib/cloudinary")
-      const url = await uploadToCloudinary(file)
+      const url = await uploadToCloudinary(croppedFile)
       updateData({ school_photo_url: url })
+      notify('Photo uploaded and cropped successfully!', 'success')
     } catch (error) {
       console.error('Upload failed:', error)
       notify('Photo upload failed. Please try again.', 'error')
@@ -39,6 +51,14 @@ export default function Step2() {
 
   return (
     <div className="p-8 md:p-16 bg-white rounded-[2.5rem] shadow-premium border border-gray-100">
+      {imageToCrop && (
+        <ImageCropperModal 
+          image={imageToCrop}
+          onClose={() => setImageToCrop(null)}
+          onCropComplete={onCropComplete}
+          aspect={1}
+        />
+      )}
       <div className="mb-14 text-center sm:text-left">
         <h2 className="text-3xl font-black text-primary mb-3 tracking-tighter">একাডেমিক তথ্য (Academic Information)</h2>
         <p className="text-muted text-lg font-medium">আপনার স্কুল জীবনের সঠিক তথ্য প্রদান করুন।</p>

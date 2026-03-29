@@ -7,6 +7,7 @@ import Link from "next/link"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 import { useNotification } from "@/lib/contexts/NotificationContext"
 import { updateAlumniProfile } from "@/app/actions/profile"
+import ImageCropperModal from "@/components/ui/ImageCropperModal"
 
 export default function EditProfileForm({ profile }: { profile: any }) {
   const router = useRouter()
@@ -14,6 +15,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
   
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null)
   const [data, setData] = useState({
     full_name_en: profile.full_name_en || "",
     full_name_bn: profile.full_name_bn || "",
@@ -36,9 +38,19 @@ export default function EditProfileForm({ profile }: { profile: any }) {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    
+    const reader = new FileReader()
+    reader.onload = () => {
+      setImageToCrop(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const onCropComplete = async (croppedFile: File) => {
+    setImageToCrop(null)
     try {
       setUploading(true)
-      const url = await uploadToCloudinary(file)
+      const url = await uploadToCloudinary(croppedFile)
       setData(prev => ({ ...prev, photo_url: url }))
       notify("Photo uploaded! Remember to save changes.", "success")
     } catch (err: any) {
@@ -66,6 +78,14 @@ export default function EditProfileForm({ profile }: { profile: any }) {
 
   return (
     <>
+      {imageToCrop && (
+        <ImageCropperModal 
+          image={imageToCrop}
+          onClose={() => setImageToCrop(null)}
+          onCropComplete={onCropComplete}
+          aspect={1}
+        />
+      )}
       <div className="flex items-center gap-6 mb-12">
         <Link href="/profile" className="p-3 bg-white hover:bg-gray-50 rounded-2xl transition-all shadow-sm border border-gray-100">
           <ArrowLeft size={20} className="text-primary" />
