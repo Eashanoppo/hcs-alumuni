@@ -3,8 +3,9 @@ import { redirect } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { User, LogOut, CheckCircle, Clock, Award, XCircle, CreditCard } from "lucide-react"
+import { User, LogOut, CheckCircle, Clock, Award, XCircle, CreditCard, Shirt } from "lucide-react"
 import Link from "next/link"
+import ProfileActions from "@/components/profile/ProfileActions"
 
 async function getProfileData(alumniNumber: string) {
   let { data, error } = await supabase
@@ -52,21 +53,15 @@ export default async function ProfilePage() {
             <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">Alumni Portal</h1>
             <p className="text-muted font-black uppercase tracking-[0.3em] text-[10px] mt-2">Welcome Back, {profile.full_name_en}</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link href="/profile/edit" className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1F3D2B] rounded-2xl text-white font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl hover:shadow-2xl">
-              Edit Profile
-            </Link>
-            <form action={async () => {
-               "use server"
-               const c = await cookies()
-               c.delete('alumni_session')
-               redirect('/')
-            }}>
-              <button type="submit" className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-100 rounded-2xl text-primary font-black text-xs uppercase tracking-widest hover:border-rose-100 hover:text-rose-600 hover:bg-rose-50 transition-all shadow-sm">
-                <LogOut size={16} /> Logout
-              </button>
-            </form>
-          </div>
+          <ProfileActions 
+            profile={profile} 
+            logoutAction={async () => {
+              "use server"
+              const c = await cookies()
+              c.delete('alumni_session')
+              redirect('/')
+            }} 
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -131,6 +126,13 @@ export default async function ProfilePage() {
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-1">Email</p>
                   <p className="font-bold text-primary">{profile.email}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-1">T-shirt Size</p>
+                  <p className="font-bold text-primary flex items-center gap-2">
+                    <Shirt size={14} className="text-[#CEB888]" />
+                    {profile.tshirt_size || 'N/A'}
+                  </p>
                 </div>
               </div>
 

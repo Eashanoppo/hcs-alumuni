@@ -12,6 +12,7 @@ export default function AdminPayments() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [batchFilter, setBatchFilter] = useState('ALL')
+  const [methodFilter, setMethodFilter] = useState('ALL')
   const { notify, confirm } = useNotification()
 
   const loadData = async () => {
@@ -47,21 +48,6 @@ export default function AdminPayments() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    const isConfirmed = await confirm("Are you sure you want to delete this payment record?")
-    if (!isConfirmed) return
-    try {
-      setLoading(true)
-      await adminDeletePayment(id)
-      notify("Payment record deleted.", 'success')
-      await loadData()
-    } catch (error: any) {
-      console.error("Failed to delete payment", error)
-      notify(`Deletion failed: ${error.message || 'Unknown error'}`, 'error')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   // Fixed SSC Batch range as per user request
   const batches = Array.from({ length: 2026 - 2009 + 1 }, (_, i) => (2009 + i).toString()).reverse()
@@ -79,8 +65,9 @@ export default function AdminPayments() {
       
     const matchesStatus = statusFilter === 'ALL' || p.status === statusFilter;
     const matchesBatch = batchFilter === 'ALL' || registrantBatch === batchFilter;
+    const matchesMethod = methodFilter === 'ALL' || p.method === methodFilter;
     
-    return matchesSearch && matchesStatus && matchesBatch;
+    return matchesSearch && matchesStatus && matchesBatch && matchesMethod;
   })
 
   return (
@@ -130,6 +117,18 @@ export default function AdminPayments() {
               >
                 <option value="ALL">SSC Batch (All)</option>
                 {batches.map(b => <option key={b} value={b}>SSC Batch {b}</option>)}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <select 
+                value={methodFilter}
+                onChange={e => setMethodFilter(e.target.value)}
+                className="grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none text-[#D12053]"
+              >
+                <option value="ALL">All Methods</option>
+                <option value="BKASH">bKash</option>
+                <option value="NAGAD">Nagad</option>
               </select>
             </div>
           </div>
@@ -216,13 +215,6 @@ export default function AdminPayments() {
                               </button>
                             </>
                           )}
-                          <button 
-                            onClick={() => handleDelete(p.id)}
-                            className="p-2.5 bg-gray-50 border border-gray-100 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 rounded-xl text-muted transition-all"
-                            title="Delete Payment Record"
-                          >
-                            <Trash2 size={18} />
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -292,13 +284,6 @@ export default function AdminPayments() {
                             </button>
                           </>
                         )}
-                        <button 
-                          onClick={() => handleDelete(p.id)}
-                          className="p-2.5 bg-gray-50 border border-gray-100 rounded-xl text-muted shadow-sm"
-                          title="Delete"
-                        >
-                          <Trash2 size={18} />
-                        </button>
                       </div>
                     </div>
                   </div>

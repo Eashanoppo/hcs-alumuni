@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Users, Search, Eye, CheckCircle, XCircle, Loader2, ArrowLeft, Trash2, Filter } from "lucide-react"
 import Link from "next/link"
-import { adminUpdateRegistrantStatus, adminDeleteRegistrant, adminGetAllRegistrants, adminBulkDeleteRegistrants } from "@/app/actions/admin"
+import { adminUpdateRegistrantStatus, adminDeleteRegistrant, adminGetAllRegistrants, adminBulkDeleteRegistrants, adminBulkUpdateRegistrantStatus } from "@/app/actions/admin"
 import { useNotification } from "@/lib/contexts/NotificationContext"
 import { Registrant } from "@/types"
 import RegistrantImportModal from "@/components/admin/RegistrantImportModal"
@@ -91,6 +91,25 @@ export default function AdminRegistrants() {
     }
   }
 
+  const handleBulkUpdate = async (status: 'APPROVED' | 'REJECTED') => {
+    if (selectedIds.size === 0) return
+    const isConfirmed = await confirm(`Are you sure you want to mark ${selectedIds.size} registrants as ${status}?`)
+    if (!isConfirmed) return
+    
+    try {
+      setLoading(true)
+      await adminBulkUpdateRegistrantStatus(Array.from(selectedIds), status)
+      notify(`Successfully updated ${selectedIds.size} registrants to ${status.toLowerCase()}.`, 'success')
+      setSelectedIds(new Set())
+      await loadData()
+    } catch (error: any) {
+      console.error("Bulk update failed", error)
+      notify(`Bulk update failed: ${error.message || 'Unknown error'}`, 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Generate fixed range 2009-2026 as per user request
   const batches = Array.from({ length: 2026 - 2009 + 1 }, (_, i) => (2009 + i).toString()).reverse()
 
@@ -146,12 +165,20 @@ export default function AdminRegistrants() {
           
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto text-primary">
             {selectedIds.size > 0 && (
-              <button 
-                onClick={handleBulkDelete} 
-                className="w-full sm:w-auto px-6 py-3 bg-rose-50 text-rose-600 border border-rose-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-100 transition-all shadow-sm flex items-center justify-center gap-2"
-              >
-                <Trash2 size={16} /> Delete Selected ({selectedIds.size})
-              </button>
+              <>
+                <button 
+                  onClick={() => handleBulkUpdate('APPROVED')} 
+                  className="w-full sm:w-auto px-6 py-3 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-100 transition-all shadow-sm flex items-center justify-center gap-2"
+                >
+                  <CheckCircle size={16} /> Approve ({selectedIds.size})
+                </button>
+                <button 
+                  onClick={handleBulkDelete} 
+                  className="w-full sm:w-auto px-6 py-3 bg-rose-50 text-rose-600 border border-rose-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-100 transition-all shadow-sm flex items-center justify-center gap-2"
+                >
+                  <Trash2 size={16} /> Delete ({selectedIds.size})
+                </button>
+              </>
             )}
             <button 
               onClick={() => setIsImportModalOpen(true)} 
