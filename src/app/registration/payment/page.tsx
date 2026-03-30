@@ -9,6 +9,7 @@ import {
   Phone,
   ArrowRight,
   Loader2,
+  User,
 } from "lucide-react";
 import { useState, Suspense } from "react";
 import { submitPayment } from "@/lib/db";
@@ -23,7 +24,6 @@ function PaymentForm() {
   const urlId = searchParams.get("id");
   const registrantId = data.id || urlId || "TEMP_ID";
 
-  const [method, setMethod] = useState<"BKASH" | "NAGAD">("BKASH");
   const [txId, setTxId] = useState("");
   const [sender, setSender] = useState("");
   const { notify } = useNotification();
@@ -39,16 +39,27 @@ function PaymentForm() {
           if (remoteData) {
             updateData(remoteData);
             setDataLoaded(true);
+
+            // Set session cookie if alumni_number exists
+            if (remoteData.alumni_number) {
+              document.cookie = `alumni_session=${remoteData.alumni_number}; path=/; max-age=86400; SameSite=Lax`;
+              window.dispatchEvent(new Event("auth-change"));
+            }
           }
         } catch (error) {
           console.error("Failed to load registrant data:", error);
         }
       } else if (data.id) {
         setDataLoaded(true);
+        // Also set cookie if already have data
+        if (data.alumni_number) {
+          document.cookie = `alumni_session=${data.alumni_number}; path=/; max-age=86400; SameSite=Lax`;
+          window.dispatchEvent(new Event("auth-change"));
+        }
       }
     }
     loadData();
-  }, [urlId, data.id, updateData]);
+  }, [urlId, data.id, data.alumni_number, updateData]);
 
   const ALUMNI_FEE = 700;
   const SPOUSE_FEE = data.spouse_attending ? 300 : 0;
@@ -64,7 +75,7 @@ function PaymentForm() {
       await submitPayment({
         registrant_id: registrantId,
         amount: total,
-        method: method,
+        method: "BKASH",
         transaction_id: txId,
         sender_number: sender,
         status: "PENDING",
@@ -169,10 +180,9 @@ function PaymentForm() {
           {/* Payment Form */}
           <div className="lg:col-span-2 space-y-10">
             <div className="bg-white rounded-[3.5rem] shadow-premium border border-gray-100 p-10 md:p-14">
-              <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-12">
-                <button
-                  onClick={() => setMethod("BKASH")}
-                  className={`flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-2 sm:px-8 py-4 rounded-2xl border-2 transition-all w-full ${method === "BKASH" ? "border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg" : "border-gray-100 grayscale hover:grayscale-0"}`}
+              <div className="flex justify-center mb-12">
+                <div
+                  className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-6 sm:px-12 py-4 rounded-2xl border-2 border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg w-full max-w-md"
                 >
                   <img
                     src="https://www.logo.wine/a/logo/BKash/BKash-Icon-Logo.wine.svg"
@@ -180,22 +190,9 @@ function PaymentForm() {
                     className="h-8 sm:h-10 w-auto object-contain"
                   />
                   <span className="font-black uppercase tracking-widest text-xs">
-                    bKash
+                    bKash Payment Selected
                   </span>
-                </button>
-                <button
-                  onClick={() => setMethod("NAGAD")}
-                  className={`flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-2 sm:px-8 py-4 rounded-2xl border-2 transition-all w-full ${method === "NAGAD" ? "border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg" : "border-gray-100 grayscale hover:grayscale-0"}`}
-                >
-                  <img
-                    src="https://www.logo.wine/a/logo/Nagad/Nagad-Vertical-Logo.wine.svg"
-                    alt="Nagad"
-                    className="h-8 sm:h-10 w-auto object-contain"
-                  />
-                  <span className="font-black uppercase tracking-widest text-xs">
-                    Nagad
-                  </span>
-                </button>
+                </div>
               </div>
 
               <div className="bg-[#FAFAF7] rounded-[2.5rem] p-8 mb-12 border border-gray-100">
@@ -209,10 +206,10 @@ function PaymentForm() {
                         <Phone size={24} />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] sm:text-xs font-black text-muted uppercase tracking-[0.2em] mb-1 break-words whitespace-normal">
+                        <p className="text-[10px] sm:text-xs font-black text-muted uppercase tracking-[0.2em] mb-1 wrap-break-word whitespace-normal">
                           Send Money To
                         </p>
-                        <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter break-words whitespace-normal">
+                        <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter wrap-break-word whitespace-normal">
                           01912-591492
                         </p>
                       </div>
@@ -276,6 +273,15 @@ function PaymentForm() {
                         <ArrowRight size={20} className="sm:w-6 sm:h-6 shrink-0" />
                       </>
                     )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => window.location.href = "/profile"}
+                    className="w-full mt-4 bg-gray-50 text-primary font-black py-4 px-4 rounded-2xl hover:bg-gray-100 hover:shadow-md transition-all flex items-center justify-center gap-2 text-xs sm:text-sm uppercase tracking-widest text-center border border-gray-200"
+                  >
+                    <User size={18} />
+                    Back to Profile
                   </button>
                 </div>
               </form>

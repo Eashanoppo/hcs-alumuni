@@ -25,9 +25,15 @@ export default function Navbar() {
             setUserPhoto(data.photo_url)
           }
         }
+      } else {
+        setIsLoggedIn(false)
+        setUserPhoto(null)
       }
     }
     checkAuth()
+
+    window.addEventListener('auth-change', checkAuth)
+    return () => window.removeEventListener('auth-change', checkAuth)
   }, [])
 
   const navLinks = [
