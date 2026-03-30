@@ -2,7 +2,7 @@
 
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
-import { Search, Filter, Phone, Mail, MessageSquare, X, User, ExternalLink } from "lucide-react"
+import { Search, Filter, Phone, Mail, MessageSquare, X, User, ExternalLink, Lock } from "lucide-react"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
@@ -16,8 +16,17 @@ export default function DirectoryPage() {
   const [selectedSSCBatch, setSelectedSSCBatch] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedAlumnus, setSelectedAlumnus] = useState<Registrant | null>(null)
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [currentAlumniNumber, setCurrentAlumniNumber] = useState<string | null>(null)
 
   useEffect(() => {
+    const match = document.cookie.match(/(^| )alumni_session=([^;]+)/)
+    if (match) {
+      setIsLoggedIn(true)
+      setCurrentAlumniNumber(match[2])
+    }
+
     async function fetchAlumni() {
       // ONLY show APPROVED alumni
       const { data, error } = await supabase
@@ -166,7 +175,7 @@ export default function DirectoryPage() {
       {/* Contact Modal */}
       {selectedAlumnus && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm animate-in fade-in duration-300">
-           <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300">
+           <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-premium border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-300">
               <div className="p-8 relative">
                  <button 
                   onClick={() => setSelectedAlumnus(null)}
@@ -192,51 +201,71 @@ export default function DirectoryPage() {
                  <div className="space-y-4">
                     <div className="p-4 bg-[#FAFAF7] rounded-2xl border border-gray-100 flex items-center justify-between">
                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center">
-                             <Phone size={18} />
+                          <div className={selectedAlumnus.alumni_number === currentAlumniNumber ? "w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center" : "w-10 h-10 rounded-xl bg-gray-100 text-gray-400 flex items-center justify-center"}>
+                             {selectedAlumnus.alumni_number === currentAlumniNumber ? <Phone size={18} /> : <Lock size={18} />}
                           </div>
                           <div>
                              <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-0.5">Mobile</p>
-                             <p className="font-bold text-primary">{selectedAlumnus.mobile}</p>
+                             <p className="font-bold text-primary">
+                               {selectedAlumnus.alumni_number === currentAlumniNumber ? selectedAlumnus.mobile : "Private"}
+                             </p>
                           </div>
                        </div>
-                       <a href={`tel:${selectedAlumnus.mobile}`} className="p-2 text-primary hover:scale-110 transition-transform">
-                          <ExternalLink size={18} />
-                       </a>
+                       {selectedAlumnus.alumni_number === currentAlumniNumber && (
+                        <a href={`tel:${selectedAlumnus.mobile}`} className="p-2 text-primary hover:scale-110 transition-transform">
+                            <ExternalLink size={18} />
+                        </a>
+                       )}
                     </div>
 
                     <div className="p-4 bg-[#FAFAF7] rounded-2xl border border-gray-100 flex items-center justify-between">
                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-[#CEB888] text-white flex items-center justify-center">
-                             <Mail size={18} />
+                          <div className={isLoggedIn || selectedAlumnus.alumni_number === currentAlumniNumber ? "w-10 h-10 rounded-xl bg-[#CEB888] text-white flex items-center justify-center" : "w-10 h-10 rounded-xl bg-gray-100 text-gray-400 flex items-center justify-center"}>
+                             {isLoggedIn || selectedAlumnus.alumni_number === currentAlumniNumber ? <Mail size={18} /> : <Lock size={18} />}
                           </div>
                           <div>
                              <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-0.5">Email</p>
-                             <p className="font-bold text-primary truncate max-w-[180px]">{selectedAlumnus.email}</p>
+                             <p className="font-bold text-primary truncate max-w-[180px]">
+                               {isLoggedIn || selectedAlumnus.alumni_number === currentAlumniNumber ? selectedAlumnus.email : "Login to view"}
+                             </p>
                           </div>
                        </div>
-                       <a href={`mailto:${selectedAlumnus.email}`} className="p-2 text-primary hover:scale-110 transition-transform">
-                          <ExternalLink size={18} />
-                       </a>
+                       {(isLoggedIn || selectedAlumnus.alumni_number === currentAlumniNumber) && (
+                        <a href={`mailto:${selectedAlumnus.email}`} className="p-2 text-primary hover:scale-110 transition-transform">
+                            <ExternalLink size={18} />
+                        </a>
+                       )}
                     </div>
 
                     {selectedAlumnus.whatsapp && (
                       <div className="p-4 bg-[#FAFAF7] rounded-2xl border border-gray-100 flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center">
-                              <MessageSquare size={18} />
+                            <div className={selectedAlumnus.alumni_number === currentAlumniNumber ? "w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center" : "w-10 h-10 rounded-xl bg-gray-100 text-gray-400 flex items-center justify-center"}>
+                              {selectedAlumnus.alumni_number === currentAlumniNumber ? <MessageSquare size={18} /> : <Lock size={18} />}
                             </div>
                             <div>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-0.5">WhatsApp</p>
-                              <p className="font-bold text-primary">{selectedAlumnus.whatsapp}</p>
+                               <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-0.5">WhatsApp</p>
+                               <p className="font-bold text-primary">
+                                 {selectedAlumnus.alumni_number === currentAlumniNumber ? selectedAlumnus.whatsapp : "Private"}
+                               </p>
                             </div>
                         </div>
+                        {selectedAlumnus.alumni_number === currentAlumniNumber && (
                         <a href={`https://wa.me/${selectedAlumnus.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" className="p-2 text-primary hover:scale-110 transition-transform">
                             <ExternalLink size={18} />
                         </a>
+                        )}
                       </div>
                     )}
                  </div>
+
+                 {!isLoggedIn && (
+                   <div className="mt-6 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                     <p className="text-[10px] font-bold text-primary text-center">
+                       <Link href="/login/alumni" className="underline decoration-[#CEB888]">Login as Alumnus</Link> to connect and view email addresses.
+                     </p>
+                   </div>
+                 )}
 
                  <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-center gap-4">
                     {selectedAlumnus.facebook_url && (

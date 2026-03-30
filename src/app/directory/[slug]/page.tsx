@@ -16,6 +16,7 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
 
   const cookieStore = await cookies()
   const loggedInAlumniNumber = cookieStore.get('alumni_session')?.value
+  const isLoggedIn = !!loggedInAlumniNumber
   const isOwner = loggedInAlumniNumber === alumni.alumni_number
 
   return (
@@ -78,28 +79,56 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                <div className="space-y-6">
                  <div>
                    <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Mobile</p>
-                   <p className="font-bold text-primary tracking-wide text-sm">
-                    {alumni.mobile}
+                   <p className="font-bold text-primary tracking-wide text-sm flex items-center gap-2">
+                    {isOwner ? (
+                      alumni.mobile
+                    ) : (
+                      <>
+                        <Lock size={12} className="text-[#CEB888]" />
+                        <span className="text-muted/40 italic font-medium">Private</span>
+                      </>
+                    )}
                    </p>
                  </div>
                  <div>
                    <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Email</p>
-                   <p className="font-bold text-primary tracking-wide text-sm break-all">
-                    {alumni.email}
+                   <p className="font-bold text-primary tracking-wide text-sm break-all flex items-center gap-2">
+                    {isOwner || isLoggedIn ? (
+                      alumni.email
+                    ) : (
+                      <>
+                        <Lock size={12} className="text-[#CEB888]" />
+                        <span className="text-muted/40 italic font-medium">Login to View</span>
+                      </>
+                    )}
                    </p>
                  </div>
                  {alumni.whatsapp && (
                    <div>
                      <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">WhatsApp</p>
-                     <p className="font-bold text-primary tracking-wide text-sm">
-                      {alumni.whatsapp}
+                     <p className="font-bold text-primary tracking-wide text-sm flex items-center gap-2">
+                       {isOwner ? (
+                         alumni.whatsapp
+                       ) : (
+                         <>
+                           <Lock size={12} className="text-[#CEB888]" />
+                           <span className="text-muted/40 italic font-medium">Private</span>
+                         </>
+                       )}
                      </p>
                    </div>
                  )}
                  <div>
                     <p className="text-[10px] font-black text-muted uppercase tracking-[0.2em] mb-1">Present Address</p>
-                    <p className="font-bold text-primary tracking-wide text-xs leading-relaxed">
-                      {alumni.present_address}
+                    <p className="font-bold text-primary tracking-wide text-xs leading-relaxed flex items-center gap-2">
+                       {isOwner ? (
+                         alumni.present_address
+                       ) : (
+                         <>
+                           <Lock size={12} className="text-[#CEB888]" />
+                           <span className="text-muted/40 italic font-medium">Private Information</span>
+                         </>
+                       )}
                     </p>
                  </div>
                </div>
@@ -110,8 +139,8 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
           <div className="lg:col-span-2 space-y-8">
              <div className="bg-white rounded-[2.5rem] shadow-premium border border-gray-100 p-10">
                 <h3 className="font-black text-primary text-xl mb-8 flex items-center gap-3 tracking-tight">
-                  <Briefcase size={24} className="text-[#CEB888]" />
-                  Professional & Identity
+                   <Briefcase size={24} className="text-[#CEB888]" />
+                   Professional & Identity
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -204,7 +233,7 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                          <div className="relative z-10">
                             <h4 className="text-sm font-black text-primary mb-2">Member ID</h4>
                             <p className="text-4xl font-black text-primary/10 tracking-widest uppercase">
-                              {isOwner ? `#${alumni.alumni_number}` : "#HIDDEN"}
+                               {isOwner ? `#${alumni.alumni_number}` : "#HIDDEN"}
                             </p>
                          </div>
                          <div className="absolute -right-2.5 -bottom-2.5 text-primary/5 -rotate-12 transition-transform group-hover:rotate-0">
@@ -226,8 +255,21 @@ export default async function AlumniProfilePage({ params }: { params: Promise<{ 
                    </div>
                 </div>
                 <div className="flex gap-4">
-                   <a href={`tel:${alumni.mobile}`} className="px-6 py-3 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg transition-all">Call Now</a>
-                   <a href={`mailto:${alumni.email}`} className="px-6 py-3 bg-white border border-gray-100 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-primary transition-all">Send Email</a>
+                   {isOwner ? (
+                      <a href={`tel:${alumni.mobile}`} className="px-6 py-3 bg-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:shadow-lg transition-all">Call Now</a>
+                   ) : (
+                      <button disabled className="px-6 py-3 bg-gray-100 text-gray-400 rounded-xl font-black text-[10px] uppercase tracking-widest cursor-not-allowed opacity-60 flex items-center gap-2">
+                        <Lock size={14} /> Call Now
+                      </button>
+                   )}
+
+                   {isLoggedIn || isOwner ? (
+                      <a href={`mailto:${alumni.email}`} className="px-6 py-3 bg-white border border-gray-100 text-primary rounded-xl font-black text-[10px] uppercase tracking-widest hover:border-primary transition-all">Send Email</a>
+                   ) : (
+                      <button disabled className="px-6 py-3 bg-white border border-gray-50 text-gray-300 rounded-xl font-black text-[10px] uppercase tracking-widest cursor-not-allowed opacity-60 flex items-center gap-2">
+                        <Lock size={14} /> Send Email
+                      </button>
+                   )}
                 </div>
              </div>
           </div>
