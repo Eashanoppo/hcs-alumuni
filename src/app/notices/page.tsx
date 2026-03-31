@@ -49,11 +49,11 @@ export default function NoticePage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAF7]">
       <Navbar />
-      <main className="grow pt-32 pb-20 px-8 max-w-7xl mx-auto w-full">
+      <main className="grow pt-24 md:pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto w-full">
         <header className="mb-16">
           <div className="flex items-center gap-4 mb-4">
             <div className="h-10 w-1.5 bg-[#CEB888] rounded-full"></div>
-            <h1 className="text-4xl md:text-6xl font-black text-primary tracking-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-primary tracking-tight">
               সবশেষ সংবাদ ও নোটিশ
             </h1>
           </div>
@@ -74,15 +74,15 @@ export default function NoticePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div className="lg:col-span-8 space-y-10">
               {featuredNotice && (
-                <section className="relative overflow-hidden rounded-[2.5rem] bg-primary p-10 md:p-14 text-white shadow-premium">
+                <section className="relative overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-primary p-6 md:p-14 text-white shadow-premium">
                   <div className="absolute top-0 right-0 p-8 opacity-10">
                     <Megaphone size={120} />
                   </div>
                   <div className="relative z-10">
-                    <span className="inline-block px-4 py-1.5 bg-[#CEB888] text-primary text-[10px] font-black rounded-full mb-8 tracking-widest uppercase">
+                    <span className="inline-block px-4 py-1.5 bg-[#CEB888] text-primary text-[10px] font-black rounded-full mb-4 md:mb-8 tracking-widest uppercase">
                       জরুরি ঘোষণা
                     </span>
-                    <h2 className="text-3xl md:text-5xl font-black mb-8 leading-tight">
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-black mb-6 md:mb-8 leading-tight">
                       {featuredNotice.title}
                     </h2>
                     <div className="flex flex-wrap items-center gap-8 text-white/60 mb-10">
@@ -101,7 +101,7 @@ export default function NoticePage() {
                         </span>
                       </div>
                     </div>
-                    <div className="prose prose-invert max-w-none mb-10 text-white/80 font-medium">
+                    <div className="prose prose-invert max-w-none mb-6 md:mb-10 text-white/80 font-medium">
                       <p>{featuredNotice.body}</p>
                     </div>
                     <div className="flex flex-wrap gap-4">
@@ -125,11 +125,11 @@ export default function NoticePage() {
                     <Link
                       key={i}
                       href={`/notices/${n.id}`}
-                      className="group bg-white p-8 rounded-4xl flex items-center justify-between gap-8 border border-gray-100 hover:shadow-premium hover:border-[#1F3D2B]/20 transition-all"
+                      className="group bg-white p-5 md:p-8 rounded-3xl md:rounded-4xl flex flex-col sm:flex-row sm:items-center justify-between gap-6 md:gap-8 border border-gray-100 hover:shadow-premium hover:border-[#1F3D2B]/20 transition-all"
                     >
-                      <div className="flex items-start gap-8">
-                        <div className="bg-[#FAFAF7] p-5 rounded-2xl text-center min-w-25 border border-gray-50 group-hover:bg-primary transition-colors group-hover:border-primary">
-                          <span className="block text-2xl font-black text-primary group-hover:text-white leading-none mb-1">
+                      <div className="flex items-start gap-4 md:gap-8">
+                        <div className="bg-[#FAFAF7] p-4 md:p-5 rounded-xl md:rounded-2xl text-center min-w-[70px] md:min-w-25 border border-gray-50 group-hover:bg-primary transition-colors group-hover:border-primary">
+                          <span className="block text-xl md:text-2xl font-black text-primary group-hover:text-white leading-none mb-1">
                             {new Date(n.created_at).getDate()}
                           </span>
                           <span className="block text-[9px] font-black text-muted group-hover:text-white/60 uppercase tracking-wider">
@@ -142,7 +142,7 @@ export default function NoticePage() {
                           <span className="inline-block px-3 py-1 bg-primary/5 text-primary text-[10px] font-bold rounded-lg mb-3 uppercase tracking-widest">
                             {n.category}
                           </span>
-                          <h4 className="text-xl font-bold text-primary group-hover:text-[#CEB888] transition-colors leading-snug">
+                          <h4 className="text-lg md:text-xl font-bold text-primary group-hover:text-[#CEB888] transition-colors leading-snug">
                             {n.title_bn || n.title}
                           </h4>
                           <p className="text-muted text-sm mt-2 line-clamp-2">
@@ -150,7 +150,7 @@ export default function NoticePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-center w-14 h-14 bg-[#FAFAF7] border border-gray-100 rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm shrink-0">
+                      <div className="hidden sm:flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-[#FAFAF7] border border-gray-100 rounded-xl md:rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm shrink-0">
                         <FileText size={24} />
                       </div>
                     </Link>
@@ -170,7 +170,7 @@ export default function NoticePage() {
             </div>
 
             <aside className="lg:col-span-4 space-y-10">
-              <div className="bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-premium">
+              <div className="bg-white p-6 md:p-10 rounded-3xl md:rounded-[2.5rem] border border-gray-100 shadow-premium">
                 <h3 className="text-xl font-black text-primary mb-8 flex items-center gap-3">
                   <Search size={22} className="text-[#CEB888]" />
                   নোটিশ খুঁজুন

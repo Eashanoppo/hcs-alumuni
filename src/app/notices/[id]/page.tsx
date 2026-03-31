@@ -70,7 +70,7 @@ export default function NoticeDetailPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="grow pt-32 pb-24 px-8 max-w-5xl mx-auto w-full">
+      <main className="grow pt-24 md:pt-32 pb-24 px-4 md:px-8 max-w-5xl mx-auto w-full">
         <Link
           href="/notices"
           className="inline-flex items-center gap-2 text-muted font-bold hover:text-accent mb-12 transition-colors group"
@@ -87,7 +87,7 @@ export default function NoticeDetailPage() {
             <Loader2 size={48} className="animate-spin text-primary/20" />
           </div>
         ) : error ? (
-          <div className="bg-white rounded-[3.5rem] p-20 text-center border border-gray-100 shadow-premium">
+          <div className="bg-white rounded-3xl md:rounded-[3.5rem] p-10 md:p-20 text-center border border-gray-100 shadow-premium">
             <AlertTriangle size={48} className="mx-auto text-rose-300 mb-6" />
             <h2 className="text-2xl font-black text-primary mb-2">Notice Not Found</h2>
             <p className="text-muted font-medium">{error}</p>
@@ -96,7 +96,7 @@ export default function NoticeDetailPage() {
           <motion.article
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-[3.5rem] p-10 md:p-20 shadow-premium border border-gray-100"
+            className="bg-white rounded-3xl md:rounded-[3.5rem] p-6 md:p-20 shadow-premium border border-gray-100"
           >
             {/* Header Meta */}
             <div className="flex flex-wrap items-center gap-4 mb-10 pb-10 border-b border-gray-100">
@@ -128,11 +128,11 @@ export default function NoticeDetailPage() {
 
             {/* Title */}
             {notice.title_bn ? (
-              <h1 className="text-4xl md:text-6xl font-black text-primary leading-tight mb-4 tracking-tighter">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-primary leading-tight mb-4 tracking-tighter">
                 {notice.title_bn}
               </h1>
             ) : (
-              <h1 className="text-4xl md:text-6xl font-black text-primary leading-tight mb-4 tracking-tighter">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-primary leading-tight mb-4 tracking-tighter">
                 {notice.title}
               </h1>
             )}
@@ -145,7 +145,7 @@ export default function NoticeDetailPage() {
             {/* Body */}
             <div className="prose prose-lg max-w-none text-muted leading-relaxed font-medium space-y-6 mb-10">
               {(notice.body_bn || notice.body) && (
-                <p className="text-xl text-primary/80 font-bold leading-relaxed whitespace-pre-line">
+                <p className="text-lg md:text-xl text-primary/80 font-bold leading-relaxed whitespace-pre-line">
                   {notice.body_bn || notice.body}
                 </p>
               )}
@@ -174,9 +174,9 @@ export default function NoticeDetailPage() {
                     href={notice.attachment_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-6 p-6 bg-background rounded-2xl w-full md:w-auto hover:shadow-md transition-all group"
+                    className="flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-background rounded-2xl w-full md:w-auto hover:shadow-md transition-all group"
                   >
-                    <div className="p-4 bg-primary text-white rounded-xl shadow-lg group-hover:bg-accent transition-colors">
+                    <div className="p-3 md:p-4 bg-primary text-white rounded-xl shadow-lg group-hover:bg-accent transition-colors">
                       <Download size={24} />
                     </div>
                     <div>
