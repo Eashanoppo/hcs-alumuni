@@ -14,6 +14,7 @@ export default function AdminRegistrants() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [batchFilter, setBatchFilter] = useState('ALL')
+  const [bloodDonationFilter, setBloodDonationFilter] = useState('ALL')
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const { notify, confirm } = useNotification()
@@ -124,7 +125,12 @@ export default function AdminRegistrants() {
     const registrantBatch = r.ssc_batch || r.batch;
     const matchesBatch = batchFilter === 'ALL' || registrantBatch === batchFilter;
     
-    return matchesSearch && matchesStatus && matchesBatch;
+    // Blood donation matching (true/false)
+    let matchesBloodDonation = true;
+    if (bloodDonationFilter === 'YES') matchesBloodDonation = r.blood_donation_interest === true;
+    if (bloodDonationFilter === 'NO') matchesBloodDonation = r.blood_donation_interest === false;
+    
+    return matchesSearch && matchesStatus && matchesBatch && matchesBloodDonation;
   })
 
   const allFilteredIds = filteredRegistrants.map(r => r.id)
@@ -218,6 +224,18 @@ export default function AdminRegistrants() {
               >
                 <option value="ALL">SSC Batch (All)</option>
                 {batches.map(b => <option key={b} value={b}>SSC Batch {b}</option>)}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <select 
+                value={bloodDonationFilter}
+                onChange={e => setBloodDonationFilter(e.target.value)}
+                className="grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
+              >
+                <option value="ALL">Blood Donor (All)</option>
+                <option value="YES">Interested</option>
+                <option value="NO">Not Interested</option>
               </select>
             </div>
           </div>

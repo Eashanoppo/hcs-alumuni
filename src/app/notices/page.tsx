@@ -125,11 +125,11 @@ export default function NoticePage() {
                     <Link
                       key={i}
                       href={`/notices/${n.id}`}
-                      className="group bg-white p-5 md:p-8 rounded-3xl md:rounded-4xl flex flex-col sm:flex-row sm:items-center justify-between gap-6 md:gap-8 border border-gray-100 hover:shadow-premium hover:border-[#1F3D2B]/20 transition-all"
+                      className="group bg-white p-8 rounded-4xl flex items-center justify-between gap-8 border border-gray-100 hover:shadow-premium hover:border-[#1F3D2B]/20 transition-all"
                     >
-                      <div className="flex items-start gap-4 md:gap-8">
-                        <div className="bg-[#FAFAF7] p-4 md:p-5 rounded-xl md:rounded-2xl text-center min-w-[70px] md:min-w-25 border border-gray-50 group-hover:bg-primary transition-colors group-hover:border-primary">
-                          <span className="block text-xl md:text-2xl font-black text-primary group-hover:text-white leading-none mb-1">
+                      <div className="flex items-start gap-8">
+                        <div className="bg-[#FAFAF7] p-5 rounded-2xl text-center min-w-25 border border-gray-50 group-hover:bg-primary transition-colors group-hover:border-primary">
+                          <span className="block text-2xl font-black text-primary group-hover:text-white leading-none mb-1">
                             {new Date(n.created_at).getDate()}
                           </span>
                           <span className="block text-[9px] font-black text-muted group-hover:text-white/60 uppercase tracking-wider">
@@ -150,7 +150,7 @@ export default function NoticePage() {
                           </p>
                         </div>
                       </div>
-                      <div className="hidden sm:flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-[#FAFAF7] border border-gray-100 rounded-xl md:rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm shrink-0">
+                      <div className="flex items-center justify-center w-14 h-14 bg-[#FAFAF7] border border-gray-100 rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm shrink-0">
                         <FileText size={24} />
                       </div>
                     </Link>

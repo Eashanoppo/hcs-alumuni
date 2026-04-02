@@ -19,6 +19,8 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<Partial<Registrant>>({
     attending: 'yes',
     volunteer_status: false,
+    blood_donation_interest: false,
+    blood_group: '',
     spouse_attending: false,
     children_count: 0,
     guests_count: 0,

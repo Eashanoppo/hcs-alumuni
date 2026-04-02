@@ -164,6 +164,9 @@ ALTER TABLE public.registrants ALTER COLUMN attending DROP DEFAULT;
 ALTER TABLE public.registrants ALTER COLUMN attending TYPE TEXT USING (CASE WHEN attending=TRUE THEN 'yes' ELSE 'no' END);
 -- 3. Add volunteer status field
 ALTER TABLE public.registrants ADD COLUMN IF NOT EXISTS volunteer_status BOOLEAN DEFAULT FALSE;
+-- 4. Add blood group and blood donation interest
+ALTER TABLE public.registrants ADD COLUMN IF NOT EXISTS blood_group TEXT;
+ALTER TABLE public.registrants ADD COLUMN IF NOT EXISTS blood_donation_interest BOOLEAN DEFAULT FALSE;
 
 -- 10. Create table for Visions (Our Vision Cards)
 CREATE TABLE IF NOT EXISTS public.visions (
@@ -193,4 +196,17 @@ ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public read access on visions" ON public.visions FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on testimonials" ON public.testimonials FOR SELECT USING (true);
 -- Service role full access via getAdminSupabase() handles writes
+CREATE TABLE IF NOT EXISTS public.site_settings (
+  id TEXT PRIMARY KEY,
+  value JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read access on site_settings" 
+  ON public.site_settings FOR SELECT USING (true);
+
+CREATE POLICY "Allow service_role full access site_settings" 
+  ON public.site_settings USING (true) WITH CHECK (true);

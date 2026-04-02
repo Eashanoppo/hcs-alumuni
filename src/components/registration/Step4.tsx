@@ -157,6 +157,33 @@ export default function Step4() {
               ))}
             </div>
           </div>
+
+          <div className="space-y-4 md:col-span-2">
+            <label className="block text-sm font-bold text-primary">
+              ব্লাড ডোনেশন কর্মসূচি <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-6">
+              {[
+                { label: "হ্যাঁ", value: true }, 
+                { label: "না", value: false }
+              ].map((opt) => (
+                <label
+                  key={`blood-${opt.label}`}
+                  className="flex items-center gap-2 cursor-pointer group"
+                >
+                  <input
+                    required
+                    type="radio"
+                    name="blood_donation"
+                    checked={data.blood_donation_interest === opt.value}
+                    onChange={() => updateData({ blood_donation_interest: opt.value })}
+                    className="w-4 h-4 text-primary focus:ring-accent"
+                  />
+                  <span className="text-sm font-bold group-hover:text-primary transition-colors">{opt.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="space-y-2">

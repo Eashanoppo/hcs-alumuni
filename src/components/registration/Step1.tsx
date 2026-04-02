@@ -200,6 +200,20 @@ export default function Step1() {
             </div>
           </div>
 
+          <div className="md:col-span-2 space-y-2">
+             <label className="block text-xs font-black uppercase tracking-widest text-primary ml-1">রক্তের গ্রুপ (Blood Group)</label>
+             <select
+               value={data.blood_group || ''}
+               className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 focus:ring-2 focus:ring-primary/10 transition-all font-bold text-primary"
+               onChange={(e) => updateData({ blood_group: e.target.value })}
+             >
+               <option value="">Select Blood Group</option>
+               {['A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-'].map(bg => (
+                 <option key={bg} value={bg}>{bg}</option>
+               ))}
+             </select>
+          </div>
+
           <div className="md:col-span-2 space-y-2 mt-4 pt-6 border-t border-gray-50">
             <label className="block text-xs font-black uppercase tracking-widest text-primary ml-1">বর্তমান ঠিকানা <span className="text-red-500">*</span></label>
             <textarea 
