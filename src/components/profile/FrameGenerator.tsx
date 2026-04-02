@@ -1,13 +1,28 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Upload, Download, RotateCw, ZoomIn, RefreshCw, X, Check, MousePointer2, Move, ImageIcon } from "lucide-react"
+import { Upload, Download, RotateCw, ZoomIn, RefreshCw, X, MousePointer2, Move, ImageIcon } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { generateFramedImage } from "@/lib/frameGenerator"
 
+// Custom SVG Icons given lucide version mismatch
+const Instagram = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram">
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+  </svg>
+)
+
+const Facebook = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-facebook">
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+  </svg>
+)
+
 const FRAMES = [
-  { id: 'jubilee', name: 'Silver Jubilee 2026', src: '/images/frames/frame1.jpg' },
-  { id: 'alumni', name: 'Alumni Portal 2026', src: '/images/frames/frame2.jpg' },
+  { id: 'instagram', name: 'Instagram', label: '1080 × 1080', aspect: 'square', icon: Instagram },
+  { id: 'facebook',  name: 'Facebook',  label: '1200 × 628',  aspect: 'video',  icon: Facebook  },
 ]
 
 interface FrameGeneratorProps {
@@ -17,212 +32,218 @@ interface FrameGeneratorProps {
 
 export default function FrameGenerator({ onClose, initialPhoto }: FrameGeneratorProps) {
   const [selectedFrame, setSelectedFrame] = useState(FRAMES[0])
-  const [userImage, setUserImage] = useState<string | null>(initialPhoto || null)
+  const [selectedColor, setSelectedColor] = useState('#0F2169')
+  const [userImage, setUserImage] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  
+
   // Transform options
   const [scale, setScale] = useState(1.1)
   const [rotation, setRotation] = useState(0)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [posX, setPosX] = useState(0)
+  const [posY, setPosY] = useState(0)
 
-  // Interaction
-  const [isDragging, setIsDragging] = useState(false)
-  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 })
+  // Dragging
+  const isDragging = useRef(false)
+  const lastMousePos = useRef({ x: 0, y: 0 })
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => setUserImage(reader.result as string)
+    reader.onload = () => {
+      setUserImage(reader.result as string)
+      setScale(1.1); setRotation(0); setPosX(0); setPosY(0)
+    }
     reader.readAsDataURL(file)
   }
 
   useEffect(() => {
-    if (userImage) {
-      updatePreview()
+    let cancelled = false
+    const run = async () => {
+      try {
+        setLoading(true)
+        const result = await generateFramedImage(userImage, '', {
+          scale,
+          rotation,
+          position: { x: posX, y: posY },
+          bgColor: selectedColor,
+          frameId: selectedFrame.id,
+        })
+        if (!cancelled) setPreviewUrl(result)
+      } catch (err) {
+        console.error("Frame generation failed", err)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
     }
-  }, [userImage, selectedFrame, scale, rotation, position])
-
-  const updatePreview = async () => {
-    if (!userImage) return
-    try {
-      setLoading(true)
-      const result = await generateFramedImage(userImage, selectedFrame.src, {
-        scale,
-        rotation,
-        position
-      })
-      setPreviewUrl(result)
-    } finally {
-      setLoading(false)
-    }
-  }
+    run()
+    return () => { cancelled = true }
+  }, [userImage, selectedFrame.id, selectedColor, scale, rotation, posX, posY])
 
   const handleDownload = () => {
     if (!previewUrl) return
     const link = document.createElement('a')
-    link.download = `HCS_Alumni_Frame_${selectedFrame.id}.jpg`
+    link.download = `HCS_Alumni_${selectedFrame.name}_Frame.jpg`
     link.href = previewUrl
     link.click()
   }
 
-  // Dragging Logic
-  const handleStart = (clientX: number, clientY: number) => {
+  const handleDragStart = (clientX: number, clientY: number) => {
     if (!userImage) return
-    setIsDragging(true)
-    setLastMousePos({ x: clientX, y: clientY })
+    isDragging.current = true
+    lastMousePos.current = { x: clientX, y: clientY }
   }
 
-  const handleMove = (clientX: number, clientY: number) => {
-    if (!isDragging || !userImage) return
-    const dx = clientX - lastMousePos.x
-    const dy = clientY - lastMousePos.y
-    setPosition(prev => ({ x: prev.x + dx * 2, y: prev.y + dy * 2 }))
-    setLastMousePos({ x: clientX, y: clientY })
+  const handleDragMove = (clientX: number, clientY: number) => {
+    if (!isDragging.current || !userImage) return
+    const dx = clientX - lastMousePos.current.x
+    const dy = clientY - lastMousePos.current.y
+    lastMousePos.current = { x: clientX, y: clientY }
+    setPosX(prev => prev + dx * 1.5)
+    setPosY(prev => prev + dy * 1.5)
+  }
+
+  const handleDragEnd = () => {
+    isDragging.current = false
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xl">
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-[3rem] w-full max-w-5xl max-h-[95vh] overflow-hidden flex flex-col md:flex-row shadow-2xl relative"
+        className="bg-white rounded-[3rem] w-full max-w-6xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row shadow-2xl relative"
       >
-        {/* Close Button Top Right */}
-        <button onClick={onClose} className="absolute top-8 right-8 p-3 bg-white/80 hover:bg-rose-50 hover:text-rose-500 rounded-2xl transition-all shadow-sm z-[60] backdrop-blur-sm hidden md:flex">
+        <button 
+          onClick={onClose} 
+          className="absolute top-8 right-8 p-3 bg-white/90 hover:bg-rose-500 hover:text-white rounded-2xl transition-all shadow-xl z-[60] backdrop-blur-md hidden md:flex"
+        >
           <X size={20} />
         </button>
 
-        {/* Left: Preview & Primary Controls */}
-        <div className="md:w-3/5 bg-[#F9F9F6] p-6 md:p-12 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 min-h-[500px]">
-          <button onClick={onClose} className="absolute top-6 left-6 p-3 bg-white hover:bg-rose-50 hover:text-rose-500 rounded-2xl transition-all shadow-sm z-10 md:hidden">
+        <div className="md:w-[65%] bg-[#F9F9F6] p-6 md:p-16 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 min-h-[500px]">
+          <button onClick={onClose} className="absolute top-6 left-6 p-3 bg-white hover:bg-rose-50 rounded-2xl transition-all shadow-sm z-10 md:hidden">
             <X size={20} />
           </button>
-          
-          {/* Main Frame Preview Wrapper */}
-          <div 
-            className="w-full aspect-square max-w-sm md:max-w-md bg-white rounded-[2.5rem] shadow-premium overflow-hidden border-8 border-white relative cursor-move active:scale-[0.98] transition-all group"
-            onMouseDown={e => handleStart(e.clientX, e.clientY)}
-            onMouseMove={e => handleMove(e.clientX, e.clientY)}
-            onMouseUp={() => setIsDragging(false)}
-            onMouseLeave={() => setIsDragging(false)}
-            onTouchStart={e => handleStart(e.touches[0].clientX, e.touches[0].clientY)}
-            onTouchMove={e => handleMove(e.touches[0].clientX, e.touches[0].clientY)}
-            onTouchEnd={() => setIsDragging(false)}
+
+          <div
+            className={`w-full max-w-md md:max-w-lg bg-white rounded-[2.5rem] shadow-xl overflow-hidden border-8 border-white relative cursor-move group ${
+              selectedFrame.aspect === 'video' ? 'aspect-video' : 'aspect-square'
+            }`}
+            onMouseDown={e => handleDragStart(e.clientX, e.clientY)}
+            onMouseMove={e => handleDragMove(e.clientX, e.clientY)}
+            onMouseUp={handleDragEnd}
+            onMouseLeave={handleDragEnd}
+            onTouchStart={e => handleDragStart(e.touches[0].clientX, e.touches[0].clientY)}
+            onTouchMove={e => handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
+            onTouchEnd={handleDragEnd}
           >
             {previewUrl ? (
-              <img src={previewUrl} alt="Framed Preview" className="w-full h-full object-contain pointer-events-none select-none" />
+              <img src={previewUrl} alt="Preview" className="w-full h-full object-contain select-none pointer-events-none" />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-muted gap-4 p-12 text-center bg-gray-50">
-                 <div className="w-20 h-20 bg-primary/5 rounded-3xl flex items-center justify-center text-primary/20">
-                    <ImageIcon size={40} />
-                 </div>
-                 <div>
-                    <p className="font-black text-primary text-xl tracking-tight">Select Photo First</p>
-                    <p className="text-xs font-bold opacity-60 mt-2">Upload your image to start framing.</p>
-                 </div>
+              <div className="w-full h-full flex flex-col items-center justify-center text-muted gap-4 p-12 bg-gray-50">
+                <ImageIcon size={40} className="opacity-10" />
+                <p className="font-bold text-gray-400">Loading Preview...</p>
               </div>
             )}
             
-            {userImage && !isDragging && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-black/20 backdrop-blur-sm p-4 rounded-full text-white/80 animate-pulse">
-                        <Move size={24} />
-                    </div>
+            {userImage && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="bg-black/30 backdrop-blur-sm p-4 rounded-full text-white">
+                  <Move size={24} />
                 </div>
+              </div>
             )}
           </div>
 
-          {/* DRIPALLA STYLE BUTTONS BELOW CANVAS */}
-          <div className="w-full max-w-md mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-             <label className="flex items-center justify-center gap-3 py-4 bg-[#F5E6CC] text-[#735B24] rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer hover:bg-[#fedb98] transition-all shadow-md group">
-                <Upload size={18} className="group-hover:-translate-y-0.5 transition-transform" />
-                Select Photo
-                <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-             </label>
-             <button 
-               disabled={!previewUrl || loading}
-               onClick={handleDownload}
-               className="flex items-center justify-center gap-3 py-4 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl disabled:opacity-30 group"
-             >
-                {loading ? <RefreshCw className="animate-spin" size={18} /> : <Download size={18} className="group-hover:translate-y-0.5 transition-transform" />}
-                Download
-             </button>
+          <div className="w-full max-w-lg mt-12 grid grid-cols-2 gap-5">
+            <label className="flex items-center justify-center gap-3 py-5 bg-[#F5E6CC] text-[#735B24] rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer hover:bg-[#fedb98] transition-all shadow-lg active:translate-y-1">
+              <Upload size={20} /> Select Photo
+              <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+            </label>
+            <button
+              disabled={!previewUrl || loading}
+              onClick={handleDownload}
+              className="flex items-center justify-center gap-3 py-5 bg-[#1F3D2B] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-lg active:translate-y-1 disabled:opacity-30"
+            >
+              {loading ? <RefreshCw className="animate-spin" size={20} /> : <Download size={20} />} Download
+            </button>
           </div>
-          
+
           {userImage && (
-             <button onClick={() => { setScale(1.1); setRotation(0); setPosition({x:0,y:0}) }} className="mt-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#CEB888] hover:text-primary transition-colors">
-                <RefreshCw size={14} /> Reset Position
-             </button>
+            <button
+              onClick={() => { setScale(1.1); setRotation(0); setPosX(0); setPosY(0) }}
+              className="mt-8 text-[10px] font-bold uppercase tracking-widest text-[#CEB888] hover:text-primary transition-all flex items-center gap-2"
+            >
+              <RefreshCw size={12} /> Reset Position
+            </button>
           )}
         </div>
 
-        {/* Right: Settings & Details */}
-        <div className="md:w-2/5 p-8 md:p-12 overflow-y-auto bg-white flex flex-col">
+        <div className="md:w-[35%] p-8 md:p-12 overflow-y-auto bg-white flex flex-col">
           <div className="mb-10">
-             <h2 className="text-2xl font-black text-primary tracking-tight">Customize Frame</h2>
-             <p className="text-[10px] font-black uppercase tracking-widest text-[#CEB888] mt-1">HCS Silver Jubilee</p>
+            <h2 className="text-3xl font-black text-primary tracking-tighter">Customize</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#CEB888] mt-1">HCS Silver Jubilee</p>
           </div>
 
           <div className="space-y-10 flex-grow">
-            {/* Design Selector */}
             <div className="space-y-4">
-              <label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1 opacity-40">Choose Frame Design</label>
-              <div className="grid grid-cols-2 gap-4">
+              <label className="text-[10px] font-black uppercase text-primary/40 tracking-widest">Theme Color</label>
+              <div className="flex flex-wrap gap-4">
+                {['#0F2169', '#1F3D2B', '#10b981', '#CEB888', '#000000'].map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setSelectedColor(c)}
+                    className={`w-10 h-10 rounded-full transition-all hover:scale-110 active:scale-95 ${selectedColor === c ? 'ring-4 ring-primary/20 scale-110' : ''}`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-[10px] font-black uppercase text-primary/40 tracking-widest">Layout Type</label>
+              <div className="grid grid-cols-1 gap-4">
                 {FRAMES.map(f => (
-                  <button 
+                  <button
                     key={f.id}
-                    onClick={() => setSelectedFrame(f)}
-                    className={`p-2 rounded-2xl border-2 transition-all transform ${selectedFrame.id === f.id ? 'border-primary bg-primary/5 scale-105' : 'border-gray-50 opacity-60 hover:opacity-100 hover:border-gray-100'}`}
+                    onClick={() => { setSelectedFrame(f); setPreviewUrl(null) }}
+                    className={`flex items-center gap-4 p-5 rounded-2xl border-2 transition-all ${
+                      selectedFrame.id === f.id ? 'border-primary bg-primary/5 text-primary' : 'border-gray-50 hover:bg-gray-50'
+                    }`}
                   >
-                    <div className="aspect-square bg-gray-50 rounded-xl overflow-hidden mb-2 relative">
-                       <img src={f.src} alt={f.name} className="w-full h-full object-cover" />
+                    <div className={`p-2 rounded-lg ${selectedFrame.id === f.id ? 'bg-primary text-white' : 'bg-gray-100'}`}>
+                      <f.icon size={20} />
                     </div>
-                    <p className={`text-[10px] font-black uppercase text-center px-1 truncate ${selectedFrame.id === f.id ? 'text-primary' : 'text-muted'}`}>{f.name}</p>
+                    <div className="text-left">
+                      <p className="font-black text-xs uppercase">{f.name}</p>
+                      <p className="text-[10px] opacity-50 font-bold">{f.label}</p>
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Transform Controls */}
-            <AnimatePresence>
             {userImage && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className="space-y-8 bg-[#FAFAF7] p-8 rounded-[2.5rem] border border-gray-50"
-              >
+              <div className="space-y-8 p-8 bg-gray-50 rounded-3xl border border-gray-100">
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center px-1">
-                    <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest">
-                      <ZoomIn size={14} className="text-[#CEB888]" />
-                      Zoom / Scale
-                    </div>
+                  <div className="flex justify-between text-[10px] font-black uppercase">
+                    <span>Zoom</span>
+                    <span>{(scale * 100).toFixed(0)}%</span>
                   </div>
-                  <input type="range" min="0.5" max="3.0" step="0.1" value={scale} onChange={e => setScale(parseFloat(e.target.value))} className="w-full accent-primary h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer" />
+                  <input type="range" min="0.5" max="3" step="0.1" value={scale} onChange={e => setScale(parseFloat(e.target.value))} className="w-full accent-primary" />
                 </div>
-
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center px-1">
-                    <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest">
-                      <RotateCw size={14} className="text-[#CEB888]" />
-                      Rotation ({rotation}°)
-                    </div>
+                  <div className="flex justify-between text-[10px] font-black uppercase">
+                    <span>Rotation</span>
+                    <span>{rotation}°</span>
                   </div>
-                  <input type="range" min="0" max="360" value={rotation} onChange={e => setRotation(parseInt(e.target.value))} className="w-full accent-primary h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer" />
+                  <input type="range" min="-180" max="180" value={rotation} onChange={e => setRotation(parseInt(e.target.value))} className="w-full accent-primary" />
                 </div>
-                
-                <p className="text-[10px] font-bold text-muted text-center pt-2 italic flex items-center justify-center gap-2 border-t border-gray-100/50 mt-4 uppercase">
-                   <MousePointer2 size={12} /> Drag photo on canvas to move
-                </p>
-              </motion.div>
+              </div>
             )}
-            </AnimatePresence>
-          </div>
-
-          <div className="mt-12 pt-8 border-t border-gray-50 text-center">
-             <p className="text-[9px] font-black text-muted uppercase tracking-widest opacity-30">Processed entirely in browser</p>
           </div>
         </div>
       </motion.div>

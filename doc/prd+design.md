@@ -181,15 +181,25 @@ Fields:
 
 ## STEP 2 — একাডেমিক তথ্য
 
-* ভর্তি বছর *
-* স্কুল ছাড়ার বছর *
-* শ্রেণি *
-* সার্টিফিকেট
+ভর্তি বছর*
+কোন শ্রেণিতে ভর্তি হয়েছেন 
+(drop down menu (nurseary,kg,1,2,3,4,5,6,7,8,9))*
+স্কুল ছাড়ার বছর*
+কোন শ্রেণীতে ছেড়েছেন
+(Kg,1,2,3,4,5,6,7,8,9)
+school থেকে প্রাপ্ত সর্বশেষ সার্টিফিকেট*
+PESC(Class-5)
+JSC(Class-8)
+SSC
+If user chooses ssc from drop down 
+Then there will be option for ssc batch (2009-2026)
+
+স্কুলে থাকাকালীন কোন ছবি যদি থাকে
 
 ### Conditional Logic
 
 * SSC → batch (2009–2026)
-* JSC → batch (2005–2025)
+* JSC → batch (2010–2019)
 
 ---
 
