@@ -12,6 +12,8 @@ export interface Registrant {
   photo_url?: string;
   occupation: string;
   alumni_number?: string;
+  blood_group?: string;
+  blood_donation_interest?: boolean;
   
   // Academic (Revised)
   admission_year: string;

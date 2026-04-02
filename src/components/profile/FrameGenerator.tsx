@@ -20,9 +20,16 @@ const Facebook = ({ size = 24 }: { size?: number }) => (
   </svg>
 )
 
+const CircleIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle">
+    <circle cx="12" cy="12" r="10"/>
+  </svg>
+)
+
 const FRAMES = [
   { id: 'instagram', name: 'Instagram', label: '1080 × 1080', aspect: 'square', icon: Instagram },
   { id: 'facebook',  name: 'Facebook',  label: '1200 × 628',  aspect: 'video',  icon: Facebook  },
+  { id: 'circle',    name: 'Circular',   label: '1080 × 1080', aspect: 'square', icon: CircleIcon },
 ]
 
 interface FrameGeneratorProps {
@@ -60,25 +67,31 @@ export default function FrameGenerator({ onClose, initialPhoto }: FrameGenerator
 
   useEffect(() => {
     let cancelled = false
-    const run = async () => {
-      try {
-        setLoading(true)
-        const result = await generateFramedImage(userImage, '', {
-          scale,
-          rotation,
-          position: { x: posX, y: posY },
-          bgColor: selectedColor,
-          frameId: selectedFrame.id,
-        })
-        if (!cancelled) setPreviewUrl(result)
-      } catch (err) {
-        console.error("Frame generation failed", err)
-      } finally {
-        if (!cancelled) setLoading(false)
+    const timeout = setTimeout(() => {
+      const run = async () => {
+        try {
+          if (!cancelled) setLoading(true)
+          const result = await generateFramedImage(userImage, '', {
+            scale,
+            rotation,
+            position: { x: posX, y: posY },
+            bgColor: selectedColor,
+            frameId: selectedFrame.id,
+          })
+          if (!cancelled) setPreviewUrl(result)
+        } catch (err) {
+          console.error("Frame generation failed", err)
+        } finally {
+          if (!cancelled) setLoading(false)
+        }
       }
+      run()
+    }, 150)
+    
+    return () => { 
+      cancelled = true
+      clearTimeout(timeout)
     }
-    run()
-    return () => { cancelled = true }
   }, [userImage, selectedFrame.id, selectedColor, scale, rotation, posX, posY])
 
   const handleDownload = () => {
@@ -191,15 +204,27 @@ export default function FrameGenerator({ onClose, initialPhoto }: FrameGenerator
           <div className="space-y-10 flex-grow">
             <div className="space-y-4">
               <label className="text-[10px] font-black uppercase text-primary/40 tracking-widest">Theme Color</label>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 items-center">
                 {['#0F2169', '#1F3D2B', '#10b981', '#CEB888', '#000000'].map(c => (
                   <button
                     key={c}
                     onClick={() => setSelectedColor(c)}
-                    className={`w-10 h-10 rounded-full transition-all hover:scale-110 active:scale-95 ${selectedColor === c ? 'ring-4 ring-primary/20 scale-110' : ''}`}
+                    className={`w-10 h-10 rounded-full transition-all hover:scale-110 active:scale-95 flex-shrink-0 ${selectedColor === c ? 'ring-4 ring-primary/20 scale-110' : ''}`}
                     style={{ backgroundColor: c }}
                   />
                 ))}
+                <div 
+                  className={`relative w-10 h-10 rounded-full overflow-hidden transition-all hover:scale-110 flex-shrink-0 cursor-pointer ${!['#0F2169', '#1F3D2B', '#10b981', '#CEB888', '#000000'].includes(selectedColor) ? 'ring-4 ring-primary/20 scale-110' : ''}`}
+                  style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}
+                >
+                  <input
+                    type="color"
+                    value={selectedColor}
+                    onChange={(e) => setSelectedColor(e.target.value)}
+                    className="absolute inset-0 w-20 h-20 -top-2 -left-2 cursor-pointer opacity-0"
+                    title="Choose custom color"
+                  />
+                </div>
               </div>
             </div>
 

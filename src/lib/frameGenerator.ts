@@ -7,8 +7,6 @@ export interface FrameOptions {
 }
 
 const GOLD = '#CEB888';
-const GOLD_LIGHT = '#E5D5B0';
-const GOLD_DIM = 'rgba(206,184,136,0.78)';
 
 interface Layout {
   W: number; H: number;
@@ -26,13 +24,94 @@ const LAYOUTS: Record<string, Layout> = {
   },
   facebook: {
     W: 1200, H: 628,
-    photo: { x: 50, y: 80, w: 1100, h: 320 },
-    bannerH: 180,
+    photo: { x: 50, y: 120, w: 1100, h: 330 },
+    bannerH: 130,
     footerH: 48,
+  },
+  circle: {
+    W: 1080, H: 1080,
+    photo: { x: 100, y: 100, w: 880, h: 880 },
+    bannerH: 0,
+    footerH: 0,
   },
 };
 
 // ── helpers ──────────────────────────────────────────────────────────────────
+
+function getGraphemes(text: string): string[] {
+  // Use modern browser Segmenter to correctly group Bengali conjuncts and diacritics
+  if (typeof Intl !== 'undefined' && 'Segmenter' in Intl) {
+    const segmenter = new (Intl as any).Segmenter('bn', { granularity: 'grapheme' });
+    return Array.from(segmenter.segment(text)).map((s: any) => s.segment);
+  }
+  return text.match(/[\u0980-\u09FF][\u09BC\u09BE-\u09D7\u09E2\u09E3]*|./g) || [];
+}
+
+function drawCurvedText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  centerX: number,
+  centerY: number,
+  radius: number,
+  startAngle: number,
+  top: boolean = true
+) {
+  ctx.save();
+  const clusters = getGraphemes(text);
+  const fullWidth = ctx.measureText(text).width;
+  // Reduced kerning to 1.1 for better visual density
+  const totalAngle = (fullWidth * 1.1) / radius;
+  
+  const stepAngle = totalAngle / clusters.length;
+  // If bottom text, start from the left side and decrement angle to draw left-to-right
+  let currentAngle = top ? startAngle - totalAngle / 2 : startAngle + totalAngle / 2;
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  for (let i = 0; i < clusters.length; i++) {
+    const char = clusters[i];
+    const angle = top ? currentAngle + stepAngle / 2 : currentAngle - stepAngle / 2;
+    const x = centerX + Math.cos(angle) * radius;
+    const y = centerY + Math.sin(angle) * radius;
+    
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle + Math.PI / 2);
+    if (!top) ctx.rotate(Math.PI);
+    ctx.fillText(char, 0, 0);
+    ctx.restore();
+    
+    currentAngle += top ? stepAngle : -stepAngle;
+  }
+  ctx.restore();
+}
+function drawWreath(ctx: CanvasRenderingContext2D, cx: number, cy: number, radius: number, color: string) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.fillStyle = color;
+  const leafCount = 15;
+  const scale = radius / 400;
+  const leafW = 20 * scale;
+  const leafH = 8 * scale;
+  
+  for (let side of [-1, 1]) {
+    for (let i = 0; i < leafCount; i++) {
+      const angle = (Math.PI / 2) + side * (0.3 + (i / leafCount) * 2.0);
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle + (side * Math.PI / 4.5));
+      ctx.beginPath();
+      ctx.ellipse(0, 0, leafW, leafH, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+}
 
 function drawInstagramLogo(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, color: string) {
   ctx.save();
@@ -122,22 +201,28 @@ function draw(
   const scale = (s: number) => Math.round(s * (W / 1080));
 
   // 1. Background
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, W, H);
-
-  const grad = ctx.createRadialGradient(W/2, H/2, W/4, W/2, H/2, W);
-  grad.addColorStop(0, 'rgba(255,255,255,0.02)');
-  grad.addColorStop(1, 'rgba(0,0,0,0.12)');
-  ctx.fillStyle = grad;
+  ctx.fillStyle = (opts.frameId === 'circle') ? '#FFFFFF' : bgColor;
   ctx.fillRect(0, 0, W, H);
 
   // 2. User Photo
   ctx.save();
   ctx.beginPath();
-  ctx.rect(photo.x, photo.y, photo.w, photo.h);
+  if (opts.frameId === 'circle') {
+    const cx = W / 2, cy = H / 2;
+    const r = scale(400);
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  } else {
+    ctx.rect(photo.x, photo.y, photo.w, photo.h);
+  }
   ctx.clip();
   ctx.fillStyle = bgColor;
-  ctx.fillRect(photo.x, photo.y, photo.w, photo.h);
+  if (opts.frameId === 'circle') {
+    ctx.beginPath();
+    ctx.arc(W/2, H/2, scale(400), 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.fillRect(photo.x, photo.y, photo.w, photo.h);
+  }
 
   if (userImg && userImg.complete && userImg.naturalWidth !== 0) {
     const cx = photo.x + photo.w / 2, cy = photo.y + photo.h / 2;
@@ -149,7 +234,7 @@ function draw(
     if (ir > pr) { dh = photo.h * opts.scale; dw = dh * ir; }
     else { dw = photo.w * opts.scale; dh = dw / ir; }
     ctx.drawImage(userImg, -dw / 2, -dh / 2, dw, dh);
-  } else {
+  } else if (opts.frameId !== 'circle') {
     ctx.fillStyle = 'rgba(0,0,0,0.05)';
     ctx.fillRect(photo.x, photo.y, photo.w, photo.h);
     ctx.fillStyle = GOLD;
@@ -160,7 +245,65 @@ function draw(
   }
   ctx.restore();
 
-  // 3. Decorative Border
+  if (opts.frameId === 'circle') {
+    // 3. Circular Frame Design
+    const cx = W / 2, cy = H / 2;
+    const rOuter = scale(500);
+    const rInner = scale(400);
+
+    // Main Circle Background
+    ctx.save();
+    ctx.fillStyle = bgColor;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rOuter, 0, Math.PI * 2);
+    ctx.arc(cx, cy, rInner, 0, Math.PI * 2, true);
+    ctx.fill();
+    
+    // Wreath
+    drawWreath(ctx, cx, cy, rInner - scale(20), GOLD);
+
+    // Borders
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = scale(4);
+    ctx.beginPath(); ctx.arc(cx, cy, rOuter, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, rInner, 0, Math.PI * 2); ctx.stroke();
+    
+    ctx.lineWidth = scale(1);
+    ctx.beginPath(); ctx.arc(cx, cy, rInner + scale(15), 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, rOuter - scale(15), 0, Math.PI * 2); ctx.stroke();
+
+    // Curved Text
+    ctx.fillStyle = GOLD;
+    const rMid = rInner + (rOuter - rInner)/2;
+    
+    // Top Arc: Name
+    ctx.font = `bold ${scale(42)}px "Georgia", serif`;
+    drawCurvedText(ctx, 'HOLY CRESCENT SCHOOL', cx, cy, rMid, -Math.PI/2, true);
+
+    // Bottom Arc: Bangla Tagline
+    ctx.font = `bold ${scale(36)}px "Georgia", serif`;
+    drawCurvedText(ctx, 'ঐতিহ্যের ২৫ বছরে,আগামীর অগ্রযাত্রায়...', cx, cy, rMid, Math.PI/2, false);
+
+    // Stars at Left and Right sides to beautifully separate the text
+    ctx.font = `${scale(52)}px serif`;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Right star (3 o'clock)
+    ctx.fillText('★', rMid, 0);
+    
+    // Left star (9 o'clock)
+    ctx.fillText('★', -rMid, 0);
+    
+    ctx.restore();
+
+    ctx.restore();
+    return;
+  }
+
+  // 3. Decorative Border (Rectangular)
   ctx.save();
   ctx.strokeStyle = GOLD;
   ctx.lineWidth = scale(3);
@@ -168,42 +311,37 @@ function draw(
   ctx.setLineDash([scale(12), scale(8)]);
   ctx.strokeRect(photo.x + borderInset, photo.y + borderInset, photo.w - borderInset*2, photo.h - borderInset*2);
   ctx.setLineDash([]);
-  ctx.strokeStyle = GOLD_DIM;
+  ctx.strokeStyle = GOLD;
   ctx.strokeRect(photo.x, photo.y, photo.w, photo.h);
   ctx.restore();
 
   // 4. Header
-  const headerMid = photo.y / 2;
+  const headerLayoutMid = photo.y / 2;
   ctx.save();
-  textShadow(ctx, 0.4);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = GOLD;
   ctx.font = `${scale(40)}px serif`;
-  ctx.fillText('★', scale(60), headerMid);
-  ctx.fillText('★', W - scale(60), headerMid);
-  ctx.font = `bold ${scale(64)}px "Georgia", serif`;
-  ctx.fillText('HOLY CRESCENT SCHOOL', W / 2, headerMid - scale(15));
-  ctx.font = `${scale(26)}px "Georgia", serif`;
-  ctx.fillStyle = GOLD_LIGHT;
-  ctx.fillText('হলি ক্রেসেন্ট স্কুল  •  রজত জয়ন্তী উৎসব ২০২৬', W / 2, headerMid + scale(32));
-  clearShadow(ctx);
+  ctx.fillText('★', scale(60), headerLayoutMid);
+  ctx.fillText('★', W - scale(60), headerLayoutMid);
+  ctx.font = `bold ${scale(56)}px "Georgia", serif`;
+  ctx.fillText('HOLY CRESCENT SCHOOL', W / 2, headerLayoutMid - scale(15));
+  ctx.font = `${scale(22)}px "Georgia", serif`;
+  ctx.fillStyle = GOLD;
+  ctx.fillText('হলি ক্রেসেন্ট স্কুল  •  রজত জয়ন্তী উৎসব ২০২৬', W / 2, headerLayoutMid + scale(32));
   ctx.restore();
 
   // 5. Banner
   const bannerTop = photo.y + photo.h;
   const bannerMid = bannerTop + bannerH / 2;
   ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,0.25)';
-  ctx.fillRect(0, bannerTop, W, bannerH);
-  ctx.strokeStyle = GOLD_DIM;
+  ctx.strokeStyle = GOLD;
   ctx.lineWidth = scale(1);
   ctx.beginPath();
   ctx.moveTo(scale(180), bannerTop);
   ctx.lineTo(W - scale(180), bannerTop);
   ctx.stroke();
 
-  textShadow(ctx, 0.4);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
@@ -214,42 +352,42 @@ function draw(
   ctx.beginPath(); ctx.arc(lcx, bannerMid, badgeR, 0, Math.PI * 2); ctx.stroke();
   ctx.beginPath(); ctx.arc(rcx, bannerMid, badgeR, 0, Math.PI * 2); ctx.stroke();
   ctx.fillStyle = GOLD;
-  ctx.font = `bold ${scale(26)}px Arial`;
+  ctx.font = `bold ${scale(24)}px Arial`;
   ctx.fillText('HCS', lcx, bannerMid - scale(16));
-  ctx.font = `${scale(16)}px Arial`;
+  ctx.font = `${scale(14)}px Arial`;
   ctx.fillText('২০০১', lcx, bannerMid + scale(16));
-  ctx.font = `bold ${scale(36)}px Georgia`;
+  ctx.font = `bold ${scale(32)}px Georgia`;
   ctx.fillText('২৫', rcx, bannerMid - scale(14));
-  ctx.font = `${scale(16)}px Georgia`;
+  ctx.font = `${scale(14)}px Georgia`;
   ctx.fillText('বছর পূর্তি', rcx, bannerMid + scale(18));
 
   // Banner Content
-  ctx.font = `bold ${scale(36)}px "Georgia", serif`;
-  ctx.fillText('ঐতিহ্যের ২৫ বছরে, আগামীর পথে অগ্রযাত্রা...', W / 2, bannerMid - scale(42));
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = `italic ${scale(24)}px "Georgia", serif`;
-  ctx.fillText('"From Memories to Mentorship..."', W / 2, bannerMid);
-  ctx.fillStyle = GOLD_LIGHT;
-  ctx.font = `bold ${scale(18)}px "Arial", sans-serif`;
+  ctx.font = `bold ${scale(32)}px "Georgia", serif`;
+  // Shifted Bangla text down for better spacing
+  ctx.fillText('ঐতিহ্যের ২৫ বছরে, আগামীর পথে অগ্রযাত্রা...', W / 2, bannerMid - scale(28));
+  ctx.fillStyle = GOLD;
+  ctx.font = `italic ${scale(20)}px "Georgia", serif`;
+  ctx.fillText('"From Memories to Mentorship..."', W / 2, bannerMid + scale(12));
+  ctx.fillStyle = GOLD;
+  ctx.font = `bold ${scale(16)}px "Arial", sans-serif`;
   const alumniText = 'HOLY CRESCENT ALUMNI';
-  ctx.fillText(alumniText, W / 2, bannerMid + scale(42));
+  ctx.fillText(alumniText, W / 2, bannerMid + scale(45));
 
   // Logo
   const logoSize = scale(32);
   const textWidth = ctx.measureText(alumniText).width;
   const logoX = W/2 - textWidth/2 - logoSize - scale(20);
-  const logoY = bannerMid + scale(42) - logoSize/2;
+  const logoY = bannerMid + scale(45) - logoSize/2;
   if (opts.frameId === 'facebook') drawFacebookLogo(ctx, logoX, logoY, logoSize, GOLD);
   if (opts.frameId === 'instagram') drawInstagramLogo(ctx, logoX, logoY, logoSize, GOLD);
   
-  clearShadow(ctx);
   ctx.restore();
 
   // 6. Footer
   const footerY = bannerTop + bannerH;
   ctx.save();
-  ctx.fillStyle = GOLD_DIM;
-  ctx.font = `bold ${scale(18)}px "Arial"`;
+  ctx.fillStyle = GOLD;
+  ctx.font = `bold ${scale(15)}px "Arial"`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('ESTD. 2001  •  25TH ANNIVERSARY  •  2026', W / 2, footerY + footerH / 2);

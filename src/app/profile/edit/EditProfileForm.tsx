@@ -30,7 +30,9 @@ export default function EditProfileForm({ profile }: { profile: any }) {
     volunteer_status: profile.volunteer_status || false,
     tshirt_size: profile.tshirt_size || "M",
     email: profile.email || "",
-    photo_url: profile.photo_url || ""
+    photo_url: profile.photo_url || "",
+    blood_group: profile.blood_group || "",
+    blood_donation_interest: profile.blood_donation_interest || false
   })
 
   const [oldPhotoUrl] = useState(profile.photo_url)
@@ -168,6 +170,14 @@ export default function EditProfileForm({ profile }: { profile: any }) {
             </div>
             
             <div className="space-y-2 md:col-span-2">
+              <label className="block text[10px] font-black uppercase tracking-widest text-primary ml-1">Blood Group</label>
+              <select value={data.blood_group} onChange={e => setData({...data, blood_group: e.target.value})} className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 font-bold text-primary appearance-none cursor-pointer">
+                <option value="">Select Blood Group</option>
+                {['A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-'].map(bg => <option key={bg} value={bg}>{bg}</option>)}
+              </select>
+            </div>
+            
+            <div className="space-y-2 md:col-span-2">
               <label className="block text[10px] font-black uppercase tracking-widest text-primary ml-1">Current Institution</label>
               <input value={data.current_institution} onChange={e => setData({...data, current_institution: e.target.value})} className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 font-bold text-primary" />
             </div>
@@ -200,6 +210,18 @@ export default function EditProfileForm({ profile }: { profile: any }) {
                   {[{label: "Yes", val: true}, {label: "No", val: false}].map(opt => (
                     <label key={opt.label} className="flex items-center gap-3 cursor-pointer">
                       <input type="radio" checked={data.volunteer_status === opt.val} onChange={() => setData({...data, volunteer_status: opt.val})} className="w-5 h-5 text-primary border-gray-300 focus:ring-primary" />
+                      <span className="font-bold text-sm text-primary">{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-primary ml-1">Blood Donation Campaign <span className="text-red-500">*</span></label>
+                <div className="flex gap-6 ml-1">
+                  {[{label: "Yes", val: true}, {label: "No", val: false}].map(opt => (
+                    <label key={`blood-edit-${opt.label}`} className="flex items-center gap-3 cursor-pointer">
+                      <input type="radio" checked={data.blood_donation_interest === opt.val} onChange={() => setData({...data, blood_donation_interest: opt.val})} className="w-5 h-5 text-primary border-gray-300 focus:ring-primary" />
                       <span className="font-bold text-sm text-primary">{opt.label}</span>
                     </label>
                   ))}
