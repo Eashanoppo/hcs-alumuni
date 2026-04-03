@@ -27,8 +27,8 @@ const CircleIcon = ({ size = 24 }: { size?: number }) => (
 )
 
 const FRAMES = [
-  { id: 'instagram', name: 'Instagram', label: '1080 × 1080', aspect: 'square', icon: Instagram },
-  { id: 'facebook',  name: 'Facebook',  label: '1200 × 628',  aspect: 'video',  icon: Facebook  },
+  { id: 'instagram', name: 'Instagram', label: '1080 × 1350', aspect: 'portrait', icon: Instagram },
+  { id: 'facebook',  name: 'Facebook',  label: '1200 × 1500',  aspect: 'portrait',  icon: Facebook  },
   { id: 'circle',    name: 'Circular',   label: '1080 × 1080', aspect: 'square', icon: CircleIcon },
 ]
 
@@ -143,7 +143,8 @@ export default function FrameGenerator({ onClose, initialPhoto }: FrameGenerator
 
           <div
             className={`w-full max-w-md md:max-w-lg bg-white rounded-[2.5rem] shadow-xl overflow-hidden border-8 border-white relative cursor-move group ${
-              selectedFrame.aspect === 'video' ? 'aspect-video' : 'aspect-square'
+              selectedFrame.aspect === 'video' ? 'aspect-video' :
+              selectedFrame.aspect === 'portrait' ? 'aspect-[4/5]' : 'aspect-square'
             }`}
             onMouseDown={e => handleDragStart(e.clientX, e.clientY)}
             onMouseMove={e => handleDragMove(e.clientX, e.clientY)}

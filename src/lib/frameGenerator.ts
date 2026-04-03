@@ -17,16 +17,16 @@ interface Layout {
 
 const LAYOUTS: Record<string, Layout> = {
   instagram: {
-    W: 1080, H: 1080,
-    photo: { x: 50, y: 140, w: 980, h: 710 },
+    W: 1080, H: 1350,
+    photo: { x: 50, y: 140, w: 980, h: 980 },
     bannerH: 190,
     footerH: 40,
   },
   facebook: {
-    W: 1200, H: 628,
-    photo: { x: 50, y: 120, w: 1100, h: 330 },
-    bannerH: 130,
-    footerH: 48,
+    W: 1200, H: 1500,
+    photo: { x: 55, y: 155, w: 1090, h: 1090 },
+    bannerH: 211,
+    footerH: 44,
   },
   circle: {
     W: 1080, H: 1080,
@@ -328,7 +328,7 @@ function draw(
   ctx.fillText('HOLY CRESCENT SCHOOL', W / 2, headerLayoutMid - scale(15));
   ctx.font = `${scale(22)}px "Georgia", serif`;
   ctx.fillStyle = GOLD;
-  ctx.fillText('হলি ক্রেসেন্ট স্কুল  •  রজত জয়ন্তী উৎসব ২০২৬', W / 2, headerLayoutMid + scale(32));
+  ctx.fillText('হলি ক্রিসেন্ট স্কুল  •  রজত জয়ন্তী উৎসব ২০২৬', W / 2, headerLayoutMid + scale(32));
   ctx.restore();
 
   // 5. Banner
