@@ -23,6 +23,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     blood_group: '',
     spouse_attending: false,
     children_count: 0,
+    parents_count: 0,
     guests_count: 0,
     admission_class: '',
     leaving_class: '',

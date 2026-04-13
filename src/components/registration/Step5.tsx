@@ -156,6 +156,8 @@ export default function Step5() {
             <>
               <InfoItem label="স্ত্রী/স্বামী" value={data.spouse_attending ? 'হ্যাঁ' : 'না'} />
               <InfoItem label="সন্তান সংখ্যা" value={data.children_count || 0} />
+              <InfoItem label="পিতা-মাতা" value={data.parents_count || 0} />
+              <InfoItem label="অতিথি" value={data.guests_count || 0} />
             </>
           )}
         </ReviewSection>

@@ -101,6 +101,42 @@ export default function Step4() {
                 </div>
                 <p className="text-[10px] text-muted font-bold uppercase tracking-wider">প্রথম সন্তান ফ্রি, পরবর্তী প্রতিজন ২০০ টাকা</p>
               </div>
+
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-primary">
+                  পিতা-মাতা (Parents Count)
+                </label>
+                <div className="relative">
+                  <Users size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+                  <input
+                    type="number"
+                    min="0"
+                    max="2"
+                    className="w-full bg-background border-none rounded-xl p-3 pl-12 focus:ring-2 focus:ring-accent transition-all font-bold"
+                    value={data.parents_count || 0}
+                    onChange={(e) => updateData({ parents_count: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+                <p className="text-[10px] text-muted font-bold uppercase tracking-wider">প্রতিজন ৩০০ টাকা</p>
+              </div>
+
+              <div className="space-y-4">
+                <label className="block text-sm font-bold text-primary">
+                  অতিরিক্ত অতিথি (Guest Count)
+                </label>
+                <div className="relative">
+                  <Users size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    className="w-full bg-background border-none rounded-xl p-3 pl-12 focus:ring-2 focus:ring-accent transition-all font-bold"
+                    value={data.guests_count || 0}
+                    onChange={(e) => updateData({ guests_count: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+                <p className="text-[10px] text-muted font-bold uppercase tracking-wider">প্রতিজন ৩০০ টাকা</p>
+              </div>
             </>
           )}
 

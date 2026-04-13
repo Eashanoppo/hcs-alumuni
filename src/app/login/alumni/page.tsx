@@ -39,12 +39,14 @@ export default function AlumniLogin() {
         .select('*')
         .or(`alumni_number.eq.${alumniNumber},mobile.eq.${alumniNumber}`)
         .eq('dob', dob)
-        .single()
+        .order('created_at', { ascending: false })
+        .limit(1)
 
-      if (error || !data) throw new Error("অবৈধ অ্যালুমনাই নম্বর বা জন্মতারিখ।")
+      if (error || !data || data.length === 0) throw new Error("অবৈধ অ্যালুমনাই নম্বর বা জন্মতারিখ।")
       
+      const record = data[0];
       // Set a session cookie - Use alumni_number if available, otherwise fall back to database id
-      const sessionIdentifier = data.alumni_number || data.id
+      const sessionIdentifier = record.alumni_number || record.id
       document.cookie = `alumni_session=${sessionIdentifier}; path=/; max-age=86400`
       window.location.href = `/profile`
     } catch (error: any) {

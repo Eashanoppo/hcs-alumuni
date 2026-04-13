@@ -32,7 +32,11 @@ export default function EditProfileForm({ profile }: { profile: any }) {
     email: profile.email || "",
     photo_url: profile.photo_url || "",
     blood_group: profile.blood_group || "",
-    blood_donation_interest: profile.blood_donation_interest || false
+    blood_donation_interest: profile.blood_donation_interest || false,
+    spouse_attending: profile.spouse_attending || false,
+    children_count: profile.children_count || 0,
+    parents_count: profile.parents_count || 0,
+    guests_count: profile.guests_count || 0,
   })
 
   const [oldPhotoUrl] = useState(profile.photo_url)
@@ -69,7 +73,7 @@ export default function EditProfileForm({ profile }: { profile: any }) {
       // Use alumni_number if available, otherwise fall back to database id
       await updateAlumniProfile(profile.alumni_number || profile.id, data, oldPhotoUrl)
       notify("Profile updated successfully", "success")
-      router.push("/profile")
+      router.push(`/registration/payment?id=${profile.id}`)
       router.refresh()
     } catch (err: any) {
       notify(`Failed to update profile: ${err.message}`, "error")
@@ -180,6 +184,37 @@ export default function EditProfileForm({ profile }: { profile: any }) {
             <div className="space-y-2 md:col-span-2">
               <label className="block text[10px] font-black uppercase tracking-widest text-primary ml-1">Current Institution</label>
               <input value={data.current_institution} onChange={e => setData({...data, current_institution: e.target.value})} className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 font-bold text-primary" />
+            </div>
+
+            <div className="space-y-2 md:col-span-2 mt-4 pt-6 border-t border-gray-50">
+              <h4 className="text-primary font-black uppercase tracking-widest text-xs mb-4">Family & Guests</h4>
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-primary ml-1">Spouse Attending?</label>
+              <div className="flex gap-6 ml-1">
+                {[{label: "Yes", val: true}, {label: "No", val: false}].map(opt => (
+                  <label key={`spouse-${opt.label}`} className="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" checked={data.spouse_attending === opt.val} onChange={() => setData({...data, spouse_attending: opt.val})} className="w-5 h-5 text-primary border-gray-300 focus:ring-primary" />
+                    <span className="font-bold text-sm text-primary">{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-primary ml-1">Children Count</label>
+              <input type="number" min="0" max="10" value={data.children_count} onChange={e => setData({...data, children_count: parseInt(e.target.value) || 0})} className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 font-bold text-primary" />
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-primary ml-1">Parents Count</label>
+              <input type="number" min="0" max="2" value={data.parents_count} onChange={e => setData({...data, parents_count: parseInt(e.target.value) || 0})} className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 font-bold text-primary" />
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-primary ml-1">Guests Count</label>
+              <input type="number" min="0" max="10" value={data.guests_count} onChange={e => setData({...data, guests_count: parseInt(e.target.value) || 0})} className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-4 font-bold text-primary" />
             </div>
 
             <div className="pt-6 border-t border-gray-50 mt-4 md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-8">

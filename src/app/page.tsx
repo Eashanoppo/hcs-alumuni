@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { ArrowRight, Image as ImageIcon, Loader2 } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, Loader2, Award } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { supabase } from "@/lib/supabase";
+import FrameGenerator from "@/components/profile/FrameGenerator";
 
 export default function Home() {
   const [galleryImages, setGalleryImages] = useState<any[]>([]);
@@ -17,6 +18,7 @@ export default function Home() {
   const [visionCover, setVisionCover] = useState<string>("/images/pic-3.webp");
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showFrameGen, setShowFrameGen] = useState(false);
 
   const [emblaRef] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 5000, stopOnInteraction: false }),
@@ -82,6 +84,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#FAFAF7] font-sans overflow-x-hidden">
       <Navbar />
+      <AnimatePresence>
+        {showFrameGen && (
+          <FrameGenerator 
+            onClose={() => setShowFrameGen(false)} 
+          />
+        )}
+      </AnimatePresence>
       <main>
         {/* Cinematic Hero */}
         <section className="relative min-h-screen lg:h-screen bg-primary-dark">
@@ -173,6 +182,13 @@ export default function Home() {
                 >
                   আমাদের সম্পর্কে
                 </Link>
+                <button
+                  onClick={() => setShowFrameGen(true)}
+                  className="w-full sm:w-auto px-10 py-5 bg-[#CEB888]/20 border border-[#CEB888]/30 text-white rounded-xl font-bold text-lg hover:bg-[#CEB888]/30 transition-all text-center flex items-center justify-center gap-3 backdrop-blur-md"
+                >
+                  <Award size={22} className="text-[#CEB888]" />
+                  Generate Frame
+                </button>
               </motion.div>
 
               {/* Integrated Stats */}

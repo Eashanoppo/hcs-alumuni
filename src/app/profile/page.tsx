@@ -43,6 +43,34 @@ export default async function ProfilePage() {
     redirect('/login/alumni')
   }
 
+  let delta = 0;
+  let totalPaidOrPending = 0;
+  let totalRequiredFee = 0;
+
+  const ALUMNI_FEE = 700;
+  const SPOUSE_FEE = profile.spouse_attending ? 300 : 0;
+  const childrenCount = profile.children_count || 0;
+  const CHILDREN_FEE = childrenCount > 1 ? (childrenCount - 1) * 200 : 0;
+  const parentsCount = profile.parents_count || 0;
+  const PARENTS_FEE = parentsCount * 300;
+  const guestsCount = profile.guests_count || 0;
+  const GUESTS_FEE = guestsCount * 300;
+  
+  totalRequiredFee = ALUMNI_FEE + SPOUSE_FEE + CHILDREN_FEE + PARENTS_FEE + GUESTS_FEE;
+
+  const { data: payments } = await supabase
+    .from('payments')
+    .select('*')
+    .eq('registrant_id', profile.id);
+
+  if (payments) {
+    totalPaidOrPending = payments
+      .filter((p: any) => p.status === 'VERIFIED' || p.status === 'PENDING')
+      .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+  }
+  
+  delta = totalRequiredFee - totalPaidOrPending;
+
   return (
     <div className="min-h-screen flex flex-col pt-28 bg-[#FAFAF7]">
       <Navbar />
@@ -136,6 +164,27 @@ export default async function ProfilePage() {
                 </div>
               </div>
 
+              <h3 className="text-lg font-black text-primary mt-12 mb-8 tracking-tight border-b border-gray-50 pb-4">Family & Guests</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-1">Spouse Attending</p>
+                  <p className="font-bold text-primary">{profile.spouse_attending ? 'Yes' : 'No'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-1">Children</p>
+                  <p className="font-bold text-primary">{profile.children_count || 0}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-1">Parents</p>
+                  <p className="font-bold text-primary">{profile.parents_count || 0}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-1">Other Guests</p>
+                  <p className="font-bold text-primary">{profile.guests_count || 0}</p>
+                </div>
+              </div>
+
               <h3 className="text-lg font-black text-primary mt-12 mb-8 tracking-tight border-b border-gray-50 pb-4">Academic History</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
@@ -160,16 +209,15 @@ export default async function ProfilePage() {
                  <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-50">
                     <h3 className="text-lg font-black text-primary tracking-tight">Payment Status</h3>
                     <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 
-                       ${profile.payment_status === 'PAID' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                       ${delta <= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
                        <CreditCard size={14} />
-                       {profile.payment_status}
+                       {delta <= 0 ? 'SETTLED' : 'OUTSTANDING'}
                     </span>
                  </div>
                  
-                 {profile.payment_status === 'UNPAID' ? (
+                 {delta > 0 ? (
                    <div className="text-center py-6">
-                      <p className="text-sm font-bold text-muted mb-6">You have an outstanding payment for your registration.</p>
-                      {/* For simplicity we redirect to a payment mock/instruction page using the existing ID if we needed it.  */}
+                      <p className="text-sm font-bold text-muted mb-6">You have an outstanding payment of <span className="text-primary font-black">{delta} BDT</span>.</p>
                       <Link href={`/registration/payment?id=${profile.id}`} className="inline-flex items-center gap-2 px-8 py-4 bg-[#1F3D2B] text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-2xl hover:bg-black transition-all">
                         Complete Payment Now
                       </Link>

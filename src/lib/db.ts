@@ -133,3 +133,36 @@ export async function getRegistrantBySlug(slug: string) {
     return generatedNameSlug === namePart
   })
 }
+
+export async function getPaymentsForRegistrant(registrantId: string) {
+  const { data, error } = await supabase
+    .from('payments')
+    .select('*')
+    .eq('registrant_id', registrantId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data
+}
+
+export async function updatePaymentInfo(id: string, txId: string, sender: string) {
+  const { data, error } = await supabase
+    .from('payments')
+    .update({ transaction_id: txId, sender_number: sender })
+    .eq('id', id)
+    .select()
+
+  if (error) throw error
+  return data ? data[0] : null
+}
+
+export async function updateRegistrantProfile(id: string, updates: Partial<Registrant>) {
+  const { data, error } = await supabase
+    .from('registrants')
+    .update(updates)
+    .eq('id', id)
+    .select()
+
+  if (error) throw error
+  return data ? data[0] : null
+}

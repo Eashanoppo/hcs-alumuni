@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS public.registrants (
     guests_count INTEGER DEFAULT 0,
     spouse_attending BOOLEAN DEFAULT FALSE,
     children_count INTEGER DEFAULT 0,
+    parents_count INTEGER DEFAULT 0,
     tshirt_size TEXT CHECK (tshirt_size IN ('S', 'M', 'L', 'XL', 'XXL')),
     registration_status TEXT DEFAULT 'PENDING' CHECK (registration_status IN ('PENDING', 'PAID', 'APPROVED', 'REJECTED')),
     payment_status TEXT DEFAULT 'UNPAID' CHECK (payment_status IN ('UNPAID', 'VERIFYING', 'PAID')),

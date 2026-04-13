@@ -40,6 +40,7 @@ export interface Registrant {
   spouse_attending?: boolean;
   children_count?: number;
   guests_count?: number;
+  parents_count?: number;
   tshirt_size: 'S' | 'M' | 'L' | 'XL' | 'XXL';
   facebook_url?: string;
   instagram_url?: string;
