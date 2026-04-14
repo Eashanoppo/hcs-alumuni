@@ -181,103 +181,134 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 lg:hidden bg-white pt-24 px-6 flex flex-col gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] lg:hidden bg-white flex flex-col"
           >
-            {navLinks.map((link) => (
-              <Link 
-                key={link.href} 
-                href={link.href} 
-                onClick={() => setIsOpen(false)}
-                className="text-2xl font-black text-primary hover:text-accent transition-colors border-b border-gray-50 pb-4"
-              >
-                {link.label}
+            {/* Overlay Header: Matches main navbar height and padding */}
+            <div className="h-20 px-6 flex items-center justify-between border-b border-gray-100 bg-white/80 backdrop-blur-md">
+              <Link href="/" onClick={() => setIsOpen(false)} className="text-xl font-black text-primary tracking-tighter flex items-center gap-2">
+                <Image src="/images/logo.png" alt="Logo" width={32} height={32} />
+                <span>ALUMNI <span className="text-accent underline decoration-accent/30 underline-offset-4">PORTAL</span></span>
               </Link>
-            ))}
-            <div className="mt-auto pb-10 flex flex-col gap-4">
-              {isLoggedIn ? (
-                <Link 
-                  href={userType === 'admin' ? '/admin/dashboard' : userType === 'teacher' ? '/profile/teacher' : '/profile'} 
-                  onClick={() => setIsOpen(false)}
-                  className="w-full py-4 text-center bg-primary text-white font-black uppercase tracking-widest rounded-xl shadow-lg flex items-center justify-center gap-3"
-                >
-                  <User size={18} /> {userType === 'admin' ? 'Admin Dashboard' : 'My Profile'}
-                </Link>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  {/* Mobile Login Dropdown */}
-                  <div className="flex flex-col border-b border-gray-50 pb-2">
-                    <button 
-                      onClick={() => setMobileLoginOpen(!mobileLoginOpen)}
-                      className="w-full py-4 flex items-center justify-between text-2xl font-black text-primary"
-                    >
-                      LOGIN <ChevronDown size={24} className={`transition-transform duration-300 ${mobileLoginOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    <AnimatePresence>
-                      {mobileLoginOpen && (
-                        <motion.div 
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden flex flex-col gap-4 pl-4 pb-4"
-                        >
-                          <Link 
-                            href="/login/alumni" 
-                            onClick={() => setIsOpen(false)}
-                            className="text-lg font-bold text-primary/60 hover:text-primary transition-colors uppercase tracking-widest"
-                          >
-                            Alumni Login
-                          </Link>
-                          <Link 
-                            href="/login/teachers" 
-                            onClick={() => setIsOpen(false)}
-                            className="text-lg font-bold text-primary/60 hover:text-primary transition-colors uppercase tracking-widest"
-                          >
-                            Teachers Login
-                          </Link>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+              <button onClick={() => setIsOpen(false)} className="p-2 text-primary hover:bg-gray-100 rounded-lg transition-colors">
+                <X size={24} />
+              </button>
+            </div>
 
-                  {/* Mobile Join Now Dropdown */}
-                  <div className="flex flex-col border-b border-gray-50 pb-2">
-                    <button 
-                      onClick={() => setMobileJoinOpen(!mobileJoinOpen)}
-                      className="w-full py-4 flex items-center justify-between text-2xl font-black text-primary"
+            <div className="flex-1 overflow-y-auto px-8 py-10 flex flex-col gap-2">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Link 
+                    href={link.href} 
+                    onClick={() => setIsOpen(false)}
+                    className="block text-[22px] font-black text-primary hover:text-accent transition-colors py-4 border-b border-gray-50/50 tracking-tight"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+
+              <div className="mt-8 space-y-4">
+                {isLoggedIn ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: navLinks.length * 0.05 }}
+                  >
+                    <Link 
+                      href={userType === 'admin' ? '/admin/dashboard' : userType === 'teacher' ? '/profile/teacher' : '/profile'} 
+                      onClick={() => setIsOpen(false)}
+                      className="w-full py-5 text-center bg-primary text-white font-black uppercase tracking-widest rounded-2xl shadow-xl flex items-center justify-center gap-3 hover:bg-black transition-all"
                     >
-                      JOIN NOW <ChevronDown size={24} className={`transition-transform duration-300 ${mobileJoinOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    <AnimatePresence>
-                      {mobileJoinOpen && (
-                        <motion.div 
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden flex flex-col gap-4 pl-4 pb-4"
-                        >
-                          <Link 
-                            href="/registration" 
-                            onClick={() => setIsOpen(false)}
-                            className="text-lg font-bold text-primary/70 bg-primary/5 p-4 rounded-xl border border-primary/10 transition-colors uppercase tracking-widest"
+                      <User size={18} /> {userType === 'admin' ? 'Admin Dashboard' : 'My Profile'}
+                    </Link>
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: navLinks.length * 0.05 }}
+                    className="flex flex-col gap-4"
+                  >
+                    {/* Mobile Login Dropdown */}
+                    <div className="bg-gray-50 rounded-[2rem] p-4 border border-gray-100">
+                      <button 
+                        onClick={() => setMobileLoginOpen(!mobileLoginOpen)}
+                        className="w-full py-2 px-4 flex items-center justify-between text-lg font-black text-primary"
+                      >
+                        LOGIN <ChevronDown size={20} className={`transition-transform duration-300 ${mobileLoginOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence>
+                        {mobileLoginOpen && (
+                          <motion.div 
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden flex flex-col gap-4 px-4 pt-2 pb-2"
                           >
-                            Alumni Registration
-                          </Link>
-                          <Link 
-                            href="/registration/teachers" 
-                            onClick={() => setIsOpen(false)}
-                            className="text-lg font-bold text-white bg-black p-4 rounded-xl shadow-lg transition-colors uppercase tracking-widest"
+                            <Link 
+                              href="/login/alumni" 
+                              onClick={() => setIsOpen(false)}
+                              className="text-sm font-bold text-primary/60 hover:text-primary transition-colors uppercase tracking-widest"
+                            >
+                              Alumni Login
+                            </Link>
+                            <Link 
+                              href="/login/teachers" 
+                              onClick={() => setIsOpen(false)}
+                              className="text-sm font-bold text-primary/60 hover:text-primary transition-colors uppercase tracking-widest"
+                            >
+                              Teachers Login
+                            </Link>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Mobile Join Now Dropdown */}
+                    <div className="bg-primary/5 rounded-[2rem] p-4 border border-primary/10">
+                      <button 
+                        onClick={() => setMobileJoinOpen(!mobileJoinOpen)}
+                        className="w-full py-2 px-4 flex items-center justify-between text-lg font-black text-primary"
+                      >
+                        JOIN NOW <ChevronDown size={20} className={`transition-transform duration-300 ${mobileJoinOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence>
+                        {mobileJoinOpen && (
+                          <motion.div 
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden flex flex-col gap-4 px-4 pt-2 pb-2"
                           >
-                            Teacher Registration
-                          </Link>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              )}
+                            <Link 
+                              href="/registration" 
+                              onClick={() => setIsOpen(false)}
+                              className="text-sm font-bold text-primary hover:text-accent transition-colors uppercase tracking-widest"
+                            >
+                              Alumni Registration
+                            </Link>
+                            <Link 
+                              href="/registration/teachers" 
+                              onClick={() => setIsOpen(false)}
+                              className="text-sm font-bold text-primary hover:text-accent transition-colors uppercase tracking-widest"
+                            >
+                              Teacher Registration
+                            </Link>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
