@@ -13,6 +13,7 @@ export default function AdminPayments() {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [batchFilter, setBatchFilter] = useState('ALL')
   const [methodFilter, setMethodFilter] = useState('ALL')
+  const [typeFilter, setTypeFilter] = useState('ALL')
   const { notify, confirm } = useNotification()
 
   const loadData = async () => {
@@ -66,8 +67,9 @@ export default function AdminPayments() {
     const matchesStatus = statusFilter === 'ALL' || p.status === statusFilter;
     const matchesBatch = batchFilter === 'ALL' || registrantBatch === batchFilter;
     const matchesMethod = methodFilter === 'ALL' || p.method === methodFilter;
+    const matchesType = typeFilter === 'ALL' || p.type === typeFilter;
     
-    return matchesSearch && matchesStatus && matchesBatch && matchesMethod;
+    return matchesSearch && matchesStatus && matchesBatch && matchesMethod && matchesType;
   })
 
   return (
@@ -129,6 +131,18 @@ export default function AdminPayments() {
                 <option value="ALL">All Methods</option>
                 <option value="BKASH">bKash</option>
                 <option value="NAGAD">Nagad</option>
+                <option value="CASH">Cash/Office</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <select 
+                value={typeFilter}
+                onChange={e => setTypeFilter(e.target.value)}
+                className="grow bg-white border border-gray-100 px-4 py-3 rounded-2xl text-[10px] font-black tracking-widest uppercase focus:ring-2 focus:ring-[#1F3D2B]/10 outline-none"
+              >
+                <option value="ALL">All Types</option>
+                <option value="ONLINE">Online</option>
+                <option value="OFFLINE">Offline</option>
               </select>
             </div>
           </div>
@@ -142,38 +156,44 @@ export default function AdminPayments() {
             <table className="w-full text-left border-collapse hidden lg:table">
               <thead className="bg-[#FAFAF7] text-[10px] font-black tracking-widest text-muted uppercase">
                 <tr>
-                  <th className="px-8 py-5">Transaction Details</th>
-                  <th className="px-8 py-5">Registrant</th>
-                  <th className="px-8 py-5">Amount</th>
-                  <th className="px-8 py-5">Status</th>
-                  <th className="px-8 py-5 text-right">Action</th>
+                   <th className="px-8 py-5">Transaction Details</th>
+                   <th className="px-8 py-5">Type</th>
+                   <th className="px-8 py-5">Registrant</th>
+                   <th className="px-8 py-5">Amount</th>
+                   <th className="px-8 py-5">Status</th>
+                   <th className="px-8 py-5 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 text-sm">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-8 py-16 text-center text-muted">
+                    <td colSpan={6} className="px-8 py-16 text-center text-muted">
                       <Loader2 className="animate-spin mx-auto mb-3" size={32} />
                       <p className="text-sm font-bold tracking-widest uppercase">Fetching Records...</p>
                     </td>
                   </tr>
                 ) : filteredPayments.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-8 py-16 text-center text-muted font-bold tracking-widest uppercase">No payment records found.</td>
+                    <td colSpan={6} className="px-8 py-16 text-center text-muted font-bold tracking-widest uppercase">No payment records found.</td>
                   </tr>
                 ) : (
                   filteredPayments.map((p) => (
                     <tr key={p.id} className="hover:bg-[#FAFAF7]/50 transition-colors group">
-                      <td className="px-8 py-6">
+                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black transition-all ${p.method === 'BKASH' ? 'bg-[#D12053]/10 text-[#D12053]' : 'bg-[#F37021]/10 text-[#F37021]'}`}>
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black transition-all ${p.method === 'BKASH' ? 'bg-[#D12053]/10 text-[#D12053]' : p.method === 'CASH' ? 'bg-[#1F3D2B]/10 text-[#1F3D2B]' : 'bg-[#F37021]/10 text-[#F37021]'}`}>
                             <CreditCard size={20} />
                           </div>
                           <div>
-                            <p className="font-black text-primary tracking-tight uppercase">{p.transaction_id || "No ID"}</p>
+                            <p className="font-black text-primary tracking-tight uppercase truncate max-w-[120px]">{p.transaction_id || "No ID"}</p>
                             <p className="text-[10px] text-muted font-bold tracking-widest uppercase">{p.method} • {p.sender_number}</p>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className={`text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest ${p.type === 'OFFLINE' ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-blue-50 text-blue-700 border border-blue-100'}`}>
+                          {p.type || 'ONLINE'}
+                        </span>
                       </td>
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-3">
@@ -263,6 +283,7 @@ export default function AdminPayments() {
                           <div className={`w-1.5 h-1.5 rounded-full ${p.status === 'VERIFIED' ? 'bg-emerald-500' : p.status === 'FAILED' ? 'bg-rose-500' : 'bg-amber-500 animate-pulse'}`}></div>
                           {p.status}
                         </span>
+                        <span className="text-[8px] font-black uppercase tracking-widest mt-1 opacity-50">{p.type || 'ONLINE'}</span>
                       </div>
 
                       <div className="flex gap-2">

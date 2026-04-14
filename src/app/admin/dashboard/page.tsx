@@ -5,17 +5,21 @@ import { LayoutDashboard, Users, FileCheck, CreditCard, Search, Filter, MoreVert
 import Link from "next/link"
 import { adminUpdateRegistrantStatus, adminDeleteRegistrant, adminGetAllRegistrants } from "@/app/actions/admin"
 import { Registrant } from "@/types"
+import { adminGetAllTeachers } from "@/app/actions/teacher-admin"
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('ALL')
   const [registrants, setRegistrants] = useState<Registrant[]>([])
+  const [teachers, setTeachers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   const loadData = async () => {
     try {
       setLoading(true)
       const data = await adminGetAllRegistrants()
+      const tData = await adminGetAllTeachers()
       setRegistrants(data || [])
+      setTeachers(tData || [])
     } catch (error) {
       console.error("Failed to fetch registrants", error)
     } finally {
@@ -59,11 +63,13 @@ export default function AdminDashboard() {
   const totalRegistrants = registrants.length
   const pendingRegistrants = registrants.filter(r => r.registration_status === 'PENDING').length
   const verifiedPayments = registrants.filter(r => r.payment_status === 'PAID').length
+  const pendingTeachers = teachers.filter(t => t.status === 'PENDING').length
 
   const stats = [
-    { label: "Total Registrants", value: totalRegistrants.toString(), icon: <Users />, color: "bg-blue-500" },
-    { label: "Pending Approval", value: pendingRegistrants.toString(), icon: <FileCheck />, color: "bg-amber-500" },
-    { label: "Payments Verified", value: verifiedPayments.toString(), icon: <CreditCard />, color: "bg-emerald-500" },
+    { label: "Total Registrants", value: totalRegistrants.toString(), icon: <Users />, color: "bg-blue-500", link: "/admin/registrants" },
+    { label: "Pending Approval", value: pendingRegistrants.toString(), icon: <FileCheck />, color: "bg-amber-500", link: "/admin/registrants" },
+    { label: "Payments Verified", value: verifiedPayments.toString(), icon: <CreditCard />, color: "bg-emerald-500", link: "/admin/payments" },
+    { label: "Pending Teachers", value: pendingTeachers.toString(), icon: <Users />, color: "bg-purple-500", link: "/admin/teachers" },
   ]
 
   const filteredRegistrants = registrants.filter(r => {
@@ -80,9 +86,9 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         {stats.map((s, i) => (
-          <div key={i} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-6 group hover:shadow-xl transition-all">
+          <Link href={s.link} key={i} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-6 group hover:shadow-xl transition-all cursor-pointer">
             <div className={`${s.color} p-4 rounded-2xl text-white shadow-lg group-hover:scale-110 transition-transform`}>
               {s.icon}
             </div>
@@ -93,7 +99,7 @@ export default function AdminDashboard() {
                 {loading && <Loader2 size={16} className="text-muted animate-spin" />}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 

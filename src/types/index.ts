@@ -61,5 +61,7 @@ export interface PaymentRecord {
   transaction_id: string;
   sender_number: string;
   status: 'PENDING' | 'VERIFIED' | 'FAILED';
+  type: 'ONLINE' | 'OFFLINE';
+  payment_date?: string;
   created_at: string;
 }

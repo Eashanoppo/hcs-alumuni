@@ -10,6 +10,7 @@ export default function DeveloperCard() {
           src="/images/eashan.webp" 
           alt="Golam Morshed Eashan" 
           fill
+          sizes="80px"
           className="object-cover"
         />
       </div>

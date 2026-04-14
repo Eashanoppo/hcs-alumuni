@@ -160,6 +160,10 @@ export default function AlumniLogin() {
                 <Link href="/login/admin" className="block text-[10px] font-bold uppercase tracking-widest text-[#CEB888] hover:text-[#1F3D2B] transition-colors underline underline-offset-4">
                   Institutional Admin Access
                 </Link>
+                
+                <Link href="/login/teachers" className="block text-[10px] font-bold uppercase tracking-widest text-primary hover:text-accent transition-colors underline underline-offset-4">
+                  শিক্ষক লগইন (Teacher Login) &rarr;
+                </Link>
               </div>
 
               <div className="mt-8 flex items-center justify-center gap-2 opacity-40">

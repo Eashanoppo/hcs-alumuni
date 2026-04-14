@@ -10,6 +10,9 @@ import {
   ArrowRight,
   Loader2,
   User,
+  Globe,
+  Smartphone,
+  CreditCard as CashIcon,
 } from "lucide-react";
 import { useState, Suspense, useEffect } from "react";
 import { submitPayment, getRegistrantById, getPaymentsForRegistrant, updatePaymentInfo } from "@/lib/db";
@@ -24,6 +27,7 @@ function PaymentForm() {
 
   const [txId, setTxId] = useState("");
   const [sender, setSender] = useState("");
+  const [paymentMode, setPaymentMode] = useState<"ONLINE" | "OFFLINE">("ONLINE");
   const { notify } = useNotification();
 
   const [loading, setLoading] = useState(false);
@@ -95,18 +99,24 @@ function PaymentForm() {
     try {
       if (delta > 0) {
         // Submit NEW extra payment
+        const finalTxId = paymentMode === "OFFLINE" ? `OFFLINE-${Date.now()}-${Math.random().toString(36).substr(2, 9)}` : txId;
+        const finalSender = paymentMode === "OFFLINE" ? "OFFICE/CASH" : sender;
+
         await submitPayment({
           registrant_id: registrantId,
           amount: delta,
-          method: "BKASH",
-          transaction_id: txId,
-          sender_number: sender,
+          method: paymentMode === "OFFLINE" ? "CASH" : "BKASH",
+          transaction_id: finalTxId,
+          sender_number: finalSender,
           status: "PENDING",
-        });
-        notify(
-          "অতিরিক্ত পেমেন্ট যাচাইয়ের জন্য পাঠানো হয়েছে। আমরা ২৪ ঘণ্টার মধ্যে নিশ্চিত করবো।",
-          "success",
-        );
+          type: paymentMode,
+        } as any);
+
+        const msg = paymentMode === "OFFLINE" 
+          ? "অফলাইন পেমেন্ট রিকোয়েস্ট জমা হয়েছে। অফিসে টাকা জমা দেওয়ার পর আমরা এটি যাচাই করবো।"
+          : "অতিরিক্ত পেমেন্ট যাচাইয়ের জন্য পাঠানো হয়েছে। আমরা ২৪ ঘণ্টার মধ্যে নিশ্চিত করবো।";
+        
+        notify(msg, "success");
       } else if (isUpdatingExisting) {
         // Update EXISTING pending payment
         await updatePaymentInfo(activePendingPayment.id, txId, sender);
@@ -262,85 +272,125 @@ function PaymentForm() {
                   </button>
                </div>
             ) : (
-              <div className="bg-white rounded-[3.5rem] shadow-premium border border-gray-100 p-10 md:p-14">
-                <div className="flex justify-center mb-12">
-                  <div
-                    className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-6 sm:px-12 py-4 rounded-2xl border-2 border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg w-full max-w-md"
-                  >
-                    <img
-                      src="https://www.logo.wine/a/logo/BKash/BKash-Icon-Logo.wine.svg"
-                      alt="bKash"
-                      className="h-8 sm:h-10 w-auto object-contain"
-                    />
-                    <span className="font-black uppercase tracking-widest text-xs">
-                      bKash Payment Selected
-                    </span>
+            <div className="bg-white rounded-[3.5rem] shadow-premium border border-gray-100 p-10 md:p-14">
+                <div className="flex flex-col items-center mb-12">
+                  <div className="flex p-1.5 bg-[#FAFAF7] rounded-3xl border border-gray-100 mb-8 w-full max-w-sm">
+                    <button 
+                      onClick={() => setPaymentMode("ONLINE")}
+                      className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${paymentMode === "ONLINE" ? "bg-[#1F3D2B] text-white shadow-lg" : "text-muted hover:text-primary"}`}
+                    >
+                      <Smartphone size={16} /> Online (bKash)
+                    </button>
+                    <button 
+                      onClick={() => setPaymentMode("OFFLINE")}
+                      className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${paymentMode === "OFFLINE" ? "bg-[#1F3D2B] text-white shadow-lg" : "text-muted hover:text-primary"}`}
+                    >
+                      <CashIcon size={16} /> Offline (Office)
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-6 sm:px-12 py-4 rounded-2xl border-2 border-[#1F3D2B] bg-[#1F3D2B]/5 shadow-lg w-full max-w-md">
+                    {paymentMode === "ONLINE" ? (
+                      <>
+                        <img
+                          src="https://www.logo.wine/a/logo/BKash/BKash-Icon-Logo.wine.svg"
+                          alt="bKash"
+                          className="h-8 sm:h-10 w-auto object-contain"
+                        />
+                        <span className="font-black uppercase tracking-widest text-xs">
+                          bKash Payment Selected
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <CashIcon className="text-primary" size={32} />
+                        <span className="font-black uppercase tracking-widest text-xs">
+                          Offline Payment Selected
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
 
-                <div className="bg-[#FAFAF7] rounded-[2.5rem] p-8 mb-12 border border-gray-100">
-                  <p className="text-[10px] font-black text-muted uppercase tracking-[0.3em] mb-6">
-                    Payment Instructions
-                  </p>
-                  <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row items-center justify-between p-6 bg-white rounded-3xl shadow-sm border border-gray-100 gap-4">
-                      <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto text-center sm:text-left">
-                        <div className="p-4 bg-[#1F3D2B]/5 rounded-2xl text-[#1F3D2B] shrink-0">
-                          <Phone size={24} />
+                {paymentMode === "ONLINE" ? (
+                  <div className="bg-[#FAFAF7] rounded-[2.5rem] p-8 mb-12 border border-gray-100">
+                    <p className="text-[10px] font-black text-muted uppercase tracking-[0.3em] mb-6">
+                      Payment Instructions
+                    </p>
+                    <div className="space-y-4">
+                      <div className="flex flex-col sm:flex-row items-center justify-between p-6 bg-white rounded-3xl shadow-sm border border-gray-100 gap-4">
+                        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto text-center sm:text-left">
+                          <div className="p-4 bg-[#1F3D2B]/5 rounded-2xl text-[#1F3D2B] shrink-0">
+                            <Phone size={24} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[10px] sm:text-xs font-black text-muted uppercase tracking-[0.2em] mb-1 wrap-break-word whitespace-normal">
+                              Send Money To
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter wrap-break-word whitespace-normal">
+                              01912-591492
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-[10px] sm:text-xs font-black text-muted uppercase tracking-[0.2em] mb-1 wrap-break-word whitespace-normal">
-                            Send Money To
-                          </p>
-                          <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter wrap-break-word whitespace-normal">
-                            01912-591492
-                          </p>
-                        </div>
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigator.clipboard.writeText("01912-591492");
+                            notify("নাম্বার কপি করা হয়েছে।", "success");
+                          }}
+                          className="p-4 rounded-2xl bg-[#FAFAF7] text-primary hover:bg-[#1F3D2B] hover:text-white transition-all shadow-sm w-full sm:w-auto flex justify-center shrink-0"
+                        >
+                          <Copy size={22} />
+                        </button>
                       </div>
-                      <button 
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          navigator.clipboard.writeText("01912-591492");
-                          notify("নাম্বার কপি করা হয়েছে।", "success");
-                        }}
-                        className="p-4 rounded-2xl bg-[#FAFAF7] text-primary hover:bg-[#1F3D2B] hover:text-white transition-all shadow-sm w-full sm:w-auto flex justify-center shrink-0"
-                      >
-                        <Copy size={22} />
-                      </button>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-amber-50 rounded-[2.5rem] p-8 mb-12 border border-amber-100">
+                    <p className="text-[10px] font-black text-amber-900 uppercase tracking-[0.3em] mb-6">
+                      Offline Instructions
+                    </p>
+                    <div className="space-y-4 text-amber-900 text-sm font-bold leading-relaxed">
+                      <p>১. স্কুল অফিসে এসে নগদ টাকা জমা দিন।</p>
+                      <p>২. অথবা আয়োজক কমিটির নির্ধারিত প্রতিনিধিদের কাছে ফি প্রদান করুন।</p>
+                      <p>৩. নিচে "Confirm Offline Payment" বাটনে ক্লিক করুন।</p>
+                      <p>৪. আমরা আপনার তথ্য যাচাই করে রেজিস্ট্রেশন নিশ্চিত করবো।</p>
+                    </div>
+                  </div>
+                )}
 
                 <form onSubmit={handlePaymentSubmit} className="space-y-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-3">
-                      <label className="block text-[10px] font-black text-primary uppercase tracking-[0.2em] ml-1">
-                        আপনার নম্বর (Sender Number)
-                      </label>
-                      <input
-                        required
-                        type="tel"
-                        className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-5 focus:ring-2 focus:ring-[#1F3D2B]/10 transition-all font-bold tracking-widest text-primary"
-                        placeholder="017XXXXXXXX"
-                        value={sender}
-                        onChange={(e) => setSender(e.target.value)}
-                      />
+                  {paymentMode === "ONLINE" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="block text-[10px] font-black text-primary uppercase tracking-[0.2em] ml-1">
+                          আপনার নম্বর (Sender Number)
+                        </label>
+                        <input
+                          required
+                          type="tel"
+                          className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-5 focus:ring-2 focus:ring-[#1F3D2B]/10 transition-all font-bold tracking-widest text-primary"
+                          placeholder="017XXXXXXXX"
+                          value={sender}
+                          onChange={(e) => setSender(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="block text-[10px] font-black text-primary uppercase tracking-[0.2em] ml-1">
+                          ট্রানজেকশন আইডি (TrxID)
+                        </label>
+                        <input
+                          required
+                          type="text"
+                          className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-5 focus:ring-2 focus:ring-[#1F3D2B]/10 transition-all font-bold uppercase tracking-[0.2em] text-primary"
+                          placeholder="TRX12345678"
+                          value={txId}
+                          onChange={(e) => setTxId(e.target.value)}
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-3">
-                      <label className="block text-[10px] font-black text-primary uppercase tracking-[0.2em] ml-1">
-                        ট্রানজেকশন আইডি (TrxID)
-                      </label>
-                      <input
-                        required
-                        type="text"
-                        className="w-full bg-[#FAFAF7] border border-gray-100 rounded-2xl p-5 focus:ring-2 focus:ring-[#1F3D2B]/10 transition-all font-bold uppercase tracking-[0.2em] text-primary"
-                        placeholder="TRX12345678"
-                        value={txId}
-                        onChange={(e) => setTxId(e.target.value)}
-                      />
-                    </div>
-                  </div>
+                  )}
 
                   <div className="pt-6">
                     <button
@@ -352,7 +402,7 @@ function PaymentForm() {
                         <Loader2 size={24} className="animate-spin" />
                       ) : (
                         <>
-                          {isUpdatingExisting ? "Update Payment Details" : "Verify & Confirm Payment"}
+                          {paymentMode === "OFFLINE" ? "Confirm Offline Payment" : (isUpdatingExisting ? "Update Payment Details" : "Verify & Confirm Payment")}
                           <ArrowRight size={20} className="sm:w-6 sm:h-6 shrink-0" />
                         </>
                       )}

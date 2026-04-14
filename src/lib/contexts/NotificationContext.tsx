@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Notification from '@/components/ui/Notification'
 
@@ -74,8 +74,10 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     setNotification(null)
   }, [notification])
 
+  const value = useMemo(() => ({ notify, confirm }), [notify, confirm])
+  
   return (
-    <NotificationContext.Provider value={{ notify, confirm }}>
+    <NotificationContext.Provider value={value}>
       {children}
       <AnimatePresence>
         {notification && (

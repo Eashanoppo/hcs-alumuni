@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutDashboard, Users, CreditCard, LogOut, ChevronRight, Megaphone, Image as ImageIcon, Menu, X, Star, MessageSquare, Phone, Info, Video } from "lucide-react"
+import { LayoutDashboard, Users, CreditCard, LogOut, ChevronRight, Megaphone, Image as ImageIcon, Menu, X, Star, MessageSquare, Phone, Info, Video, GraduationCap } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { logoutAdmin } from "@/app/actions/admin"
@@ -24,6 +24,7 @@ export default function AdminSidebar() {
   const navItems = [
     { label: "Dashboard", href: "/admin/dashboard", icon: <LayoutDashboard size={20} /> },
     { label: "Registrants", href: "/admin/registrants", icon: <Users size={20} /> },
+    { label: "Teachers", href: "/admin/teachers", icon: <GraduationCap size={20} /> },
     { label: "Payments", href: "/admin/payments", icon: <CreditCard size={20} /> },
     { label: "Notices", href: "/admin/notices", icon: <Megaphone size={20} /> },
     { label: "Gallery", href: "/admin/gallery", icon: <ImageIcon size={20} /> },

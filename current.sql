@@ -211,3 +211,60 @@ CREATE POLICY "Allow public read access on site_settings"
 
 CREATE POLICY "Allow service_role full access site_settings" 
   ON public.site_settings USING (true) WITH CHECK (true);
+  
+  -- Teachers table
+CREATE TABLE IF NOT EXISTS public.teachers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    -- Step 1: Personal Info
+    full_name TEXT NOT NULL,
+    designation TEXT NOT NULL,           -- পদবি (স্কুলে থাকাকালীন)
+    subject TEXT NOT NULL,               -- পাঠদানের বিষয়
+    joining_year TEXT NOT NULL,          -- স্কুলে যোগদানের সাল (used as login credential)
+    leaving_year TEXT NOT NULL,          -- স্কুল ত্যাগের সাল
+    photo_url TEXT,
+
+    -- Education (repeatable, stored as JSONB array)
+    education JSONB DEFAULT '[]',        -- [{level, institution, subject}]
+
+    -- Step 2: Contact & Professional Info
+    present_address TEXT,
+    mobile TEXT NOT NULL,                -- used as login credential
+    email TEXT,
+    current_occupation TEXT,
+
+    -- Step 3: Event Participation
+    willing_to_attend TEXT DEFAULT 'হ্যাঁ' CHECK (willing_to_attend IN ('হ্যাঁ', 'না', 'সম্ভবত')),
+    activities JSONB DEFAULT '[]',       -- array of selected activity strings
+    memory_note TEXT,                    -- স্মৃতিচারণ (ঐচ্ছিক)
+    consent BOOLEAN DEFAULT FALSE,       -- সম্মতি
+
+    -- Admin
+    status TEXT DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
+    teacher_id TEXT UNIQUE,              -- auto-generated on approval (e.g. HCS-TCH-001)
+    is_founder_guide BOOLEAN DEFAULT FALSE,  -- "Our Founder & Guide" flag
+    founder_guide_note TEXT,             -- special note shown on profile if founder/guide
+
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS
+ALTER TABLE public.teachers ENABLE ROW LEVEL SECURITY;
+
+-- Public can insert (register)
+CREATE POLICY "Teachers public insert" ON public.teachers FOR INSERT WITH CHECK (true);
+
+-- Public can read APPROVED teachers
+CREATE POLICY "Teachers public read approved" ON public.teachers FOR SELECT USING (status = 'APPROVED');
+
+-- Service role has full access (admin operations)
+CREATE POLICY "Teachers service role full access" ON public.teachers USING (true) WITH CHECK (true);
+
+-- Rename existing columns
+ALTER TABLE public.teachers RENAME COLUMN full_name TO full_name_en;
+ALTER TABLE public.teachers RENAME COLUMN joining_year TO joining_date;
+
+-- Add new columns
+ALTER TABLE public.teachers ADD COLUMN full_name_bn TEXT;
+ALTER TABLE public.teachers ADD COLUMN slug TEXT UNIQUE;
