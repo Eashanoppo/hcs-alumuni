@@ -72,7 +72,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm flex justify-between items-center px-6 md:px-16 h-20 font-sans font-medium tracking-tight">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-[#F3F3F0]/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm flex justify-between items-center px-6 md:px-16 h-20 font-sans font-medium tracking-tight">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-xl md:text-2xl font-black text-primary tracking-tighter hover:text-accent transition-colors flex items-center gap-2">
             <Image 
@@ -89,7 +89,7 @@ export default function Navbar() {
         {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-10">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="text-primary/60 hover:text-primary transition-colors font-bold text-xs uppercase tracking-[0.2em]">
+            <Link key={link.href} href={link.href} className="text-primary/70 hover:text-primary transition-colors font-black text-[11px] uppercase tracking-[0.25em]">
               {link.label}
             </Link>
           ))}
@@ -115,7 +115,7 @@ export default function Navbar() {
                 onMouseEnter={() => setActiveDropdown('login')}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
-                <button className="flex items-center gap-1 text-primary/60 hover:text-primary font-bold text-xs uppercase tracking-[0.2em] py-2 transition-colors">
+                <button className="flex items-center gap-1 text-primary/70 hover:text-primary font-black text-[11px] uppercase tracking-[0.25em] py-2 transition-colors">
                   Login <ChevronDown size={14} className={`transition-transform duration-200 ${activeDropdown === 'login' ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
@@ -143,7 +143,7 @@ export default function Navbar() {
                 onMouseEnter={() => setActiveDropdown('join')}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
-                <button className="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-xl font-black hover:shadow-xl hover:bg-black transition-all text-xs uppercase tracking-[0.2em]">
+                <button className="flex items-center gap-2 bg-[#1F3D2B] text-white px-8 py-3 rounded-xl font-black hover:shadow-xl hover:bg-black transition-all text-[11px] uppercase tracking-[0.25em]">
                   Join Now <ChevronDown size={14} className={`transition-transform duration-200 ${activeDropdown === 'join' ? 'rotate-180' : ''}`} />
                 </button>
                 <AnimatePresence>
@@ -167,12 +167,17 @@ export default function Navbar() {
             </div>
           )}
           
-          {/* Hamburger Button */}
+          {/* Hamburger Button Styled like Join Now for Premium Feel */}
           <button 
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-primary hover:bg-gray-100 rounded-lg transition-colors"
+            className="lg:hidden flex items-center gap-2 bg-[#1F3D2B] text-white px-4 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-lg"
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <X size={18} /> : (
+              <>
+                <Menu size={18} />
+                <span>MENU</span>
+              </>
+            )}
           </button>
         </div>
       </nav>
@@ -187,13 +192,18 @@ export default function Navbar() {
             className="fixed inset-0 z-[60] lg:hidden bg-white flex flex-col"
           >
             {/* Overlay Header: Matches main navbar height and padding */}
-            <div className="h-20 px-6 flex items-center justify-between border-b border-gray-100 bg-white/80 backdrop-blur-md">
+            {/* Overlay Header: Matches PC navbar background and style */}
+            <div className="h-20 px-6 flex items-center justify-between border-b border-gray-200/50 bg-[#F3F3F0]/95 backdrop-blur-md">
               <Link href="/" onClick={() => setIsOpen(false)} className="text-xl font-black text-primary tracking-tighter flex items-center gap-2">
                 <Image src="/images/logo.png" alt="Logo" width={32} height={32} />
                 <span>ALUMNI <span className="text-accent underline decoration-accent/30 underline-offset-4">PORTAL</span></span>
               </Link>
-              <button onClick={() => setIsOpen(false)} className="p-2 text-primary hover:bg-gray-100 rounded-lg transition-colors">
-                <X size={24} />
+              <button 
+                onClick={() => setIsOpen(false)} 
+                className="flex items-center gap-2 bg-[#1F3D2B] text-white px-4 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg"
+              >
+                <X size={18} />
+                <span>CLOSE</span>
               </button>
             </div>
 
@@ -235,13 +245,13 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: navLinks.length * 0.05 }}
-                    className="flex flex-col gap-4"
+                    className="flex flex-col gap-6"
                   >
-                    {/* Mobile Login Dropdown */}
-                    <div className="bg-gray-50 rounded-[2rem] p-4 border border-gray-100">
+                    {/* Mobile Login Dropdown Styled like Premium buttons */}
+                    <div className="bg-white rounded-[2rem] p-6 shadow-premium border border-gray-100">
                       <button 
                         onClick={() => setMobileLoginOpen(!mobileLoginOpen)}
-                        className="w-full py-2 px-4 flex items-center justify-between text-lg font-black text-primary"
+                        className="w-full py-2 px-2 flex items-center justify-between text-base font-black text-primary uppercase tracking-[0.2em]"
                       >
                         LOGIN <ChevronDown size={20} className={`transition-transform duration-300 ${mobileLoginOpen ? 'rotate-180' : ''}`} />
                       </button>
@@ -251,19 +261,19 @@ export default function Navbar() {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden flex flex-col gap-4 px-4 pt-2 pb-2"
+                            className="overflow-hidden flex flex-col gap-5 px-2 pt-6 pb-2"
                           >
                             <Link 
                               href="/login/alumni" 
                               onClick={() => setIsOpen(false)}
-                              className="text-sm font-bold text-primary/60 hover:text-primary transition-colors uppercase tracking-widest"
+                              className="text-xs font-black text-primary/60 hover:text-primary transition-colors uppercase tracking-[0.2em] border-l-4 border-accent pl-4"
                             >
                               Alumni Login
                             </Link>
                             <Link 
                               href="/login/teachers" 
                               onClick={() => setIsOpen(false)}
-                              className="text-sm font-bold text-primary/60 hover:text-primary transition-colors uppercase tracking-widest"
+                              className="text-xs font-black text-primary/60 hover:text-primary transition-colors uppercase tracking-[0.2em] border-l-4 border-accent pl-4"
                             >
                               Teachers Login
                             </Link>
@@ -272,11 +282,11 @@ export default function Navbar() {
                       </AnimatePresence>
                     </div>
 
-                    {/* Mobile Join Now Dropdown */}
-                    <div className="bg-primary/5 rounded-[2rem] p-4 border border-primary/10">
+                    {/* Mobile Join Now Dropdown Styled like PC Join button */}
+                    <div className="bg-[#1F3D2B] rounded-[2rem] p-6 shadow-2xl border border-primary/20">
                       <button 
                         onClick={() => setMobileJoinOpen(!mobileJoinOpen)}
-                        className="w-full py-2 px-4 flex items-center justify-between text-lg font-black text-primary"
+                        className="w-full py-2 px-2 flex items-center justify-between text-base font-black text-white uppercase tracking-[0.2em]"
                       >
                         JOIN NOW <ChevronDown size={20} className={`transition-transform duration-300 ${mobileJoinOpen ? 'rotate-180' : ''}`} />
                       </button>
@@ -286,19 +296,19 @@ export default function Navbar() {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden flex flex-col gap-4 px-4 pt-2 pb-2"
+                            className="overflow-hidden flex flex-col gap-5 px-2 pt-6 pb-2"
                           >
                             <Link 
                               href="/registration" 
                               onClick={() => setIsOpen(false)}
-                              className="text-sm font-bold text-primary hover:text-accent transition-colors uppercase tracking-widest"
+                              className="text-xs font-black text-white/70 hover:text-accent transition-colors uppercase tracking-[0.2em] border-l-4 border-accent/50 pl-4"
                             >
                               Alumni Registration
                             </Link>
                             <Link 
                               href="/registration/teachers" 
                               onClick={() => setIsOpen(false)}
-                              className="text-sm font-bold text-primary hover:text-accent transition-colors uppercase tracking-widest"
+                              className="text-xs font-black text-white/70 hover:text-accent transition-colors uppercase tracking-[0.2em] border-l-4 border-accent/50 pl-4"
                             >
                               Teacher Registration
                             </Link>
