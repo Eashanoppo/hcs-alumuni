@@ -68,6 +68,11 @@ function PaymentForm() {
             setActivePendingPayment(pending);
             setTxId(pending.transaction_id);
             setSender(pending.sender_number);
+            if (pending.type === "OFFLINE" || pending.method === "CASH") {
+              setPaymentMode("OFFLINE");
+            } else {
+              setPaymentMode("ONLINE");
+            }
           }
         }
         setDataLoaded(true);
@@ -119,7 +124,11 @@ function PaymentForm() {
         notify(msg, "success");
       } else if (isUpdatingExisting) {
         // Update EXISTING pending payment
-        await updatePaymentInfo(activePendingPayment.id, txId, sender);
+        const finalTxId = paymentMode === "OFFLINE" ? (txId.startsWith("OFFLINE") ? txId : `OFFLINE-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`) : txId;
+        const finalSender = paymentMode === "OFFLINE" ? "OFFICE/CASH" : sender;
+        const finalMethod = paymentMode === "OFFLINE" ? "CASH" : "BKASH";
+
+        await updatePaymentInfo(activePendingPayment.id, finalTxId, finalSender, finalMethod, paymentMode);
         notify("পেমেন্ট তথ্য সফলভাবে আপডেট হয়েছে।", "success");
       }
       window.location.href = "/";

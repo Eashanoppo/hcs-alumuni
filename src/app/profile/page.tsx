@@ -63,10 +63,13 @@ export default async function ProfilePage() {
     .select('*')
     .eq('registrant_id', profile.id);
 
+  let hasPendingPayment = false;
+
   if (payments) {
     totalPaidOrPending = payments
       .filter((p: any) => p.status === 'VERIFIED' || p.status === 'PENDING')
       .reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+    hasPendingPayment = payments.some((p: any) => p.status === 'PENDING');
   }
   
   delta = totalRequiredFee - totalPaidOrPending;
@@ -223,13 +226,20 @@ export default async function ProfilePage() {
                       </Link>
                    </div>
                  ) : (
-                   <div className="p-6 bg-[#FAFAF7] rounded-3xl border border-gray-100 flex items-center justify-between">
-                     <div>
-                       <p className="font-black text-primary mb-1">Registration Fee Settled</p>
-                       <p className="text-[10px] font-bold uppercase tracking-widest text-muted">Awaiting final administrative verification if pending.</p>
-                     </div>
-                     <CheckCircle className="text-emerald-500" size={32} />
-                   </div>
+                    <div className="p-6 bg-[#FAFAF7] rounded-3xl border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div>
+                        <p className="font-black text-primary mb-1">Registration Fee Settled</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted">Awaiting final administrative verification if pending.</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        {hasPendingPayment && (
+                          <Link href={`/registration/payment?id=${profile.id}`} className="px-4 py-2 border border-gray-200 text-primary bg-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#1F3D2B] hover:text-white transition-colors shadow-sm">
+                            Edit Terms
+                          </Link>
+                        )}
+                        <CheckCircle className="text-emerald-500 shrink-0" size={32} />
+                      </div>
+                    </div>
                  )}
                </div>
             </div>

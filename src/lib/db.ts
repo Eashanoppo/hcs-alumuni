@@ -145,10 +145,14 @@ export async function getPaymentsForRegistrant(registrantId: string) {
   return data
 }
 
-export async function updatePaymentInfo(id: string, txId: string, sender: string) {
+export async function updatePaymentInfo(id: string, txId: string, sender: string, method?: string, type?: string) {
+  const updatePayload: any = { transaction_id: txId, sender_number: sender };
+  if (method) updatePayload.method = method;
+  if (type) updatePayload.type = type;
+
   const { data, error } = await supabase
     .from('payments')
-    .update({ transaction_id: txId, sender_number: sender })
+    .update(updatePayload)
     .eq('id', id)
     .select()
 
