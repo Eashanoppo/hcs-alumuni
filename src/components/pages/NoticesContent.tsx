@@ -125,32 +125,32 @@ export default function NoticesContent() {
                     <Link
                       key={i}
                       href={`/notices/${n.id}`}
-                      className="group bg-white p-8 rounded-4xl flex items-center justify-between gap-8 border border-gray-100 hover:shadow-premium hover:border-[#1F3D2B]/20 transition-all"
+                      className="group bg-white p-5 md:p-8 rounded-3xl md:rounded-4xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8 border border-gray-100 hover:shadow-premium hover:border-[#1F3D2B]/20 transition-all overflow-hidden"
                     >
-                      <div className="flex items-start gap-8">
-                        <div className="bg-[#FAFAF7] p-5 rounded-2xl text-center min-w-25 border border-gray-50 group-hover:bg-primary transition-colors group-hover:border-primary">
-                          <span className="block text-2xl font-black text-primary group-hover:text-white leading-none mb-1">
+                      <div className="flex items-start gap-4 sm:gap-8 w-full flex-1 min-w-0">
+                        <div className="bg-[#FAFAF7] p-3 sm:p-5 rounded-2xl text-center min-w-[4.5rem] sm:min-w-[6rem] border border-gray-50 group-hover:bg-primary transition-colors group-hover:border-primary shrink-0">
+                          <span className="block text-xl sm:text-2xl font-black text-primary group-hover:text-white leading-none mb-1">
                             {new Date(n.created_at).getDate()}
                           </span>
-                          <span className="block text-[9px] font-black text-muted group-hover:text-white/60 uppercase tracking-wider">
+                          <span className="block text-[8px] sm:text-[9px] font-black text-muted group-hover:text-white/60 uppercase tracking-wider">
                             {new Date(n.created_at).toLocaleString("default", {
                               month: "short",
                             })}
                           </span>
                         </div>
-                        <div>
-                          <span className="inline-block px-3 py-1 bg-primary/5 text-primary text-[10px] font-bold rounded-lg mb-3 uppercase tracking-widest">
+                        <div className="min-w-0 flex-1">
+                          <span className="inline-block px-2 sm:px-3 py-1 bg-primary/5 text-primary text-[9px] sm:text-[10px] font-bold rounded-lg mb-2 sm:mb-3 uppercase tracking-widest">
                             {n.category}
                           </span>
-                          <h4 className="text-lg md:text-xl font-bold text-primary group-hover:text-[#CEB888] transition-colors leading-snug">
+                          <h4 className="text-base md:text-xl font-bold text-primary group-hover:text-[#CEB888] transition-colors leading-snug break-words pr-2">
                             {n.title_bn || n.title}
                           </h4>
-                          <p className="text-muted text-sm mt-2 line-clamp-2">
+                          <p className="text-muted text-xs sm:text-sm mt-1 sm:mt-2 line-clamp-2">
                             {n.body_bn || n.body}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-center w-14 h-14 bg-[#FAFAF7] border border-gray-100 rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm shrink-0">
+                      <div className="hidden sm:flex items-center justify-center w-14 h-14 bg-[#FAFAF7] border border-gray-100 rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm shrink-0">
                         <FileText size={24} />
                       </div>
                     </Link>

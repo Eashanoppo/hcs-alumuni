@@ -229,7 +229,11 @@ export default async function ProfilePage() {
                     <div className="p-6 bg-[#FAFAF7] rounded-3xl border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div>
                         <p className="font-black text-primary mb-1">Registration Fee Settled</p>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted">Awaiting final administrative verification if pending.</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted">
+                          {hasPendingPayment 
+                            ? 'Awaiting final administrative verification.' 
+                            : 'Successfully verified by administration.'}
+                        </p>
                       </div>
                       <div className="flex items-center gap-4">
                         {hasPendingPayment && (
