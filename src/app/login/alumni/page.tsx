@@ -148,14 +148,16 @@ export default function AlumniLogin() {
                 </button>
               </form>
 
-              <div className="mt-8 pt-8 border-t border-gray-100 text-center space-y-4">
-                <p className="text-muted text-[10px] font-bold uppercase tracking-widest">
-                  আপনার কি এখনো একাউন্ট নেই? 
-                  <Link href="/registration" className="text-primary hover:text-[#CEB888] transition-colors ml-2 inline-flex items-center gap-1">
-                    Registration
-                    <ArrowRight size={14} />
+              <div className="pt-8 border-t border-gray-100 text-center space-y-4">
+                <div className="p-4 bg-[#1F3D2B]/5 rounded-2xl border border-[#1F3D2B]/10 mb-6">
+                  <p className="text-muted text-xs md:text-sm font-black uppercase tracking-wider mb-3">
+                    আপনার কি এখনো একাউন্ট নেই? 
+                  </p>
+                  <Link href="/registration" className="text-primary hover:text-[#CEB888] transition-colors inline-flex items-center gap-2 text-sm md:text-base font-black uppercase tracking-widest underline decoration-accent underline-offset-4">
+                    Registration Now
+                    <ArrowRight size={18} />
                   </Link>
-                </p>
+                </div>
                 
                 <Link href="/login/admin" className="block text-[10px] font-bold uppercase tracking-widest text-[#CEB888] hover:text-[#1F3D2B] transition-colors underline underline-offset-4">
                   Institutional Admin Access

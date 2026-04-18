@@ -166,13 +166,16 @@ export default function TeacherLogin() {
             </button>
           </form>
 
-          <div className="mt-10 text-center border-t border-gray-50 pt-8 space-y-3">
-            <p className="text-[10px] font-black tracking-widest text-muted uppercase">
-              Not registered yet?{" "}
-              <Link href="/registration/teachers" className="text-primary hover:text-[#CEB888] underline underline-offset-4 transition-colors ml-1">
+          <div className="text-center border-t border-gray-50 pt-8 space-y-4">
+            <div className="p-4 bg-[#1F3D2B]/5 rounded-2xl border border-[#1F3D2B]/10 mb-6">
+              <p className="text-muted text-xs md:text-sm font-black uppercase tracking-wider mb-3">
+                Not registered yet?
+              </p>
+              <Link href="/registration/teachers" className="text-primary hover:text-[#CEB888] transition-colors inline-flex items-center gap-2 text-sm md:text-base font-black uppercase tracking-widest underline decoration-accent underline-offset-4">
                 Register Here
+                <ArrowRight size={18} />
               </Link>
-            </p>
+            </div>
             <Link href="/login/admin" className="text-[10px] uppercase font-black tracking-widest text-rose-500 hover:text-rose-600 transition-colors underline underline-offset-4 block">
               Institution Admin Access — Login as Admin
             </Link>

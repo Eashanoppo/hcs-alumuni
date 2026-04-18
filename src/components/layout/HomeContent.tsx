@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { ArrowRight, Image as ImageIcon, Loader2, Award } from "lucide-react";
+import { ArrowRight, Image as ImageIcon, Loader2, Award, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
@@ -19,6 +19,7 @@ export default function HomeContent() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFrameGen, setShowFrameGen] = useState(false);
+  const [heroLoginOpen, setHeroLoginOpen] = useState(false);
 
   const [emblaRef] = useEmblaCarousel({ loop: true }, [
     Autoplay({ delay: 5000, stopOnInteraction: false }),
@@ -169,13 +170,33 @@ export default function HomeContent() {
                 }}
                 className="flex flex-col sm:flex-row items-center justify-start gap-5 mb-12"
               >
-                <Link
-                  href="/registration"
-                  className="w-full sm:w-auto px-10 py-5 bg-accent text-primary-dark rounded-xl font-bold text-lg hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center gap-3 shadow-lg"
+                <div 
+                  className="relative group w-full sm:w-auto z-50"
+                  onMouseEnter={() => setHeroLoginOpen(true)}
+                  onMouseLeave={() => setHeroLoginOpen(false)}
                 >
-                  রেজিস্ট্রেশন করুন
-                  <ArrowRight size={22} />
-                </Link>
+                  <button className="w-full sm:w-auto px-10 py-5 bg-accent text-primary-dark rounded-xl font-bold text-lg hover:shadow-2xl transition-all flex items-center justify-center gap-3 shadow-lg">
+                    লগইন করুন
+                    <ChevronDown size={22} className={`transition-transform duration-200 ${heroLoginOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {heroLoginOpen && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 top-full mt-2 w-full sm:w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 overflow-hidden"
+                      >
+                        <Link href="/login/alumni" className="block px-4 py-4 text-sm font-bold uppercase tracking-wider text-primary/70 hover:text-primary hover:bg-gray-50 transition-colors text-center border-b border-gray-50">
+                          Alumni Login
+                        </Link>
+                        <Link href="/login/teachers" className="block px-4 py-4 text-sm font-bold uppercase tracking-wider text-primary/70 hover:text-primary hover:bg-gray-50 transition-colors text-center">
+                          Teachers Login
+                        </Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
                 <Link
                   href="/about"
                   className="w-full sm:w-auto px-10 py-5 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all text-center"
