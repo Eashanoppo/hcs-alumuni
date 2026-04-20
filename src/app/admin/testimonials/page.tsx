@@ -100,54 +100,64 @@ export default function AdminTestimonials() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] flex flex-col">
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center gap-6">
-          <Link href="/admin/dashboard" className="p-3 hover:bg-[#FAFAF7] rounded-2xl transition-all border border-transparent hover:border-gray-100">
-            <ArrowLeft size={20} className="text-primary" />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-black text-primary tracking-tight">Voice of Alumni</h1>
-            <p className="text-muted text-[10px] font-bold uppercase tracking-widest mt-1">Manage Testimonials</p>
-          </div>
+    <div className="min-h-screen bg-[#FAFAF7] p-8 md:p-12 relative">
+      <header className="flex items-center gap-6 mb-12">
+        <Link href="/admin/dashboard" className="p-3 hover:bg-white rounded-2xl transition-all border border-transparent hover:border-gray-100 shadow-sm md:shadow-none hover:shadow-premium">
+          <ArrowLeft size={20} className="text-primary" />
+        </Link>
+        <div>
+          <h1 className="text-3xl font-black text-primary tracking-tight">Voice of Alumni</h1>
+          <p className="text-muted text-sm font-medium">Manage and display student/alumni testimonials</p>
         </div>
       </header>
 
-      <main className="flex-1 p-6 md:p-8">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
-          
-          <div className="order-2 lg:order-1 space-y-4">
+      <main className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* List Section */}
+          <div className="lg:col-span-2 space-y-6">
             {loading ? (
-              <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary" /></div>
+              <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[2.5rem] border border-gray-100 shadow-premium">
+                <Loader2 className="animate-spin text-primary mb-4" size={40} />
+                <p className="text-[10px] font-black tracking-widest uppercase text-muted">Fetching Feedback...</p>
+              </div>
             ) : testimonials.length === 0 ? (
-              <div className="p-12 text-center bg-white rounded-[2rem] border border-gray-100">
-                <MessageSquare size={40} className="mx-auto text-gray-300 mb-4" />
-                <p className="text-muted font-bold">No testimonials added yet.</p>
+              <div className="p-24 text-center bg-white rounded-[2.5rem] border border-gray-100 shadow-premium">
+                <MessageSquare size={48} className="mx-auto text-gray-200 mb-6" />
+                <p className="text-muted font-black text-[10px] uppercase tracking-widest">No testimonials found.</p>
               </div>
             ) : (
               testimonials.map((testimonial) => (
-                <div key={testimonial.id} className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-md transition-all group relative">
-                  <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => handleEdit(testimonial)} className="p-2 bg-gray-50 text-gray-600 hover:text-primary rounded-xl transition-colors">
+                <div key={testimonial.id} className="bg-white p-8 md:p-10 rounded-[2.5rem] border border-gray-100 shadow-premium hover:shadow-[0_40px_80px_rgba(31,61,43,0.06)] transition-all group relative overflow-hidden">
+                  <div className="absolute top-8 right-8 flex gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
+                    <button onClick={() => handleEdit(testimonial)} className="p-3 bg-[#FAFAF7] text-primary hover:bg-primary hover:text-white rounded-xl transition-all shadow-sm">
                       <Edit2 size={16} />
                     </button>
-                    <button onClick={(e) => handleDelete(testimonial.id, e)} className="p-2 bg-rose-50 text-rose-500 hover:bg-rose-100 rounded-xl transition-colors">
+                    <button onClick={(e) => handleDelete(testimonial.id, e)} className="p-3 bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-all shadow-sm">
                       <Trash2 size={16} />
                     </button>
                   </div>
                   
-                  <div className="flex flex-col gap-6">
-                    <MessageSquare size={24} className="text-accent/50" />
-                    <p className="text-primary text-lg font-bold italic leading-relaxed">
-                      "{testimonial.quote}"
-                    </p>
-                    <div className="pt-4 border-t border-gray-50 flex justify-between items-center">
+                  <div className="flex flex-col gap-8">
+                    <div className="flex items-center gap-4">
+                      <div className="p-4 bg-primary/5 text-primary rounded-2xl shadow-sm border border-primary/10">
+                        <MessageSquare size={24} />
+                      </div>
                       <div>
-                        <h4 className="font-black text-primary">{testimonial.name}</h4>
+                        <h4 className="text-xl font-black text-primary leading-tight">{testimonial.name}</h4>
                         <p className="text-[10px] uppercase font-black tracking-widest text-muted mt-1">{testimonial.batch}</p>
                       </div>
-                      <span className="px-3 py-1 bg-gray-50 text-gray-500 rounded-lg text-[10px] font-black uppercase tracking-wider">
-                        Order: {testimonial.display_order}
+                    </div>
+
+                    <div className="relative">
+                      <span className="absolute -top-4 -left-2 text-6xl font-serif text-primary/5 select-none opacity-50">"</span>
+                      <p className="text-primary text-lg font-medium italic leading-relaxed relative z-10 pl-4">
+                        {testimonial.quote}
+                      </p>
+                    </div>
+
+                    <div className="pt-8 border-t border-gray-50 flex justify-between items-center">
+                       <span className="px-5 py-2 bg-[#FAFAF7] text-muted rounded-xl text-[10px] font-black uppercase tracking-widest border border-gray-100">
+                        Display Priority: {testimonial.display_order}
                       </span>
                     </div>
                   </div>
@@ -156,79 +166,79 @@ export default function AdminTestimonials() {
             )}
           </div>
 
-          <div className="order-1 lg:order-2">
-            <div className="bg-white p-6 md:p-8 rounded-[2.5rem] border border-gray-100 shadow-premium sticky top-32">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 bg-primary/5 text-primary rounded-2xl"><MessageSquare size={24} /></div>
-                <h2 className="text-xl font-black text-primary">{editId ? "Edit Voice" : "New Voice"}</h2>
+          {/* Form Section */}
+          <div className="lg:col-span-1">
+            <div className="bg-white p-8 md:p-10 rounded-[2.5rem] border border-gray-100 shadow-premium sticky top-12">
+              <div className="flex items-center gap-4 mb-10">
+                <div className="p-3 bg-primary/5 text-primary rounded-2xl"><Plus size={24} /></div>
+                <h2 className="text-xl font-black text-primary tracking-tight">{editId ? "Update Voice" : "Add New Voice"}</h2>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-muted mb-2">Alumni Name</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-3">Alumni Name</label>
                   <input
                     type="text"
                     required
                     value={form.name}
                     onChange={e => setForm({ ...form, name: e.target.value })}
-                    className="w-full bg-[#FAFAF7] border-0 rounded-2xl px-5 py-4 text-primary font-bold placeholder:text-gray-400 focus:ring-2 focus:ring-accent outline-none"
+                    className="w-full bg-[#FAFAF7] border-0 rounded-2xl px-6 py-5 text-primary font-bold placeholder:text-gray-300 focus:ring-2 focus:ring-primary/10 transition-all"
                     placeholder="e.g. Dr. Ahmed Sharif"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-muted mb-2">SSC Batch</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-3">SSC Batch</label>
                   <input
                     type="text"
                     required
                     value={form.batch}
                     onChange={e => setForm({ ...form, batch: e.target.value })}
-                    className="w-full bg-[#FAFAF7] border-0 rounded-2xl px-5 py-4 text-primary font-bold placeholder:text-gray-400 focus:ring-2 focus:ring-accent outline-none"
+                    className="w-full bg-[#FAFAF7] border-0 rounded-2xl px-6 py-5 text-primary font-bold placeholder:text-gray-400 focus:ring-2 focus:ring-primary/10 transition-all"
                     placeholder="e.g. SSC 2005"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-muted mb-2">Quote Component</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-3">Testimonial Quote</label>
                   <textarea
                     required
                     value={form.quote}
                     onChange={e => setForm({ ...form, quote: e.target.value })}
-                    className="w-full bg-[#FAFAF7] border-0 rounded-2xl px-5 py-4 text-primary placeholder:text-gray-400 focus:ring-2 focus:ring-accent outline-none min-h-[120px] resize-y"
+                    className="w-full bg-[#FAFAF7] border-0 rounded-2xl px-6 py-5 text-primary font-medium placeholder:text-gray-300 focus:ring-2 focus:ring-primary/10 transition-all min-h-[160px] resize-none leading-relaxed"
                     placeholder="Enter short inspiring quote..."
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-muted mb-2">Display Order Option</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-muted mb-3">Display Priority</label>
                   <input
                     type="number"
                     value={form.display_order}
                     onChange={e => setForm({ ...form, display_order: parseInt(e.target.value) || 0 })}
-                    className="w-full bg-[#FAFAF7] border-0 rounded-2xl px-5 py-4 text-primary font-bold placeholder:text-gray-400 focus:ring-2 focus:ring-accent outline-none"
+                    className="w-full bg-[#FAFAF7] border-0 rounded-2xl px-6 py-5 text-primary font-bold focus:ring-2 focus:ring-primary/10"
                   />
-                  <p className="text-[10px] text-muted italic mt-2">Lower numbers appear first on the page.</p>
+                  <p className="text-[9px] text-muted font-bold italic mt-3 tracking-wide">Lower numbers appear first on the page.</p>
                 </div>
 
-                <div className="pt-4 flex gap-3">
+                <div className="pt-6 flex gap-3">
                   {editId && (
-                    <button type="button" onClick={cancelEdit} className="flex-1 py-4 bg-gray-50 text-gray-600 rounded-2xl font-bold hover:bg-gray-100 transition-colors">
+                    <button type="button" onClick={cancelEdit} className="flex-1 py-5 bg-[#FAFAF7] text-primary rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all">
                       Cancel
                     </button>
                   )}
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 py-4 bg-[#1F3D2B] text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-black transition-all flex justify-center items-center gap-2 shadow-lg disabled:opacity-50"
+                    className="flex-1 py-5 bg-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex justify-center items-center gap-3 shadow-lg disabled:opacity-50"
                   >
                     {submitting ? <Loader2 className="animate-spin" size={16} /> : <Plus size={16} />}
-                    {editId ? "Save Changes" : "Create Card"}
+                    {editId ? "Update Entry" : "Post Testimony"}
                   </button>
                 </div>
               </form>
             </div>
           </div>
-          
         </div>
       </main>
     </div>

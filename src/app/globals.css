@@ -49,3 +49,45 @@ body {
     @apply border-border;
   }
 }
+
+@media print {
+  /* Hide sidebar and mobile UI */
+  aside, 
+  nav,
+  .lg\:hidden.fixed.top-0 {
+    display: none !important;
+  }
+  
+  /* Hide dashboard content marked with no-print */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset layout containers */
+  .h-dvh, 
+  body, 
+  html {
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  .print-report-root,
+  .print-report {
+    display: block !important;
+    width: 100% !important;
+    visibility: visible !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 15mm 10mm;
+  }
+}

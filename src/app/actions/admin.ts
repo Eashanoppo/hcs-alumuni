@@ -118,6 +118,23 @@ export async function adminGetAllRegistrants() {
   return data
 }
 
+export async function adminGetRegistrantsWithPayments() {
+  const supabase = getAdminSupabase()
+  // Fetch registrants and join with verified payments to get transaction_id
+  const { data, error } = await supabase
+    .from('registrants')
+    .select('*, payments(transaction_id, status)')
+    .order('full_name_en', { ascending: true })
+
+  if (error) throw new Error(error.message)
+  
+  // Map the data to flatten the verified payment transaction_id
+  return data.map((reg: any) => ({
+    ...reg,
+    transaction_id: reg.payments?.find((p: any) => p.status === 'VERIFIED')?.transaction_id || null
+  }))
+}
+
 export async function adminGetRegistrantById(id: string) {
   const supabase = getAdminSupabase()
   const { data, error } = await supabase
